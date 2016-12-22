@@ -1,0 +1,83 @@
+<!-- Styles! -->
+<link href="css/loopy.css" rel="stylesheet"/>
+
+<!-- Scripts! -->
+<script src="js/minpubsub.js"></script>
+<script src="js/helpers.js"></script>
+<script src="js/Mouse.js"></script>
+<script src="js/Node.js"></script>
+<script src="js/Edge.js"></script>
+<script src="js/Loopy.js"></script>
+
+<script>
+
+// MODEL! Manic-Depressive Disorder.
+var model = {
+	width: 600,
+	height: 330,
+	meta: {
+		radius: 60,
+		speed: 1
+	},
+	nodes: [
+		{
+			id: 0,
+			label: "mania",
+			hue: 0, // red
+			x:100, y:100,
+			value: 0
+		},
+		{
+			id: 1,
+			label: "energy",
+			hue: 0, // red
+			x:300, y:160,
+			value: 0
+		},
+		{
+			id: 2,
+			label: "depression",
+			hue: 210, // blue
+			x:500, y:210,
+			value: 0
+		}
+	],
+	edges: [
+
+		// Energy-Mania loop: +/+, clockwise
+		{
+			from:0, to:1,
+			arc: 100,
+			strength:0.1
+		},
+		{
+			from:1, to:0,
+			arc: 100,
+			strength:1
+		},
+
+		// Energy-Depression loop: -/-, counter-clockwise
+		{
+			from:2, to:1,
+			arc: -100,
+			strength:-0.1,
+			delay:0
+		},
+		{
+			from:1, to:2,
+			arc: -100,
+			strength:-1
+		}
+
+	]
+};
+
+window.onload = function(){
+
+	// Make a LOOPY out of it.
+	window.loopy = new Loopy(model);
+	document.body.appendChild(loopy.canvas);
+
+};
+
+</script>

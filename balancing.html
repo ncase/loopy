@@ -1,0 +1,68 @@
+<link href="prototype.css" rel="stylesheet"/>
+<script src="prototype.js"></script>
+<script>
+
+// MODEL! Simple balancing loop
+var model = {
+	width: 400,
+	height: 200,
+	nodes: [
+		{
+			id: 0,
+			label: "fox",
+			hue: 0,
+			x:100, y:100,
+			value: 100
+		},
+		{
+			id: 1,
+			label: "rabbit",
+			hue: 210,
+			x:300, y:100,
+			value: 0
+		}
+	],
+	edges: [
+
+		// BALANCE!
+		{
+			from:0, to:1,
+			label: "increases",
+			x:200, y:0,
+			strength:0.25,
+			delay:1
+		},
+		{
+			from:1, to:0,
+			label: "decreases",
+			x:200, y:200,
+			strength:-0.25,
+			delay:1
+		},
+
+		// DECAY???
+		/*{
+			from:0, to:0,
+			label: "decay",
+			x:200, y:0,
+			strength:-0.05,
+			delay:1
+		},
+		{
+			from:1, to:1,
+			label: "decay",
+			x:200, y:0,
+			strength:-0.05,
+			delay:1
+		}*/
+
+	]
+};
+
+// Make a LOOPY out of it.
+var loopy = new Loopy(model);
+window.onload = function(){
+	document.body.appendChild(loopy.canvas);
+};
+
+</script>
