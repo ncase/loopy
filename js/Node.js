@@ -44,6 +44,7 @@ function Node(model, config){
 			_controlsPressed = true;
 			_controlsTicker = 6;
 			self.value += _controlsDirection*50;
+			self.bound();
 		}
 	});
 	subscribe("mouseup",function(){
@@ -58,6 +59,11 @@ function Node(model, config){
 	var _offsetAcc = 0;
 	var _offsetDamp = 0.3;
 	var _offsetHookes = 0.8;
+	self.bound = function(){
+		if(self.value<-100) self.value=-100;
+		if(self.value>100) self.value=100;
+		// if(Math.abs(self.value)<0.1) self.value=0;
+	};
 	self.update = function(speed){
 
 		// Cursor!
@@ -73,9 +79,7 @@ function Node(model, config){
 		}
 
 		// Keep value within bounds!
-		if(self.value<-100) self.value=-100;
-		if(self.value>100) self.value=100;
-		// if(Math.abs(self.value)<0.1) self.value=0;
+		self.bound();
 
 		// Synchronous update
 		self.nextValue = self.value;
@@ -98,6 +102,7 @@ function Node(model, config){
 	};
 
 	// Draw
+	var _circleRadius = 0;
 	self.draw = function(ctx){
 
 		// Retina
@@ -110,6 +115,7 @@ function Node(model, config){
 		ctx.translate(x,y+_offsetY);
 		//ctx.globalAlpha = 0.5;
 
+		/*
 		// Draw circle!
 		ctx.beginPath();
 		ctx.arc(0, 0, r, 0, Math.TAU, false);
@@ -132,17 +138,35 @@ function Node(model, config){
 		// negative or not, OUTLINE
 		ctx.strokeStyle = color;
 		ctx.stroke();
+		*/
+
+		// Color the circles!
+		// Grey background
+		ctx.beginPath();
+		ctx.arc(0, 0, r, 0, Math.TAU, false);
+		ctx.fillStyle = "hsl(0,0%,78%)";
+		ctx.fill();
+		// Colored bubble
+		ctx.beginPath();
+		var _circleRadiusGoto = r*(((self.value/100)+1)/2);
+		_circleRadius = _circleRadius*0.5 + _circleRadiusGoto*0.5;
+		ctx.arc(0, 0, _circleRadius, 0, Math.TAU, false);
+		ctx.fillStyle = "hsl("+config.hue+",80%,58%)";
+		ctx.fill();
 
 		// Text!
 		ctx.font = "300 40px sans-serif";
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
 		var textcolor;
+		/*
 		if(self.value>=0){
 			textcolor = "#fff"; // if positive, WHITE
 		}else{
 			textcolor = color; // if negative, OUTLINE
 		}
+		*/
+		textcolor = "#fff";
 		ctx.fillStyle = textcolor;
 		ctx.fillText(config.label, 0, 0);
 

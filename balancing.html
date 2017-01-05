@@ -1,68 +1,64 @@
-<link href="prototype.css" rel="stylesheet"/>
-<script src="prototype.js"></script>
+
+<!-- Styles! -->
+<link href="css/loopy.css" rel="stylesheet"/>
+
+<!-- Scripts! -->
+<script src="js/minpubsub.js"></script>
+<script src="js/helpers.js"></script>
+<script src="js/Mouse.js"></script>
+<script src="js/Node.js"></script>
+<script src="js/Edge.js"></script>
+<script src="js/Loopy.js"></script>
+
 <script>
 
-// MODEL! Simple balancing loop
+// MODEL! Manic-Depressive Disorder.
 var model = {
-	width: 400,
-	height: 200,
+	width: 360,
+	height: 240,
+	meta: {
+		radius: 60,
+		speed: 1
+	},
 	nodes: [
 		{
 			id: 0,
-			label: "fox",
-			hue: 0,
-			x:100, y:100,
+			label: "foxes",
+			hue: 20,
+			x:80, y:120,
 			value: 100
 		},
 		{
 			id: 1,
-			label: "rabbit",
+			label: "rabbits",
 			hue: 210,
-			x:300, y:100,
+			x:280, y:120,
 			value: 0
 		}
 	],
 	edges: [
-
 		// BALANCE!
 		{
 			from:0, to:1,
-			label: "increases",
-			x:200, y:0,
-			strength:0.25,
+			arc:100,
+			strength:-0.1,
 			delay:1
 		},
 		{
 			from:1, to:0,
-			label: "decreases",
-			x:200, y:200,
-			strength:-0.25,
+			arc:100,
+			strength:0.1,
 			delay:1
-		},
-
-		// DECAY???
-		/*{
-			from:0, to:0,
-			label: "decay",
-			x:200, y:0,
-			strength:-0.05,
-			delay:1
-		},
-		{
-			from:1, to:1,
-			label: "decay",
-			x:200, y:0,
-			strength:-0.05,
-			delay:1
-		}*/
-
+		}
 	]
 };
 
-// Make a LOOPY out of it.
-var loopy = new Loopy(model);
 window.onload = function(){
+
+	// Make a LOOPY out of it.
+	window.loopy = new Loopy(model);
 	document.body.appendChild(loopy.canvas);
+
 };
 
 </script>
