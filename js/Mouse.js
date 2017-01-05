@@ -17,6 +17,15 @@ Mouse.init = function(target){
 		publish("mouseup");
 	};
 
+	// Cursor & Update
+	Mouse.target = target;
+	Mouse.showCursor = function(cursor){
+		Mouse.target.style.cursor = cursor;
+	};
+	Mouse.update = function(){
+		Mouse.showCursor("");
+	};
+
 	// Add events!
 	target.onmousedown = _onmousedown;
 	target.onmousemove = _onmousemove;

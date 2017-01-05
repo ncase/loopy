@@ -55,6 +55,8 @@ function Loopy(config){
 	// Update
 	self.update = function(){
 
+		Mouse.update();
+
 		var speed = self.meta.speed;
 
 		// Update edges THEN nodes.

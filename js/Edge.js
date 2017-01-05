@@ -115,7 +115,8 @@ function Edge(model, config){
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
 		var lx = w/2;
-		var ly = h-labelBuffer;
+		var ly = (h-labelBuffer);
+		if(config.arc>=0) ly*=-1;
 		ctx.save();
 		ctx.translate(lx, ly);
 		//ctx.rotate(-a);

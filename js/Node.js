@@ -19,11 +19,58 @@ function Node(model, config){
 	self.value = config.value;
 	self.nextValue = self.value; // for synchronous update
 
+	// MOUSE.
+	var _controlsVisible = false;
+	var _controlsAlpha = 0;
+	var _controlsDirection = 0;
+	var _controlsSelected = true;
+	var _controlsPressed = false;
+	var _controlsTicker = -1;
+	subscribe("mousemove", function(){
+		var dx = Mouse.x-self.x;
+		var dy = Mouse.y-self.y;
+		var r = model.meta.radius;
+		_controlsSelected = (dx*dx+dy*dy < r*r);
+		if(_controlsSelected){
+			_controlsVisible = true;
+			_controlsDirection = (dy<0) ? 1 : -1;
+		}else{
+			_controlsVisible = false;
+			_controlsDirection = 0;
+		}
+	});
+	subscribe("mousedown",function(){
+		if(_controlsSelected){
+			_controlsPressed = true;
+			_controlsTicker = 6;
+			self.value += _controlsDirection*50;
+		}
+	});
+	subscribe("mouseup",function(){
+		_controlsPressed = false;
+		_controlsTicker = -1;
+	});
+
 	// Update!
+	var _offsetY = 0;
+	var _offsetGoto = 0;
+	var _offsetVel = 0;
+	var _offsetAcc = 0;
+	var _offsetDamp = 0.3;
+	var _offsetHookes = 0.8;
 	self.update = function(speed){
 
+		// Cursor!
+		if(_controlsSelected) Mouse.showCursor("pointer");
+
 		// Synchronous update
-		self.value = self.nextValue;
+		if(_controlsPressed){
+			if(_controlsTicker--<0){
+				self.value += _controlsDirection*5;
+			}
+		}else{
+			self.value = self.nextValue;
+		}
 
 		// Keep value within bounds!
 		if(self.value<-100) self.value=-100;
@@ -32,6 +79,21 @@ function Node(model, config){
 
 		// Synchronous update
 		self.nextValue = self.value;
+
+		// Controls!
+		var gotoAlpha = _controlsVisible ? 1 : 0;
+		_controlsAlpha = _controlsAlpha*0.5 + gotoAlpha*0.5;
+		if(_controlsPressed){
+			_offsetGoto = -_controlsDirection*15;
+		}else{
+			_offsetGoto = 0;
+		}
+
+		// Offset
+		_offsetY += _offsetVel;
+		_offsetVel += _offsetAcc;
+		_offsetVel *= _offsetDamp;
+		_offsetAcc = (_offsetGoto-_offsetY)*_offsetHookes;
 
 	};
 
@@ -45,7 +107,7 @@ function Node(model, config){
 
 		// Translate!
 		ctx.save();
-		ctx.translate(x,y);
+		ctx.translate(x,y+_offsetY);
 		//ctx.globalAlpha = 0.5;
 
 		// Draw circle!
@@ -75,12 +137,34 @@ function Node(model, config){
 		ctx.font = "300 40px sans-serif";
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
+		var textcolor;
 		if(self.value>=0){
-			ctx.fillStyle = "#fff"; // if positive, WHITE
+			textcolor = "#fff"; // if positive, WHITE
 		}else{
-			ctx.fillStyle = color; // if negative, OUTLINE
+			textcolor = color; // if negative, OUTLINE
 		}
+		ctx.fillStyle = textcolor;
 		ctx.fillText(config.label, 0, 0);
+
+		// Controls!
+		var cl = 30;
+		var cy = 20;
+		ctx.globalAlpha = _controlsAlpha;
+		ctx.strokeStyle = textcolor;
+		// top arrow
+		ctx.beginPath();
+		ctx.moveTo(-cl,-cy-cl);
+		ctx.lineTo(0,-cy-cl*2);
+		ctx.lineTo(cl,-cy-cl);
+		ctx.lineWidth = (_controlsDirection>0) ? 7: 3;
+		ctx.stroke();
+		// bottom arrow
+		ctx.beginPath();
+		ctx.moveTo(-cl,cy+cl);
+		ctx.lineTo(0,cy+cl*2);
+		ctx.lineTo(cl,cy+cl);
+		ctx.lineWidth = (_controlsDirection<0) ? 7: 3;
+		ctx.stroke();
 
 		// Restore
 		ctx.restore();
