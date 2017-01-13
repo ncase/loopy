@@ -8,13 +8,12 @@
 <script src="js/Node.js"></script>
 <script src="js/Edge.js"></script>
 <script src="js/Loopy.js"></script>
-
 <script>
 
-// MODEL! Manic-Depressive Disorder.
+// MODEL! College education & pricing
 var model = {
-	width: 600,
-	height: 330,
+	width: 260,
+	height: 360,
 	meta: {
 		radius: 60,
 		speed: 1
@@ -22,53 +21,37 @@ var model = {
 	nodes: [
 		{
 			id: 0,
-			label: "mania",
-			hue: 0, // red
-			x:100, y:160, //y:100,
+			label: "tuition",
+			hue: 0,
+			x:130, y:80,
 			value: -100
 		},
 		{
 			id: 1,
-			label: "energy",
-			hue: 0, // red
-			x:300, y:160,
+			label: "students",
+			hue: 30,
+			x:130, y:230,
 			value: -100
-		},
-		{
-			id: 2,
-			label: "depression",
-			hue: 210, // blue
-			x:500, y:160, //y:210,
-			value: 0
 		}
 	],
 	edges: [
-
-		// Energy-Mania loop: +/+, clockwise
+		// BALANCE!
 		{
 			from:0, to:1,
-			arc: 100,
-			strength:0.1
+			arc:100,
+			strength:-0.1
 		},
 		{
 			from:1, to:0,
-			arc: 100,
-			strength:1
+			arc:100,
+			strength:0.1
 		},
-
-		// Energy-Depression loop: -/-, counter-clockwise
+		// delay
 		{
-			from:2, to:1,
-			arc: -100,
-			strength:-0.1,
-			delay:0
-		},
-		{
-			from:1, to:2,
-			arc: -100,
-			strength:-1
+			from:1, to:1,
+			arc:100, rotation:180,
+			strength:-0.1
 		}
-
 	]
 };
 
@@ -79,5 +62,4 @@ window.onload = function(){
 	document.body.appendChild(loopy.canvas);
 
 };
-
 </script>

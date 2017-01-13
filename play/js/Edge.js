@@ -51,7 +51,13 @@ function Edge(model, config){
 		var fx=self.from.x*2,
 			fy=self.from.y*2,
 			tx=self.to.x*2,
-			ty=self.to.y*2;			
+			ty=self.to.y*2;	
+		if(self.from==self.to){
+			var r = config.rotation || 0;
+			r *= Math.TAU/360;
+			tx += Math.cos(r);
+			ty += Math.sin(r);
+		}		
 		var dx = tx-fx;
 		var dy = ty-fy;
 		var w = Math.sqrt(dx*dx+dy*dy);
@@ -119,7 +125,7 @@ function Edge(model, config){
 		if(config.arc>=0) ly*=-1;
 		ctx.save();
 		ctx.translate(lx, ly);
-		//ctx.rotate(-a);
+		ctx.rotate(-a);
 		ctx.fillText(self.label, 0, 0);
 		ctx.restore();
 
