@@ -10,64 +10,59 @@
 <script src="js/Loopy.js"></script>
 <script>
 
-// MODEL! Manic-Depressive Disorder.
+// MODEL! Wolves, Elk, and plants
 var model = {
-	width: 580,
-	height: 260,
+	width: 560,
+	height: 240,
 	meta: {
-		radius: 60,
+		radius: 40,
 		speed: 1
 	},
 	nodes: [
 		{
 			id: 0,
-			label: "mania",
-			hue: 0, // red
-			x:90, y:130, //y:100,
-			value: 100
+			label: "wolves",
+			hue: 0,
+			x:80, y:120,
+			value: 0
 		},
 		{
 			id: 1,
-			label: "energy",
-			hue: 0, // red
-			x:290, y:130,
-			value: 100
+			label: "elk",
+			hue: 30,
+			x:280, y:120,
+			value: 0
 		},
 		{
 			id: 2,
-			label: "depression",
-			hue: 210, // blue
-			x:490, y:130, //y:210,
-			value: -100
+			label: "plants",
+			hue: 90,
+			x:480, y:120,
+			value: 20
 		}
 	],
 	edges: [
-
-		// Energy-Mania loop: +/+, clockwise
+		// BALANCE!
 		{
 			from:0, to:1,
-			arc: 100,
-			strength:0.1
+			arc:100,
+			strength:-0.1
 		},
 		{
 			from:1, to:0,
-			arc: 100,
+			arc:100,
 			strength:0.1
-		},
-
-		// Energy-Depression loop: -/-, counter-clockwise
-		{
-			from:2, to:1,
-			arc: -100,
-			strength:-0.1,
-			delay:0
 		},
 		{
 			from:1, to:2,
-			arc: -100,
+			arc:100,
 			strength:-0.1
+		},
+		{
+			from:2, to:1,
+			arc:100,
+			strength:0.1
 		}
-
 	]
 };
 

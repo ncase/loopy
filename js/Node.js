@@ -10,22 +10,28 @@ function Node(model, config){
 	self.model = model;
 	self.config = config;
 
-	// Properties
-	self.id = config.id;
-	self.x = config.x;
-	self.y = config.y;
+	// Default values...
+	_configureProperties(self, config, {
+		id: Node._getUID,
+		x: 0,
+		y: 0,
+		value: 1,
+		label: "?",
+		hue: 0,
+		radius: 50
+	});
 
-	// Value: from -100 to 100
-	self.value = config.value;
+	// Value: from -1 to 1
 	self.nextValue = self.value; // for synchronous update
 
 	// MOUSE.
+	/*
 	var _controlsVisible = false;
 	var _controlsAlpha = 0;
 	var _controlsDirection = 0;
 	var _controlsSelected = true;
 	var _controlsPressed = false;
-	var _controlsTicker = -1;
+	// var _controlsTicker = -1;
 	subscribe("mousemove", function(){
 		var dx = Mouse.x-self.x;
 		var dy = Mouse.y-self.y;
@@ -42,15 +48,20 @@ function Node(model, config){
 	subscribe("mousedown",function(){
 		if(_controlsSelected){
 			_controlsPressed = true;
-			_controlsTicker = 6;
-			self.value += _controlsDirection*50;
+			//_controlsTicker = 6;
+			//self.value += _controlsDirection*50;
 			self.bound();
 		}
 	});
 	subscribe("mouseup",function(){
 		_controlsPressed = false;
-		_controlsTicker = -1;
+		// _controlsTicker = -1;
 	});
+	*/
+
+	//////////////////////////////////////
+	// UPDATE & DRAW /////////////////////
+	//////////////////////////////////////
 
 	// Update!
 	var _offsetY = 0;
@@ -60,20 +71,21 @@ function Node(model, config){
 	var _offsetDamp = 0.3;
 	var _offsetHookes = 0.8;
 	self.bound = function(){
-		if(self.value<-100) self.value=-100;
-		if(self.value>100) self.value=100;
-		// if(Math.abs(self.value)<0.1) self.value=0;
+		if(self.value<-1) self.value=-1;
+		if(self.value>1) self.value=1;
 	};
 	self.update = function(speed){
+
+		/*
 
 		// Cursor!
 		if(_controlsSelected) Mouse.showCursor("pointer");
 
 		// Synchronous update
 		if(_controlsPressed){
-			if(_controlsTicker--<0){
-				self.value += _controlsDirection*5;
-			}
+			//if(_controlsTicker--<0){
+			self.value += _controlsDirection*5;
+			//}
 		}else{
 			self.value = self.nextValue;
 		}
@@ -99,6 +111,8 @@ function Node(model, config){
 		_offsetVel *= _offsetDamp;
 		_offsetAcc = (_offsetGoto-_offsetY)*_offsetHookes;
 
+		*/
+
 	};
 
 	// Draw
@@ -108,71 +122,47 @@ function Node(model, config){
 		// Retina
 		var x = self.x*2;
 		var y = self.y*2;
-		var r = model.meta.radius*2;
+		var r = self.radius*2;
 
 		// Translate!
 		ctx.save();
-		ctx.translate(x,y+_offsetY);
-		//ctx.globalAlpha = 0.5;
-
-		/*
-		// Draw circle!
+		ctx.translate(x,y);
+		// ctx.translate(x,y+_offsetY); // DISABLE move for NOW.
+		
+		// White bubble
 		ctx.beginPath();
 		ctx.arc(0, 0, r, 0, Math.TAU, false);
-		ctx.lineWidth = 10;
-
-		// Now... color that circle, based on VALUE
-		var color = "hsl("+config.hue+",";
-		var val = Math.abs(self.value/100);
-		color += Math.round(val*80) + "%,"; // from 0 to 80
-		color += Math.round(78-val*20) + "%)"; // from 78 to 60
-
-		// Fill or outline?
-		if(self.value>=0){ // if positive, FILL
-			ctx.fillStyle = color;
-			ctx.fill();
-		}else{
-			ctx.fillStyle = "#fff";
-			ctx.fill();
-		}
-		// negative or not, OUTLINE
-		ctx.strokeStyle = color;
-		ctx.stroke();
-		*/
-
-		// Color the circles!
-		// Grey background
-		ctx.beginPath();
-		ctx.arc(0, 0, r, 0, Math.TAU, false);
-		ctx.fillStyle = "hsl(0,0%,78%)";
+		ctx.fillStyle = "#fff";
 		ctx.fill();
+
 		// Colored bubble
 		ctx.beginPath();
-		var _circleRadiusGoto = r*(((self.value/100)+1)/2);
+		var _circleRadiusGoto = r*(self.value+1)*0.5; // radius
+		//var _circleRadiusGoto = r*Math.sqrt(self.value+1); // area
 		_circleRadius = _circleRadius*0.5 + _circleRadiusGoto*0.5;
 		ctx.arc(0, 0, _circleRadius, 0, Math.TAU, false);
-		ctx.fillStyle = "hsl("+config.hue+",80%,58%)";
+		ctx.fillStyle = "hsl("+self.hue+",80%,58%)";
 		ctx.fill();
+
+		// Outline
+		ctx.beginPath();
+		ctx.arc(0, 0, r, 0, Math.TAU, false);
+		ctx.lineWidth = 4;
+		ctx.strokeStyle = "#000";
+		ctx.stroke();
 
 		// Text!
 		ctx.font = "300 40px sans-serif";
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
-		var textcolor;
-		/*
-		if(self.value>=0){
-			textcolor = "#fff"; // if positive, WHITE
-		}else{
-			textcolor = color; // if negative, OUTLINE
-		}
-		*/
-		textcolor = "#fff";
+		var textcolor = "#000";
 		ctx.fillStyle = textcolor;
-		ctx.fillText(config.label, 0, 0);
+		ctx.fillText(self.label, 0, 0);
 
 		// Controls!
+		/*
 		var cl = 30;
-		var cy = 20;
+		var cy = 0;
 		ctx.globalAlpha = _controlsAlpha;
 		ctx.strokeStyle = textcolor;
 		// top arrow
@@ -189,10 +179,43 @@ function Node(model, config){
 		ctx.lineTo(cl,cy+cl);
 		ctx.lineWidth = (_controlsDirection<0) ? 7: 3;
 		ctx.stroke();
+		*/
 
 		// Restore
 		ctx.restore();
 
 	};
 
+	//////////////////////////////////////
+	// HELPER METHODS ////////////////////
+	//////////////////////////////////////
+
+	self.isPointInNode = function(x, y, buffer){
+		
+		// how far outside the circle before NOT "in" node?
+		buffer = buffer || 0;
+		
+		// Point distance
+		var dx = self.x-x;
+		var dy = self.y-y;
+		var dist2 = dx*dx + dy*dy;
+
+		// My radius (with buffer)
+		var r = self.radius+buffer;
+		var r2 = r*r;
+
+		// Inside?
+		return dist2<=r2;
+
+	};
+
 }
+
+////////////////////////////
+// Unique ID identifiers! //
+////////////////////////////
+
+Node._UID = 0;
+Node._getUID = function(){
+	return(Node._UID++);
+};

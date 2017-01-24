@@ -81,9 +81,9 @@ function Loopy(config){
 			var ctx = self.context;
 			ctx.clearRect(0,0,self.canvas.width,self.canvas.height);
 
-			// Draw edges, then nodes
-			for(var i=0;i<self.edges.length;i++) self.edges[i].draw(ctx);
+			// Draw nodes, THEN edges
 			for(var i=0;i<self.nodes.length;i++) self.nodes[i].draw(ctx);
+			for(var i=0;i<self.edges.length;i++) self.edges[i].draw(ctx);
 
 		}
 

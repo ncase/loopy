@@ -10,24 +10,28 @@ function Edge(model, config){
 	self.model = model;
 	self.config = config;
 
-	// Properties
-	self.x = config.x;
-	self.y = config.y;
-	self.strength = config.strength;
+	// Default values...
+	_configureProperties(self, config, {
+		from: _makeErrorFunc("CAN'T LEAVE 'FROM' BLANK"),
+		to: _makeErrorFunc("CAN'T LEAVE 'TO' BLANK"),
+		arc: 100,
+		rotation: 0,
+		strength: 0
+	});
 
 	// Get my NODES
-	self.from = model.getNode(config.from);
-	self.to = model.getNode(config.to);
+	self.from = model.getNode(self.from);
+	self.to = model.getNode(self.to);
 
 	// My label???
 	var s = self.strength;
 	var l;
-	if(s>=1) l="+++";
-	else if(s>=0.5) l="++";
-	else if(s>=0) l="+";
-	else if(s==0) l="0";
-	else if(s>-0.5) l="-";
-	else if(s>-1) l="- -";
+	if(s>=3) l="+++";
+	else if(s>=2) l="++";
+	else if(s>=1) l="+";
+	else if(s==0) l="?";
+	else if(s>-1) l="-";
+	else if(s>-2) l="- -";
 	else l="- - -";
 	self.label = l;
 
@@ -43,9 +47,12 @@ function Edge(model, config){
 	self.draw = function(ctx){
 
 		// Width & Color
-		var color = "hsl(0,0%,40%)";
-		ctx.lineWidth = 8*Math.abs(self.strength)+2;
+		var color = "#000";
+		ctx.lineWidth = 3*Math.abs(self.strength)+2;
 		ctx.strokeStyle = color;
+
+		// Edge case: if arc is EXACTLY zero, whatever, add 0.1 to it.
+		if(self.arc==0) self.arc=0.1;
 
 		// Mathy calculations:
 		var fx=self.from.x*2,
@@ -53,7 +60,7 @@ function Edge(model, config){
 			tx=self.to.x*2,
 			ty=self.to.y*2;	
 		if(self.from==self.to){
-			var r = config.rotation || 0;
+			var r = self.rotation;
 			r *= Math.TAU/360;
 			tx += Math.cos(r);
 			ty += Math.sin(r);
@@ -62,7 +69,7 @@ function Edge(model, config){
 		var dy = ty-fy;
 		var w = Math.sqrt(dx*dx+dy*dy);
 		var a = Math.atan2(dy,dx);
-		var h = Math.abs(config.arc*2);
+		var h = Math.abs(self.arc*2);
 
 		// From: http://www.mathopenref.com/arcradius.html
 		var r = (h/2) + ((w*w)/(8*h));
@@ -76,8 +83,10 @@ function Edge(model, config){
 
 		// Arrow buffer...
 		var arrowBuffer = 20; // hack!
-		var arrowDistance = (model.meta.radius+arrowBuffer)*2;
+		var arrowDistance = (self.to.radius+arrowBuffer)*2;
 		var arrowAngle = arrowDistance/r; // (distance/circumference)*TAU, close enough.
+		//var beginDistance = self.from.radius*2;
+		//var beginAngle = beginDistance/r;
 
 		// Arc it!
 		var startAngle = a2 - Math.TAU/2;
@@ -87,15 +96,17 @@ function Edge(model, config){
 			endAngle *= -1;
 		}
 		ctx.beginPath();
-		var y2, end;
-		if(config.arc>0){
+		var y2, begin, end;
+		if(self.arc>0){
 			y2 = y;
+			begin = startAngle; // +beginAngle;
 			end = endAngle-arrowAngle;
-			ctx.arc(w/2, y2, r, startAngle, end, false);
+			ctx.arc(w/2, y2, r, begin, end, false);
 		}else{
 			y2 = -y;
+			begin = -startAngle; // -beginAngle;
 			end = -endAngle+arrowAngle;
-			ctx.arc(w/2, y2, r, -startAngle, end, true);
+			ctx.arc(w/2, y2, r, begin, end, true);
 		}
 
 		// Arrow HEAD!
@@ -105,7 +116,7 @@ function Edge(model, config){
 		var aa = end + Math.TAU/4;
 		ctx.save();
 		ctx.translate(ax, ay);
-		if(config.arc<0) ctx.scale(-1,-1);
+		if(self.arc<0) ctx.scale(-1,-1);
 		ctx.rotate(aa);
 		ctx.moveTo(-arrowLength, -arrowLength);
 		ctx.lineTo(0,0);
@@ -122,7 +133,7 @@ function Edge(model, config){
 		ctx.textBaseline = "middle";
 		var lx = w/2;
 		var ly = (h-labelBuffer);
-		if(config.arc>=0) ly*=-1;
+		if(self.arc>=0) ly*=-1;
 		ctx.save();
 		ctx.translate(lx, ly);
 		ctx.rotate(-a);
