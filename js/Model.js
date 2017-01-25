@@ -33,6 +33,7 @@ function Model(loopy){
 		var node = new Node(self,config);
 		self.nodeByID[node.id] = node;
 		self.nodes.push(node);
+		return node;
 	};
 
 
@@ -47,6 +48,7 @@ function Model(loopy){
 	self.addEdge = function(config){
 		var edge = new Edge(self,config);
 		self.edges.push(edge);
+		return edge;
 	};
 
 

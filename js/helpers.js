@@ -2,22 +2,30 @@ Math.TAU = Math.PI*2;
 
 function _createCanvas(){
 
+	var canvasses = document.getElementById("canvasses");
 	var canvas = document.createElement("canvas");
 
 	// Dimensions
-	var width = window.innerWidth;
-	var height = window.innerHeight;
+	var width = canvasses.clientWidth;
+	var height = canvasses.clientHeight;
 	canvas.width = width*2; // retina
 	canvas.style.width = width+"px";
 	canvas.height = height*2; // retina
 	canvas.style.height = height+"px";
 
 	// Add to body!
-	document.body.appendChild(canvas);
+	canvasses.appendChild(canvas);
 
 	// Gimme
 	return canvas;
 
+}
+
+function _createLabel(message){
+	var label = document.createElement("div");
+	label.innerHTML = message;
+	label.setAttribute("class","component_label");
+	return label;
 }
 
 function _getBounds(points){

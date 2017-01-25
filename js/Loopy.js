@@ -8,13 +8,17 @@ LOOPY!
 function Loopy(config){
 
 	var self = this;
+	self.config = config;
 
 	// Mouse
-	Mouse.init(window);
+	Mouse.init(document.getElementById("canvasses")); // TODO: ugly fix, ew
 	
-	// LAYERS: Model & Ink	
+	// Canvasses: Model & Ink	
 	self.model = new Model(self);
 	self.ink = new Ink(self);
+
+	// Sidebar
+	self.sidebar = new Sidebar();
 
 	///////////////////
 	// UPDATE & DRAW //
@@ -31,5 +35,8 @@ function Loopy(config){
 		requestAnimationFrame(self.draw);
 	};
 	requestAnimationFrame(self.draw);
+
+	// TODO: Smarter drawing of Ink, Edges, and Nodes
+	// (only Nodes need redrawing often. And only in PLAY mode.)
 
 }

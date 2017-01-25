@@ -7,6 +7,7 @@ EDGE!
 function Edge(model, config){
 
 	var self = this;
+	self._CLASS_ = "Edge";
 	self.model = model;
 	self.config = config;
 
@@ -16,24 +17,12 @@ function Edge(model, config){
 		to: _makeErrorFunc("CAN'T LEAVE 'TO' BLANK"),
 		arc: 100,
 		rotation: 0,
-		strength: 0
+		strength: 1
 	});
 
 	// Get my NODES
 	self.from = model.getNode(self.from);
 	self.to = model.getNode(self.to);
-
-	// My label???
-	var s = self.strength;
-	var l;
-	if(s>=3) l="+++";
-	else if(s>=2) l="++";
-	else if(s>=1) l="+";
-	else if(s==0) l="?";
-	else if(s>-1) l="-";
-	else if(s>-2) l="- -";
-	else l="- - -";
-	self.label = l;
 
 	// Update!
 	self.update = function(speed){
@@ -48,7 +37,7 @@ function Edge(model, config){
 
 		// Width & Color
 		var color = "#000";
-		ctx.lineWidth = 3*Math.abs(self.strength)+2;
+		ctx.lineWidth = 4*Math.abs(self.strength)-2;
 		ctx.strokeStyle = color;
 
 		// Edge case: if arc is EXACTLY zero, whatever, add 0.1 to it.
@@ -82,7 +71,7 @@ function Edge(model, config){
 		ctx.rotate(a);
 
 		// Arrow buffer...
-		var arrowBuffer = 20; // hack!
+		var arrowBuffer = 15;
 		var arrowDistance = (self.to.radius+arrowBuffer)*2;
 		var arrowAngle = arrowDistance/r; // (distance/circumference)*TAU, close enough.
 		//var beginDistance = self.from.radius*2;
@@ -126,7 +115,20 @@ function Edge(model, config){
 		// Stroke!
 		ctx.stroke();
 
+		// My label is...
+		var s = self.strength;
+		var l;
+		if(s>=3) l="+++";
+		else if(s>=2) l="++";
+		else if(s>=1) l="+";
+		else if(s==0) l="?";
+		else if(s>=-1) l="-";
+		else if(s>=-2) l="- -";
+		else l="- - -";
+		self.label = l;
+
 		// LABEL!
+		// TODO: in the middle of actual arrow not arc
 		var labelBuffer = 20*2;
 		ctx.font = "300 40px sans-serif";
 		ctx.textAlign = "center";

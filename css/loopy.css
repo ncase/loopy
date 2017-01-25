@@ -1,11 +1,54 @@
 body{
 	margin:0;
 	background: #fff;
-}
-.loopy-model{
-	background: #fff;
+
+	font-family: Helvetica, Arial, sans-serif;
+	font-weight: 100;
+	font-size: 20px;
 }
 canvas{
 	position:absolute;
 	top:0; left:0;
+}
+
+#canvasses{
+	position:absolute;
+	top:0; left:0;
+	width: calc(100% - 300px);
+	height: 100%;
+}
+
+/**********
+ SIDEBAR 
+**********/
+
+#sidebar{
+	position: absolute;
+	top:0; right:0;
+	width: 300px;
+	height: 100%;
+	background: #ddd;
+}
+#sidebar > div{
+	margin: 25px;
+}
+#sidebar > div > div{
+	margin-bottom: 20px;
+}
+
+.component_input{
+	border: none;
+	
+	width:calc(100% - 10px);
+	height:22px;
+	padding: 5px;
+	
+	font-size: 20px;
+	font-weight: 100;
+}
+.component_slider{
+	width: 100%;
+}
+.component_label{
+	margin-bottom: 5px;
 }

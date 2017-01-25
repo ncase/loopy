@@ -8,8 +8,8 @@ Mouse.init = function(target){
 		publish("mousedown");
 	};
 	var _onmousemove = function(event){
-		Mouse.x = event.offsetX;
-		Mouse.y = event.offsetY;
+		Mouse.x = event.clientX;
+		Mouse.y = event.clientY;
 		publish("mousemove");
 	};
 	var _onmouseup = function(){

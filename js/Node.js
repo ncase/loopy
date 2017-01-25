@@ -7,6 +7,7 @@ NODE!
 function Node(model, config){
 
 	var self = this;
+	self._CLASS_ = "Node";
 	self.model = model;
 	self.config = config;
 
@@ -129,10 +130,10 @@ function Node(model, config){
 		ctx.translate(x,y);
 		// ctx.translate(x,y+_offsetY); // DISABLE move for NOW.
 		
-		// White bubble
+		// White-gray bubble
 		ctx.beginPath();
 		ctx.arc(0, 0, r, 0, Math.TAU, false);
-		ctx.fillStyle = "#fff";
+		ctx.fillStyle = "#ddd";
 		ctx.fill();
 
 		// Colored bubble
@@ -145,11 +146,11 @@ function Node(model, config){
 		ctx.fill();
 
 		// Outline
-		ctx.beginPath();
+		/*ctx.beginPath();
 		ctx.arc(0, 0, r, 0, Math.TAU, false);
 		ctx.lineWidth = 4;
 		ctx.strokeStyle = "#000";
-		ctx.stroke();
+		ctx.stroke();*/
 
 		// Text!
 		ctx.font = "300 40px sans-serif";

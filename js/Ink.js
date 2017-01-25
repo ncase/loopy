@@ -3,6 +3,8 @@
 LOOPY!
 - with edit & play mode
 
+TODO: smoother bezier curve?
+
 **********************************/
 
 function Ink(loopy){
@@ -28,7 +30,7 @@ function Ink(loopy){
 		var lastPoint = self.strokeData[self.strokeData.length-1];
 
 		// Style
-		ctx.strokeStyle = "#555";
+		ctx.strokeStyle = "#aaa";
 		ctx.lineWidth = 5;
 		ctx.lineCap = "round";
 
@@ -55,18 +57,21 @@ function Ink(loopy){
 	subscribe("mousemove",self.drawInk);
 	subscribe("mouseup",function(){
 
+		if(self.strokeData.length<2) return;
+
 		/*************************
 		
 		Detect what you drew!
 		1. Started in a node?
 		1a. If ended near/in a node, it's an EDGE.
-		2. If not, it's a NODE. // todo: actual circle detection?
+		2. If not, it's a NODE. // TODO: actual circle detection?
 
 		*************************/
 
 		// Started in a node?
 		var startPoint = self.strokeData[0];
 		var startNode = loopy.model.getNodeByPoint(startPoint[0], startPoint[1]);
+		if(!startNode) startNode=loopy.model.getNodeByPoint(startPoint[0], startPoint[1], 20); // try again with buffer
 
 		// Ended in a node?
 		var endPoint = self.strokeData[self.strokeData.length-1];
@@ -86,6 +91,7 @@ function Ink(loopy){
 			if(startNode==endNode){
 
 				// TODO: clockwise or counterclockwise???
+				// TODO: if the arc doesn't go beyond radius, don't make edge. also min distance.
 
 				// Find rotation first by getting average point
 				var bounds = _getBounds(self.strokeData);
@@ -121,7 +127,8 @@ function Ink(loopy){
 			}
 
 			// Add the edge!
-			loopy.model.addEdge(edgeConfig);
+			var newEdge = loopy.model.addEdge(edgeConfig);
+			loopy.sidebar.edit(newEdge);
 
 		}
 
@@ -135,12 +142,14 @@ function Ink(loopy){
 			var r = ((bounds.width/2)+(bounds.height/2))/2;
 
 			// Circle can't be TOO smol
+			// TODO: Snap circle to certain radiuses, or x/y pos???
 			if(r>15){
-				loopy.model.addNode({
+				var newNode = loopy.model.addNode({
 					x:x,
 					y:y,
 					radius:r
 				});
+				loopy.sidebar.edit(newNode);
 			}
 
 		}
