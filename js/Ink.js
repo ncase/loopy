@@ -44,6 +44,10 @@ function Ink(loopy){
 		self.strokeData.push([Mouse.x,Mouse.y]);
 
 	};
+	self.reset = function(){
+		ctx.clearRect(0,0,canvas.width,canvas.height); // Clear canvas
+		self.strokeData = []; // Reset stroke data
+	};
 	subscribe("mousedown",function(){
 
 		// New stroke data
@@ -58,6 +62,7 @@ function Ink(loopy){
 	subscribe("mouseup",function(){
 
 		if(self.strokeData.length<2) return;
+		if(!Mouse.moved) return;
 
 		/*************************
 		
@@ -154,16 +159,12 @@ function Ink(loopy){
 
 		}
 
-		//////////////////////////////////
-		//////////////////////////////////
-		//////////////////////////////////
+		self.reset();
 
-		// Clear canvas
-		ctx.clearRect(0,0,canvas.width,canvas.height);
-
-		// Reset stroke data
-		self.strokeData = [];
-
+	});
+	subscribe("mouseclick",function(){
+		if(loopy.mode==Loopy.MODE_EDIT) loopy.sidebar.showPage("Edit");
+		self.reset();
 	});
 
 }

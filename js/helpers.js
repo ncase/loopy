@@ -1,3 +1,10 @@
+/*****************************
+
+A miscellaneous collection of reuseable helper methods
+that I couldn't be arsed to put into separate classes
+
+*****************************/
+
 Math.TAU = Math.PI*2;
 
 function _createCanvas(){
@@ -26,6 +33,14 @@ function _createLabel(message){
 	label.innerHTML = message;
 	label.setAttribute("class","component_label");
 	return label;
+}
+
+function _createButton(label, onclick){
+	var button = document.createElement("div");
+	button.innerHTML = label;
+	button.onclick = onclick;
+	button.setAttribute("class","component_button");
+	return button;
 }
 
 function _getBounds(points){

@@ -3,7 +3,7 @@ body{
 	background: #fff;
 
 	font-family: Helvetica, Arial, sans-serif;
-	font-weight: 100;
+	font-weight: normal;
 	font-size: 20px;
 }
 canvas{
@@ -35,6 +35,9 @@ canvas{
 #sidebar > div > div{
 	margin-bottom: 20px;
 }
+#sidebar[mode=play]{
+	background: #222;
+}
 
 .component_input{
 	border: none;
@@ -51,4 +54,16 @@ canvas{
 }
 .component_label{
 	margin-bottom: 5px;
+}
+.component_button{
+	width: calc(100% - 20px);
+	background: #666;
+	color: #fff;
+	text-align: center;
+	padding: 10px;
+
+	cursor: pointer;
+}
+.component_button:hover{
+	background: #777;
 }

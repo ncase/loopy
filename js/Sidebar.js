@@ -60,7 +60,25 @@ function Sidebar(loopy){
 	}));
 	self.addPage("Edge", page);
 
-	// TODO: Model
+	// Edit
+	var page = new SidebarPage();
+	page.addComponent(new ComponentButton({
+		label: "START SIMULATION",
+		onclick: function(){
+			loopy.setMode(Loopy.MODE_PLAY);
+		}
+	}));
+	self.addPage("Edit", page);
+
+	// Play
+	var page = new SidebarPage();
+	page.addComponent(new ComponentButton({
+		label: "STOP SIMULATION",
+		onclick: function(){
+			loopy.setMode(Loopy.MODE_EDIT);
+		}
+	}));
+	self.addPage("Play", page);
 
 }
 
@@ -80,6 +98,13 @@ function SidebarPage(){
 	// Components
 	self.components = [];
 	self.addComponent = function(propName, component){
+
+		// One or two args
+		if(!component){
+			component = propName;
+			propName = "";
+		}
+
 		component.page = self; // tie to self
 		component.propName = propName; // tie to propName
 		self.dom.appendChild(component.dom); // add to DOM
@@ -203,5 +228,18 @@ function ComponentSlider(config){
 	self.focus = function(){
 		input.select();
 	};
+
+}
+
+function ComponentButton(config){
+
+	// Inherit
+	var self = this;
+	Component.apply(self);
+
+	// DOM: just a button
+	self.dom = document.createElement("div");
+	var button = _createButton(config.label, config.onclick);
+	self.dom.appendChild(button);
 
 }

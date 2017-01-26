@@ -9,6 +9,9 @@ function Model(loopy){
 	var self = this;
 	self.loopy = loopy;
 
+	// Properties
+	self.speed = 0.05;
+
 	// Create canvas & context
 	var canvas = _createCanvas();
 	var ctx = canvas.getContext("2d");
@@ -58,6 +61,11 @@ function Model(loopy){
 	///////////////////
 
 	self.update = function(){
+
+		// Update edges THEN nodes
+		for(var i=0;i<self.edges.length;i++) self.edges[i].update(self.speed);
+		for(var i=0;i<self.nodes.length;i++) self.nodes[i].update(self.speed);
+
 	};
 
 	self.draw = function(){

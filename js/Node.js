@@ -8,6 +8,9 @@ function Node(model, config){
 
 	var self = this;
 	self._CLASS_ = "Node";
+
+	// Mah Parents!
+	self.loopy = model.loopy;
 	self.model = model;
 	self.config = config;
 
@@ -16,13 +19,14 @@ function Node(model, config){
 		id: Node._getUID,
 		x: 0,
 		y: 0,
-		value: 1,
+		init: 1, // initial value!
 		label: "?",
 		hue: 0,
 		radius: 50
 	});
 
 	// Value: from -1 to 1
+	self.value = 0;
 	self.nextValue = self.value; // for synchronous update
 
 	// MOUSE.
@@ -76,6 +80,19 @@ function Node(model, config){
 		if(self.value>1) self.value=1;
 	};
 	self.update = function(speed){
+
+		// When actually playing the simulation...
+		if(self.loopy.mode==Loopy.MODE_PLAY){
+			self.value = self.nextValue;
+			self.bound();
+			self.nextValue = self.value;
+		}
+
+		// Otherwise, value = initValue exactly
+		if(self.loopy.mode==Loopy.MODE_EDIT){
+			self.value = self.init;
+			self.nextValue = self.value;
+		}
 
 		/*
 

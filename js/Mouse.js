@@ -4,17 +4,25 @@ Mouse.init = function(target){
 	// Events!
 	var _onmousedown = function(event){
 		_onmousemove(event);
+		Mouse.moved = false;
 		Mouse.pressed = true;
+		Mouse.startedOnTarget = true;
 		publish("mousedown");
 	};
 	var _onmousemove = function(event){
+		Mouse.moved = true;
 		Mouse.x = event.clientX;
 		Mouse.y = event.clientY;
 		publish("mousemove");
 	};
 	var _onmouseup = function(){
 		Mouse.pressed = false;
-		publish("mouseup");
+		if(Mouse.startedOnTarget){
+			publish("mouseup");
+			if(!Mouse.moved) publish("mouseclick");
+		}
+		Mouse.moved = false;
+		Mouse.startedOnTarget = false;
 	};
 
 	// Cursor & Update

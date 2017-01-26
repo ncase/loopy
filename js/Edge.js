@@ -8,6 +8,9 @@ function Edge(model, config){
 
 	var self = this;
 	self._CLASS_ = "Edge";
+
+	// Mah Parents!
+	self.loopy = model.loopy;
 	self.model = model;
 	self.config = config;
 
@@ -27,8 +30,10 @@ function Edge(model, config){
 	// Update!
 	self.update = function(speed){
 
-		// Change TO with FROM x strength (x model's speed)
-		self.to.nextValue += self.from.value * self.strength * speed;
+		// When actually playing the simulation...
+		if(self.loopy.mode==Loopy.MODE_PLAY){
+			self.to.nextValue += self.from.value * self.strength * speed;
+		}
 
 	};
 
