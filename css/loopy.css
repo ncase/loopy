@@ -5,6 +5,8 @@ body{
 	font-family: Helvetica, Arial, sans-serif;
 	font-weight: normal;
 	font-size: 20px;
+
+	overflow: hidden;
 }
 canvas{
 	position:absolute;
@@ -16,6 +18,28 @@ canvas{
 	top:0; left:0;
 	width: calc(100% - 300px);
 	height: 100%;
+}
+
+
+/**********
+ TOOLBAR 
+**********/
+
+#toolbar{
+	position: absolute;
+	width: calc(100% - 300px);
+	height: 60px;
+	bottom:0px; left:0px;
+}
+
+#toolbar > div{
+	width:180px; height:60px;
+	margin: auto;
+	top:0; left:0; right:0; bottom:0;
+	background: #ddd;
+}
+#toolbar > div > .toolbar_button{
+	width:60px; height:60px;
 }
 
 /**********

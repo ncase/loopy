@@ -30,39 +30,35 @@ function Node(model, config){
 	self.nextValue = self.value; // for synchronous update
 
 	// MOUSE.
-	/*
 	var _controlsVisible = false;
 	var _controlsAlpha = 0;
 	var _controlsDirection = 0;
-	var _controlsSelected = true;
-	var _controlsPressed = false;
-	// var _controlsTicker = -1;
-	subscribe("mousemove", function(){
-		var dx = Mouse.x-self.x;
-		var dy = Mouse.y-self.y;
-		var r = model.meta.radius;
-		_controlsSelected = (dx*dx+dy*dy < r*r);
+	var _controlsSelected = false;
+	var _controlsPressed = false;	
+	var _listenerMouseMove = subscribe("mousemove", function(){
+
+		// ONLY WHEN PLAYING
+		if(self.loopy.mode!=Loopy.MODE_PLAY) return;
+
+		// If moused over this, show it, or not.
+		_controlsSelected = self.isPointInNode(Mouse.x, Mouse.y);
 		if(_controlsSelected){
 			_controlsVisible = true;
-			_controlsDirection = (dy<0) ? 1 : -1;
+			_controlsDirection = (Mouse.y<self.y) ? 1 : -1;
 		}else{
 			_controlsVisible = false;
 			_controlsDirection = 0;
 		}
+
 	});
-	subscribe("mousedown",function(){
-		if(_controlsSelected){
-			_controlsPressed = true;
-			//_controlsTicker = 6;
-			//self.value += _controlsDirection*50;
-			self.bound();
-		}
+	var _listenerMouseDown = subscribe("mousedown",function(){
+		if(self.loopy.mode!=Loopy.MODE_PLAY) return; // ONLY WHEN PLAYING
+		if(_controlsSelected) _controlsPressed = true;
 	});
-	subscribe("mouseup",function(){
+	var _listenerMouseUp = subscribe("mouseup",function(){
+		if(self.loopy.mode!=Loopy.MODE_PLAY) return; // ONLY WHEN PLAYING
 		_controlsPressed = false;
-		// _controlsTicker = -1;
 	});
-	*/
 
 	//////////////////////////////////////
 	// UPDATE & DRAW /////////////////////
@@ -82,11 +78,7 @@ function Node(model, config){
 	self.update = function(speed){
 
 		// When actually playing the simulation...
-		if(self.loopy.mode==Loopy.MODE_PLAY){
-			self.value = self.nextValue;
-			self.bound();
-			self.nextValue = self.value;
-		}
+		var _isPlaying = (self.loopy.mode==Loopy.MODE_PLAY);
 
 		// Otherwise, value = initValue exactly
 		if(self.loopy.mode==Loopy.MODE_EDIT){
@@ -94,16 +86,12 @@ function Node(model, config){
 			self.nextValue = self.value;
 		}
 
-		/*
-
 		// Cursor!
 		if(_controlsSelected) Mouse.showCursor("pointer");
 
 		// Synchronous update
-		if(_controlsPressed){
-			//if(_controlsTicker--<0){
-			self.value += _controlsDirection*5;
-			//}
+		if(_isPlaying && _controlsPressed){
+			self.value += _controlsDirection*speed;
 		}else{
 			self.value = self.nextValue;
 		}
@@ -114,22 +102,18 @@ function Node(model, config){
 		// Synchronous update
 		self.nextValue = self.value;
 
-		// Controls!
+		// Visually & vertically bump the node
 		var gotoAlpha = _controlsVisible ? 1 : 0;
 		_controlsAlpha = _controlsAlpha*0.5 + gotoAlpha*0.5;
-		if(_controlsPressed){
-			_offsetGoto = -_controlsDirection*15;
+		if(_isPlaying && _controlsPressed){
+			_offsetGoto = -_controlsDirection*25; // by 25 pixels
 		}else{
 			_offsetGoto = 0;
 		}
-
-		// Offset
 		_offsetY += _offsetVel;
 		_offsetVel += _offsetAcc;
 		_offsetVel *= _offsetDamp;
 		_offsetAcc = (_offsetGoto-_offsetY)*_offsetHookes;
-
-		*/
 
 	};
 
@@ -144,8 +128,7 @@ function Node(model, config){
 
 		// Translate!
 		ctx.save();
-		ctx.translate(x,y);
-		// ctx.translate(x,y+_offsetY); // DISABLE move for NOW.
+		ctx.translate(x,y+_offsetY);
 		
 		// White-gray bubble
 		ctx.beginPath();
@@ -164,43 +147,56 @@ function Node(model, config){
 
 		// Outline
 		/*ctx.beginPath();
-		ctx.arc(0, 0, r, 0, Math.TAU, false);
+		ctx.arc(0, 0, r/2, 0, Math.TAU, false);
 		ctx.lineWidth = 4;
-		ctx.strokeStyle = "#000";
+		ctx.strokeStyle = "rgba(0,0,0,0.2)";
 		ctx.stroke();*/
 
 		// Text!
 		ctx.font = "300 40px sans-serif";
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
-		var textcolor = "#000";
-		ctx.fillStyle = textcolor;
+		ctx.fillStyle = "#000";
 		ctx.fillText(self.label, 0, 0);
 
 		// Controls!
-		/*
-		var cl = 30;
-		var cy = 0;
+		var cl = 40;
+		var cy = 10;
 		ctx.globalAlpha = _controlsAlpha;
-		ctx.strokeStyle = textcolor;
+		ctx.strokeStyle = "#000";
 		// top arrow
 		ctx.beginPath();
 		ctx.moveTo(-cl,-cy-cl);
 		ctx.lineTo(0,-cy-cl*2);
 		ctx.lineTo(cl,-cy-cl);
-		ctx.lineWidth = (_controlsDirection>0) ? 7: 3;
+		ctx.lineWidth = (_controlsDirection>0) ? 10: 3;
 		ctx.stroke();
 		// bottom arrow
 		ctx.beginPath();
 		ctx.moveTo(-cl,cy+cl);
 		ctx.lineTo(0,cy+cl*2);
 		ctx.lineTo(cl,cy+cl);
-		ctx.lineWidth = (_controlsDirection<0) ? 7: 3;
+		ctx.lineWidth = (_controlsDirection<0) ? 10: 3;
 		ctx.stroke();
-		*/
 
 		// Restore
 		ctx.restore();
+
+	};
+
+	//////////////////////////////////////
+	// KILL NODE /////////////////////////
+	//////////////////////////////////////
+
+	self.kill = function(){
+
+		// Kill Listeners!
+		unsubscribe("mousemove",_listenerMouseMove);
+		unsubscribe("mousedown",_listenerMouseDown);
+		unsubscribe("mouseup",_listenerMouseUp);
+
+		// Remove from parent!
+		model.removeNode(self);
 
 	};
 

@@ -8,6 +8,10 @@ LOOPY!
 Loopy.MODE_EDIT = 0;
 Loopy.MODE_PLAY = 1;
 
+Loopy.TOOL_INK = 0;
+Loopy.TOOL_DRAG = 1;
+Loopy.TOOL_ERASE = 2;
+
 function Loopy(config){
 
 	var self = this;
@@ -16,9 +20,8 @@ function Loopy(config){
 	// Mouse
 	Mouse.init(document.getElementById("canvasses")); // TODO: ugly fix, ew
 	
-	// Canvasses: Model & Ink	
+	// Model
 	self.model = new Model(self);
-	self.ink = new Ink(self);
 
 	// Sidebar
 	self.sidebar = new Sidebar(self);
@@ -27,12 +30,20 @@ function Loopy(config){
 	// Play/Edit mode
 	self.mode = Loopy.MODE_EDIT;
 
+	// Tools
+	self.toolbar = new Toolbar(self);
+	self.tool = Loopy.TOOL_INK;
+	self.ink = new Ink(self);
+	self.drag = new Dragger(self);
+	self.erase = new Eraser(self);
+
 	///////////////////
 	// UPDATE & DRAW //
 	///////////////////
 
 	// Update
 	self.update = function(){
+		Mouse.update();
 		self.model.update();
 	};
 	setInterval(self.update, 1000/30); // 30 FPS, why not.

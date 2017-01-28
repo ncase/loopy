@@ -50,6 +50,10 @@ function Ink(loopy){
 	};
 	subscribe("mousedown",function(){
 
+		// ONLY WHEN EDITING w INK
+		if(self.loopy.mode!=Loopy.MODE_EDIT) return;
+		if(self.loopy.tool!=Loopy.TOOL_INK) return;
+
 		// New stroke data
 		self.strokeData = [];
 		self.strokeData.push([Mouse.x,Mouse.y]);
@@ -58,8 +62,21 @@ function Ink(loopy){
 		self.drawInk();
 
 	});
-	subscribe("mousemove",self.drawInk);
+	subscribe("mousemove",function(){
+
+		// ONLY WHEN EDITING w INK
+		if(self.loopy.mode!=Loopy.MODE_EDIT) return;
+		if(self.loopy.tool!=Loopy.TOOL_INK) return;
+
+		// Draw ink!
+		self.drawInk();
+
+	});
 	subscribe("mouseup",function(){
+
+		// ONLY WHEN EDITING w INK
+		if(self.loopy.mode!=Loopy.MODE_EDIT) return;
+		if(self.loopy.tool!=Loopy.TOOL_INK) return;
 
 		if(self.strokeData.length<2) return;
 		if(!Mouse.moved) return;
@@ -159,12 +176,19 @@ function Ink(loopy){
 
 		}
 
+		// Reset.
 		self.reset();
 
 	});
 	subscribe("mouseclick",function(){
-		if(loopy.mode==Loopy.MODE_EDIT) loopy.sidebar.showPage("Edit");
+
+		// ONLY WHEN EDITING w INK
+		if(self.loopy.mode!=Loopy.MODE_EDIT) return;
+		if(self.loopy.tool!=Loopy.TOOL_INK) return;
+
+		// Reset
 		self.reset();
+
 	});
 
 }

@@ -27,6 +27,11 @@ function Edge(model, config){
 	self.from = model.getNode(self.from);
 	self.to = model.getNode(self.to);
 
+
+	//////////////////////////////////////
+	// UPDATE & DRAW /////////////////////
+	//////////////////////////////////////
+
 	// Update!
 	self.update = function(speed){
 
@@ -151,5 +156,17 @@ function Edge(model, config){
 		ctx.restore();
 
 	};
+
+	//////////////////////////////////////
+	// KILL NODE /////////////////////////
+	//////////////////////////////////////
+
+	self.kill = function(){
+
+		// Remove from parent!
+		model.removeEdge(self);
+
+	};
+
 
 }

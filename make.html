@@ -12,20 +12,32 @@
 </head>
 <body>
 	<div id="canvasses"></div>
+	<div id="toolbar"></div>
 	<div id="sidebar"></div>
 </body>
 </html>
 
 <!-- Scripts! -->
+
+<!-- Libraries -->
 <script src="js/helpers.js"></script>
 <script src="js/minpubsub.js"></script>
 <script src="js/Mouse.js"></script>
-<script src="js/Model.js"></script>
-<script src="js/Ink.js"></script>
+
+<!-- Core Simulation Code -->
 <script src="js/Loopy.js"></script>
+<script src="js/Model.js"></script>
 <script src="js/Node.js"></script>
 <script src="js/Edge.js"></script>
+
+<!-- Tools -->
 <script src="js/Sidebar.js"></script>
+<script src="js/Toolbar.js"></script>
+<script src="js/Ink.js"></script>
+<script src="js/Dragger.js"></script>
+<script src="js/Eraser.js"></script>
+
+<!-- Start it -->
 <script>
 window.onload = function(){
 	window.loopy = new Loopy();
