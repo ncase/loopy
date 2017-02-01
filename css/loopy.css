@@ -100,7 +100,8 @@ canvas{
 	font-weight: 100;
 }
 .component_slider{
-	width: 100%;
+	width: 250px;
+	height: 40px;
 }
 .component_label{
 	margin-bottom: 5px;

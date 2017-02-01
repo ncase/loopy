@@ -49,29 +49,41 @@ function Sidebar(loopy){
 	///////////////////////
 
 	// Node!
-	var page = new SidebarPage();
-	page.addComponent("label", new ComponentInput({
-		label: "Name:"
-	}));
-	page.addComponent("hue", new ComponentSlider({
-		label: "Color:",
-		min:0, max:360, step:30
-	}));
-	/*page.addComponent(new ComponentButton({
-		label: "delete node",
-		onclick: function(node){
-			node.kill();
-			self.showPage("Edit");
-		}
-	}));*/
-	self.addPage("Node", page);
+	(function(){
+		var page = new SidebarPage();
+		page.addComponent("label", new ComponentInput({
+			label: "Name:"
+		}));
+		page.addComponent("hue", new ComponentSlider({
+			bg: "color",
+			label: "Color:",
+			options: [0,30,60,120,180,240]
+		}));
+		page.addComponent("init", new ComponentSlider({
+			bg: "initial",
+			label: "Initial Value:",
+			options: [-1,-0.66,-0.33,0,0.33,0.66,1]
+		}));
+		page.onedit = function(){
+			var color = "hsl("+page.target.hue+",80%,58%)";
+			page.getComponent("init").setBGColor(color);
+		};
+		/*page.addComponent(new ComponentButton({
+			label: "delete node",
+			onclick: function(node){
+				node.kill();
+				self.showPage("Edit");
+			}
+		}));*/
+		self.addPage("Node", page);
+	})();
 
 	// Edge!
 	var page = new SidebarPage();
 	page.addComponent("strength", new ComponentSlider({
+		bg: "strength",
 		label: "Relationship:",
-		min:0, max:5, step:1,
-		map:{0:-3, 1:-2, 2:-1, 3:1, 4:2, 5:3}
+		options: [-3,-2,-1,1,2,3]
 	}));
 	/*page.addComponent(new ComponentButton({
 		label: "delete edge",
@@ -119,6 +131,7 @@ function SidebarPage(){
 
 	// Components
 	self.components = [];
+	self.componentsByID = {};
 	self.addComponent = function(propName, component){
 
 		// One or two args
@@ -130,7 +143,14 @@ function SidebarPage(){
 		component.page = self; // tie to self
 		component.propName = propName; // tie to propName
 		self.dom.appendChild(component.dom); // add to DOM
-		self.components.push(component); // remember component
+
+		// remember component
+		self.components.push(component);
+		self.componentsByID[propName] = component;
+
+	};
+	self.getComponent = function(propName){
+		return self.componentsByID[propName];	
 	};
 
 	// Edit
@@ -149,6 +169,14 @@ function SidebarPage(){
 			if(self.components.length>0) self.components[0].focus();
 		},10);
 
+		// Callback!
+		self.onedit();
+
+	};
+
+	// On edit: TO IMPLEMENT
+	self.onedit = function(){
+		// TO BE IMPLEMENTED
 	};
 
 }
@@ -175,6 +203,7 @@ function Component(){
 	};
 	self.setValue = function(value){
 		self.page.target[self.propName] = value;
+		self.page.onedit(); // callback!
 	};
 }
 
@@ -189,9 +218,12 @@ function ComponentInput(config){
 	var label = _createLabel(config.label);
 	var input = document.createElement("input");
 	input.setAttribute("class","component_input");
-	input.oninput = function(){
+	input.oninput = function(event){
 		self.setValue(input.value);
 	};
+	input.addEventListener("keydown",function(event){
+		event.stopPropagation ? event.stopPropagation() : (event.cancelBubble=true);
+	},false); // STOP IT FROM TRIGGERING KEY.js
 	self.dom.appendChild(label);
 	self.dom.appendChild(input);
 
@@ -216,25 +248,33 @@ function ComponentSlider(config){
 	// TODO: control with + / -, alt keys??
 
 	// DOM: label + slider
+	// TODO: DRAGGABLE SLIDER
 	self.dom = document.createElement("div");
 	var label = _createLabel(config.label);
-	var input = document.createElement("input");
-	input.type = "range";
-	input.min = config.min;
-	input.max = config.max;
-	input.step = config.step;
-	input.setAttribute("class","component_slider");
-	input.oninput = function(){
-		var value = input.value;
-		if(config.map) value = config.map[value];
-		self.setValue(value);
-	};
+	var slider = new Image();
+	slider.draggable = false;
+	slider.src = "css/sliders/"+config.bg+".png";
+	slider.setAttribute("class","component_slider");
 	self.dom.appendChild(label);
-	self.dom.appendChild(input);
+	self.dom.appendChild(slider);
+
+	// On click... (or on drag)
+	var sliderInput = function(event){
+
+		// The option selected?
+		var index = event.offsetX/250;
+		var optionIndex = Math.floor(index*config.options.length);
+		var option = config.options[optionIndex];
+		if(option===undefined) return;
+		self.setValue(option);
+
+	};
+	slider.onmousedown = sliderInput;
+	//slider.ondrag = sliderInput;
 
 	// Show
 	self.show = function(){
-		var value = self.getValue();
+		/*var value = self.getValue();
 		if(config.map){
 			for(var key in config.map){
 				if(config.map[key]==value){
@@ -242,13 +282,18 @@ function ComponentSlider(config){
 					break;
 				}
 			}
-		}
-		input.value = value;
+		}*/
+		//input.value = value;
 	};
 
 	// Focus
-	self.focus = function(){
+	/*self.focus = function(){
 		input.select();
+	};*/
+
+	// BG Color!
+	self.setBGColor = function(color){
+		slider.style.background = color;
 	};
 
 }

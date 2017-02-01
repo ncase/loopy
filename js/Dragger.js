@@ -51,9 +51,14 @@ function Dragger(loopy){
 
 		// If you're dragging a NODE, move it around!
 		if(self.dragging && self.dragging._CLASS_=="Node"){
+			
 			var node = self.dragging;
 			node.x = Mouse.x - self.offsetX;
 			node.y = Mouse.y - self.offsetY;
+
+			// update coz visual glitches
+			loopy.model.update();
+			
 		}
 
 		// If you're dragging an EDGE, move it around!
