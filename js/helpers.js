@@ -28,6 +28,8 @@ function _createCanvas(){
 
 }
 
+// TODO: put these helper methods somewhere else?
+
 function _createLabel(message){
 	var label = document.createElement("div");
 	label.innerHTML = message;
@@ -107,6 +109,22 @@ function _configureProperties(self, config, properties){
 
 }
 
+function _isPointInCircle(x, y, cx, cy, radius){
+	
+	// Point distance
+	var dx = cx-x;
+	var dy = cy-y;
+	var dist2 = dx*dx + dy*dy;
+
+	// My radius
+	var r2 = radius*radius;
+
+	// Inside?
+	return dist2<=r2;
+
+}
+
+// TODO: Make more use of this???
 function _makeErrorFunc(msg){
 	return function(){
 		throw Error(msg);

@@ -9,20 +9,31 @@ function Eraser(loopy){
 	var self = this;
 	self.loopy = loopy;
 
-	subscribe("mousemove",function(){
+	self.erase = function(clicked){
 
 		// ONLY WHEN EDITING w DRAG
 		if(self.loopy.mode!=Loopy.MODE_EDIT) return;
 		if(self.loopy.tool!=Loopy.TOOL_ERASE) return;
 
 		// Erase any nodes under here
-		if(Mouse.pressed){
+		if(Mouse.pressed || clicked){
 			var eraseNode = loopy.model.getNodeByPoint(Mouse.x, Mouse.y);
 			if(eraseNode) eraseNode.kill();
 		}
 
-		// TODO: Erase any edges under here
+		// Erase any edges under here
+		if(Mouse.pressed || clicked){
+			var eraseEdge = loopy.model.getEdgeByPoint(Mouse.x, Mouse.y, true);
+			if(eraseEdge) eraseEdge.kill();
+		}
 
+	};
+
+	subscribe("mousemove",function(){
+		self.erase();
+	});
+	subscribe("mouseclick",function(){
+		self.erase(true);
 	});
 
 }

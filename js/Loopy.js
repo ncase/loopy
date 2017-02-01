@@ -79,7 +79,7 @@ function Loopy(config){
 			self.sidebar.showPage("Edit");
 			self.sidebar.dom.setAttribute("mode","edit");
 			self.toolbar.dom.setAttribute("mode","edit");
-			document.getElementById("canvasses").removeAttribute("cursor", self.toolbar.currentTool); // TODO: EVENT BASED
+			document.getElementById("canvasses").setAttribute("cursor", self.toolbar.currentTool); // TODO: EVENT BASED
 		}
 
 	};

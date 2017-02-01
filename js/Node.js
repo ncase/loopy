@@ -155,7 +155,7 @@ function Node(model, config){
 		ctx.stroke();*/
 
 		// Text!
-		ctx.font = "300 40px sans-serif";
+		ctx.font = "100 40px sans-serif";
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
 		ctx.fillStyle = "#000";
@@ -207,22 +207,8 @@ function Node(model, config){
 	//////////////////////////////////////
 
 	self.isPointInNode = function(x, y, buffer){
-		
-		// how far outside the circle before NOT "in" node?
 		buffer = buffer || 0;
-		
-		// Point distance
-		var dx = self.x-x;
-		var dy = self.y-y;
-		var dist2 = dx*dx + dy*dy;
-
-		// My radius (with buffer)
-		var r = self.radius+buffer;
-		var r2 = r*r;
-
-		// Inside?
-		return dist2<=r2;
-
+		return _isPointInCircle(x, y, self.x, self.y, self.radius+buffer);
 	};
 
 }

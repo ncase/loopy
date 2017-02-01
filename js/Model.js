@@ -36,6 +36,7 @@ function Model(loopy){
 		var node = new Node(self,config);
 		self.nodeByID[node.id] = node;
 		self.nodes.push(node);
+		self.update();
 		return node;
 	};
 
@@ -71,6 +72,7 @@ function Model(loopy){
 	self.addEdge = function(config){
 		var edge = new Edge(self,config);
 		self.edges.push(edge);
+		self.update();
 		return edge;
 	};
 
@@ -119,17 +121,34 @@ function Model(loopy){
 		return null;
 	};
 
+	self.getEdgeByPoint = function(x, y, wholeArrow){
+		// TODO: wholeArrow option?
+		var result;
+		for(var i=self.edges.length-1; i>=0; i--){ // top-down
+			var edge = self.edges[i];
+			if(edge.isPointOnLabel(x,y)) return edge;
+		}
+		return null;
+	};
+
 	// Click to edit!
 	subscribe("mouseclick",function(){
 
-		// ONLY WHEN EDITING w INK
+		// ONLY WHEN EDITING (and NOT erase)
 		if(self.loopy.mode!=Loopy.MODE_EDIT) return;
+		if(self.loopy.tool==Loopy.TOOL_ERASE) return;
 
 		// Did you click on a node? If so, edit THAT node.
-		// TODO: CLICK TO EDIT EDGE TOO
 		var clickedNode = self.getNodeByPoint(Mouse.x, Mouse.y);
 		if(clickedNode){
 			loopy.sidebar.edit(clickedNode);
+			return;
+		}
+
+		// Did you click on an edge label? If so, edit THAT edge.
+		var clickedEdge = self.getEdgeByPoint(Mouse.x, Mouse.y);
+		if(clickedEdge){
+			loopy.sidebar.edit(clickedEdge);
 			return;
 		}
 

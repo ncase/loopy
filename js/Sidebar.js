@@ -49,6 +49,13 @@ function Sidebar(loopy){
 		label: "Color:",
 		min:0, max:360, step:30
 	}));
+	/*page.addComponent(new ComponentButton({
+		label: "delete node",
+		onclick: function(node){
+			node.kill();
+			self.showPage("Edit");
+		}
+	}));*/
 	self.addPage("Node", page);
 
 	// Edge!
@@ -58,6 +65,13 @@ function Sidebar(loopy){
 		min:0, max:5, step:1,
 		map:{0:-3, 1:-2, 2:-1, 3:1, 4:2, 5:3}
 	}));
+	/*page.addComponent(new ComponentButton({
+		label: "delete edge",
+		onclick: function(edge){
+			edge.kill();
+			self.showPage("Edit");
+		}
+	}));*/
 	self.addPage("Edge", page);
 
 	// Edit
@@ -239,7 +253,9 @@ function ComponentButton(config){
 
 	// DOM: just a button
 	self.dom = document.createElement("div");
-	var button = _createButton(config.label, config.onclick);
+	var button = _createButton(config.label, function(){
+		config.onclick(self.page.target);
+	});
 	self.dom.appendChild(button);
 
 }
