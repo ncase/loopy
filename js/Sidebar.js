@@ -10,9 +10,16 @@ function Sidebar(loopy){
 
 	// Edit
 	self.edit = function(object){
-		var page = self.showPage(object._CLASS_);
-		page.edit(object);
+		self.showPage(object._CLASS_);
+		self.currentPage.edit(object);
 	};
+
+	// Go back to main when the thing you're editing is killed
+	subscribe("kill",function(object){
+		if(self.currentPage.target==object){
+			self.showPage("Edit");
+		}
+	});
 
 	// Pages
 	self.dom = document.getElementById("sidebar");
@@ -22,6 +29,7 @@ function Sidebar(loopy){
 		self.dom.appendChild(page.dom);
 		self.pages.push(page);
 	};
+	self.currentPage = null;
 	self.showPage = function(id){
 		var shownPage = null;
 		for(var i=0; i<self.pages.length; i++){
@@ -33,7 +41,7 @@ function Sidebar(loopy){
 				page.hide();
 			}
 		}
-		return shownPage;
+		self.currentPage = shownPage;
 	};
 
 	///////////////////////

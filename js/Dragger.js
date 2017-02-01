@@ -28,6 +28,7 @@ function Dragger(loopy){
 			self.dragging = dragNode;
 			self.offsetX = Mouse.x - dragNode.x;
 			self.offsetY = Mouse.y - dragNode.y;
+			loopy.sidebar.edit(dragNode); // and edit!
 			return;
 		}
 
@@ -37,6 +38,8 @@ function Dragger(loopy){
 			self.dragging = dragEdge;
 			self.offsetX = Mouse.x - dragEdge.labelX;
 			self.offsetY = Mouse.y - dragEdge.labelY;
+			loopy.sidebar.edit(dragEdge); // and edit!
+			return;
 		}
 
 	});

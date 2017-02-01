@@ -18,7 +18,7 @@
 	};
 
 	// Keyboard Combos
-	// TODO.
+	// TODO: Keyboard c-c-c-combos
 	var KEY_COMBOS = [
 		//{combo:[], publish:""}
 	];
@@ -39,6 +39,7 @@
 	    event.stopPropagation();
 	    event.preventDefault();
 	}
+	//window.addEventListener("keydown",Key.onKeyDown,false);
 	window.addEventListener("keydown",Key.onKeyDown,false);
 	window.addEventListener("keyup",Key.onKeyUp,false);
 

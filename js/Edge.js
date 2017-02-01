@@ -195,6 +195,9 @@ function Edge(model, config){
 		// Remove from parent!
 		model.removeEdge(self);
 
+		// Killed!
+		publish("kill",[self]);
+
 	};
 
 	//////////////////////////////////////

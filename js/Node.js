@@ -200,6 +200,9 @@ function Node(model, config){
 		// Remove from parent!
 		model.removeNode(self);
 
+		// Killed!
+		publish("kill",[self]);
+
 	};
 
 	//////////////////////////////////////
