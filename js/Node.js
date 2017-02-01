@@ -133,7 +133,7 @@ function Node(model, config){
 		// White-gray bubble
 		ctx.beginPath();
 		ctx.arc(0, 0, r, 0, Math.TAU, false);
-		ctx.fillStyle = "#ddd";
+		ctx.fillStyle = "#eee";
 		ctx.fill();
 
 		// Colored bubble
@@ -145,11 +145,13 @@ function Node(model, config){
 		ctx.fillStyle = "hsl("+self.hue+",80%,58%)";
 		ctx.fill();
 
-		// Outline
-		/*ctx.beginPath();
+		// Dark alpha bubble
+		ctx.beginPath();
 		ctx.arc(0, 0, r/2, 0, Math.TAU, false);
-		ctx.lineWidth = 4;
-		ctx.strokeStyle = "rgba(0,0,0,0.2)";
+		ctx.fillStyle = "rgba(0,0,0,0.15)";
+		ctx.fill();
+		/*ctx.strokeStyle = "rgba(0,0,0,0.2)";
+		ctx.lineWidth = 5;
 		ctx.stroke();*/
 
 		// Text!

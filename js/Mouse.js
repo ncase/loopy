@@ -2,6 +2,7 @@ window.Mouse = {};
 Mouse.init = function(target){
 
 	// Events!
+	// TODO: fire CLICK based on
 	var _onmousedown = function(event){
 		_onmousemove(event);
 		Mouse.moved = false;
@@ -40,6 +41,7 @@ Mouse.init = function(target){
 	window.onmouseup = _onmouseup;
 
 	// TOUCH.
+	// TODO: reuse functions, to also get "startedOnTarget"
 	var _onTouchMove;
 	target.addEventListener("touchstart",function(event){
 		_onTouchMove(event);

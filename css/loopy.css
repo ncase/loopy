@@ -19,6 +19,15 @@ canvas{
 	width: calc(100% - 300px);
 	height: 100%;
 }
+#canvasses[cursor=ink]{
+	cursor: url('cursors/ink.png') 0 30, auto;
+}
+#canvasses[cursor=drag]{
+	cursor: url('cursors/drag.png') 15 15, auto;
+}
+#canvasses[cursor=erase]{
+	cursor: url('cursors/erase.png') 5 25, auto;
+}
 
 
 /**********
@@ -27,19 +36,31 @@ canvas{
 
 #toolbar{
 	position: absolute;
-	width: calc(100% - 300px);
-	height: 60px;
-	bottom:0px; left:0px;
+	left: calc(50% - 247.5px); /* half of toolbar width + sidebar width */
+	bottom:0;
+
+	width:195px; height:65px;
+	padding: 5px;
+	background: #ddd;
+
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+#toolbar[mode=play]{
+	display: none;
 }
 
-#toolbar > div{
-	width:180px; height:60px;
-	margin: auto;
-	top:0; left:0; right:0; bottom:0;
-	background: #ddd;
+.toolbar_button{
+	width:50px; height:50px;
+	padding:5px;
+	border: 2px solid #ddd;
+	cursor: pointer;
 }
-#toolbar > div > .toolbar_button{
-	width:60px; height:60px;
+.toolbar_button[selected=yes]{
+	border: 2px solid #888;
+	background: #999;
 }
 
 /**********
@@ -52,6 +73,11 @@ canvas{
 	width: 300px;
 	height: 100%;
 	background: #ddd;
+
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 #sidebar > div{
 	margin: 25px;

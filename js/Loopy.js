@@ -70,12 +70,16 @@ function Loopy(config){
 		if(mode==Loopy.MODE_PLAY){
 			self.sidebar.showPage("Play");
 			self.sidebar.dom.setAttribute("mode","play");
+			self.toolbar.dom.setAttribute("mode","play");
+			document.getElementById("canvasses").removeAttribute("cursor"); // TODO: EVENT BASED
 		}
 
 		// Edit mode!
 		if(mode==Loopy.MODE_EDIT){
 			self.sidebar.showPage("Edit");
 			self.sidebar.dom.setAttribute("mode","edit");
+			self.toolbar.dom.setAttribute("mode","edit");
+			document.getElementById("canvasses").removeAttribute("cursor", self.toolbar.currentTool); // TODO: EVENT BASED
 		}
 
 	};

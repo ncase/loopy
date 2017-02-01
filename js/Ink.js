@@ -7,6 +7,9 @@ TODO: smoother bezier curve?
 
 **********************************/
 
+Ink.MINIMUM_RADIUS = 15;
+Ink.SNAP_TO_RADIUS = 50;
+
 function Ink(loopy){
 
 	var self = this;
@@ -164,14 +167,22 @@ function Ink(loopy){
 			var r = ((bounds.width/2)+(bounds.height/2))/2;
 
 			// Circle can't be TOO smol
-			// TODO: Snap circle to certain radiuses, or x/y pos???
-			if(r>15){
+			if(r>Ink.MINIMUM_RADIUS){
+
+				// Snap to radius
+				r = Math.round(r/Ink.SNAP_TO_RADIUS)*Ink.SNAP_TO_RADIUS;
+				if(r==0) r=Ink.SNAP_TO_RADIUS;
+
+				// Make that node!
 				var newNode = loopy.model.addNode({
 					x:x,
 					y:y,
 					radius:r
 				});
+
+				// Edit it immediately
 				loopy.sidebar.edit(newNode);
+
 			}
 
 		}
