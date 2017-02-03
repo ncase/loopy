@@ -148,10 +148,10 @@ function Node(model, config){
 		// Dark alpha bubble
 		ctx.beginPath();
 		ctx.arc(0, 0, r/2, 0, Math.TAU, false);
-		ctx.fillStyle = "rgba(0,0,0,0.15)";
+		ctx.fillStyle = "rgba(0,0,0,0.1)";
 		ctx.fill();
 		/*ctx.strokeStyle = "rgba(0,0,0,0.2)";
-		ctx.lineWidth = 5;
+		ctx.lineWidth = 2;
 		ctx.stroke();*/
 
 		// Text!
@@ -222,5 +222,6 @@ function Node(model, config){
 
 Node._UID = 0;
 Node._getUID = function(){
-	return(Node._UID++);
+	Node._UID++;
+	return Node._UID;
 };

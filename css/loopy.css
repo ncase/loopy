@@ -74,6 +74,9 @@ canvas{
 	height: 100%;
 	background: #ddd;
 
+	font-weight: 100;
+	font-size: 18px;
+
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
@@ -88,7 +91,11 @@ canvas{
 #sidebar[mode=play]{
 	background: #222;
 }
-
+#sidebar hr{
+	border: none;
+	border-bottom: 2px solid #aaa;
+	margin: 2em 0;
+}
 .component_input{
 	border: none;
 	
@@ -99,6 +106,14 @@ canvas{
 	font-size: 20px;
 	font-weight: 100;
 }
+.component_output{
+	border: 1px solid #aaa;
+	width:100%;
+	background: #ddd;
+	color: #666;
+	font-size: 15px;
+	font-weight: 100;
+}
 .component_slider{
 	width: 250px;
 	height: 40px;
@@ -107,9 +122,12 @@ canvas{
 	margin-bottom: 5px;
 }
 .component_button{
+
 	width: calc(100% - 20px);
 	background: #666;
 	color: #fff;
+	font-size: 20px;
+	font-weight: normal;
 	text-align: center;
 	padding: 10px;
 

@@ -108,6 +108,103 @@ function Model(loopy){
 
 
 
+
+	//////////////////////////////
+	// SERIALIZE & DE-SERIALIZE //
+	//////////////////////////////
+
+	self.serialize = function(){
+
+		var data = {};
+
+		// Nodes
+		data.nodes = [];
+		for(var i=0;i<self.nodes.length;i++){
+			var node = self.nodes[i];
+			data.nodes.push({
+				id: node.id,
+				x: Math.round(node.x),
+				y: Math.round(node.y),
+				init: node.init,
+				label: node.label,
+				hue: node.hue,
+				radius: node.radius
+			});
+		}
+
+		// Edges
+		data.edges = [];
+		for(var i=0;i<self.edges.length;i++){
+			var edge = self.edges[i];
+			data.edges.push({
+				from: edge.from.id,
+				to: edge.to.id,
+				arc: Math.round(edge.arc),
+				rotation: Math.round(edge.rotation),
+				strength: edge.strength
+			});
+		}
+
+		// META.
+		data.UID = Node._UID;
+
+		// Return as string!
+		var dataString = JSON.stringify(data);
+		return dataString;
+
+	};
+
+	self.deserialize = function(dataString){
+
+		self.clear();
+
+		var data = JSON.parse(dataString);
+
+		// Nodes
+		for(var i=0;i<data.nodes.length;i++){
+			var node = data.nodes[i];
+			self.addNode({
+				id: node.id,
+				x: node.x,
+				y: node.y,
+				init: node.init,
+				label: node.label,
+				hue: node.hue,
+				radius: node.radius
+			});
+		}
+
+		// Edges
+		for(var i=0;i<data.edges.length;i++){
+			var edge = data.edges[i];
+			self.addEdge({
+				from: edge.from,
+				to: edge.to,
+				arc: edge.arc,
+				rotation: edge.rotation,
+				strength: edge.strength
+			});
+		}
+
+		// META.
+		Node._UID = data.UID;
+
+		// TODO: META - center X & Y, so can offset later!
+		// TODO: META - versioning so whatever don't screw up
+
+	};
+
+	self.clear = function(){
+
+		// Just kill ALL nodes.
+		while(self.nodes.length>0){
+			self.nodes[0].kill();
+		}
+
+	};
+
+
+
 	////////////////////
 	// HELPER METHODS //
 	////////////////////

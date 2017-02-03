@@ -37,6 +37,14 @@ function Loopy(config){
 	self.drag = new Dragger(self);
 	self.erase = new Eraser(self);
 
+	//////////
+	// INIT //
+	//////////
+
+	self.init = function(){
+		self.loadFromURL(); // try it.
+	};
+
 	///////////////////
 	// UPDATE & DRAW //
 	///////////////////
@@ -83,5 +91,28 @@ function Loopy(config){
 		}
 
 	};
+
+	/////////////////
+	// SAVE & LOAD //
+	/////////////////
+
+	self.saveToURL = function(){
+		var dataString = self.model.serialize();
+		var uri = encodeURIComponent(dataString);
+		var base = window.location.origin + window.location.pathname;
+		var link = base+"?data="+uri;
+		return link;
+	};
+
+	self.loadFromURL = function(){
+		var data = _getParameterByName("data");
+		if(data) self.model.deserialize(data);
+	}; 
+
+	///////////////////////////
+	///////////////////////////
+
+	self.init();
+
 
 }

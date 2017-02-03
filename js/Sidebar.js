@@ -44,9 +44,9 @@ function Sidebar(loopy){
 		self.currentPage = shownPage;
 	};
 
-	///////////////////////
-	// ACTUAL PAGES ///////
-	///////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// ACTUAL PAGES ////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////
 
 	// Node!
 	(function(){
@@ -79,40 +79,62 @@ function Sidebar(loopy){
 	})();
 
 	// Edge!
-	var page = new SidebarPage();
-	page.addComponent("strength", new ComponentSlider({
-		bg: "strength",
-		label: "Relationship:",
-		options: [-3,-2,-1,1,2,3]
-	}));
-	/*page.addComponent(new ComponentButton({
-		label: "delete edge",
-		onclick: function(edge){
-			edge.kill();
-			self.showPage("Edit");
-		}
-	}));*/
-	self.addPage("Edge", page);
+	(function(){
+		var page = new SidebarPage();
+		page.addComponent("strength", new ComponentSlider({
+			bg: "strength",
+			label: "Relationship:",
+			options: [-3,-2,-1,1,2,3]
+		}));
+		/*page.addComponent(new ComponentButton({
+			label: "delete edge",
+			onclick: function(edge){
+				edge.kill();
+				self.showPage("Edit");
+			}
+		}));*/
+		self.addPage("Edge", page);
+	})();
 
 	// Edit
-	var page = new SidebarPage();
-	page.addComponent(new ComponentButton({
-		label: "START SIMULATION",
-		onclick: function(){
-			loopy.setMode(Loopy.MODE_PLAY);
-		}
-	}));
-	self.addPage("Edit", page);
+	(function(){
+		var page = new SidebarPage();
+		page.addComponent(new ComponentButton({
+			label: "START SIMULATION",
+			onclick: function(){
+				loopy.setMode(Loopy.MODE_PLAY);
+			}
+		}));
+		page.addComponent(new ComponentHTML({
+			html: "<hr/>You can also save &amp; share your LOOPY model, as a link!"
+		}));
+		page.addComponent(new ComponentButton({
+			label: "save as link:",
+			onclick: function(){
+				var link = loopy.saveToURL();
+				output.output("saving...");
+				setTimeout(function(){
+					output.output(link);
+					output.focus();
+					output.dom.select();
+				},750);
+			}
+		}));
+		var output = page.addComponent(new ComponentOutput({}));
+		self.addPage("Edit", page);
+	})();
 
 	// Play
-	var page = new SidebarPage();
-	page.addComponent(new ComponentButton({
-		label: "STOP SIMULATION",
-		onclick: function(){
-			loopy.setMode(Loopy.MODE_EDIT);
-		}
-	}));
-	self.addPage("Play", page);
+	(function(){
+		var page = new SidebarPage();
+		page.addComponent(new ComponentButton({
+			label: "STOP SIMULATION",
+			onclick: function(){
+				loopy.setMode(Loopy.MODE_EDIT);
+			}
+		}));
+		self.addPage("Play", page);
+	})();
 
 }
 
@@ -147,6 +169,9 @@ function SidebarPage(){
 		// remember component
 		self.components.push(component);
 		self.componentsByID[propName] = component;
+
+		// return!
+		return component;
 
 	};
 	self.getComponent = function(propName){
@@ -183,9 +208,9 @@ function SidebarPage(){
 
 
 
-///////////////////////////////
-// COMPONENTS /////////////////
-///////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+// COMPONENTS ///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
 
 function Component(){
 	var self = this;
@@ -216,14 +241,10 @@ function ComponentInput(config){
 	// DOM: label + text input
 	self.dom = document.createElement("div");
 	var label = _createLabel(config.label);
-	var input = document.createElement("input");
-	input.setAttribute("class","component_input");
+	var input = _createInput("component_input");
 	input.oninput = function(event){
 		self.setValue(input.value);
 	};
-	input.addEventListener("keydown",function(event){
-		event.stopPropagation ? event.stopPropagation() : (event.cancelBubble=true);
-	},false); // STOP IT FROM TRIGGERING KEY.js
 	self.dom.appendChild(label);
 	self.dom.appendChild(input);
 
@@ -310,5 +331,42 @@ function ComponentButton(config){
 		config.onclick(self.page.target);
 	});
 	self.dom.appendChild(button);
+
+}
+
+function ComponentHTML(config){
+
+	// Inherit
+	var self = this;
+	Component.apply(self);
+
+	// just a div
+	self.dom = document.createElement("div");
+	self.dom.innerHTML = config.html;
+
+}
+
+function ComponentOutput(config){
+
+	// Inherit
+	var self = this;
+	Component.apply(self);
+
+	// DOM: just a readonly input that selects all when clicked
+	self.dom = _createInput("component_output");
+	self.dom.readonly = true;
+	self.dom.onclick = function(){
+		self.dom.select();
+	};
+
+	// Output the string!
+	self.output = function(string){
+		self.dom.value = string;
+	};
+
+	// Focus
+	self.focus = function(){
+		self.dom.select();
+	};
 
 }

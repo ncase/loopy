@@ -45,6 +45,15 @@ function _createButton(label, onclick){
 	return button;
 }
 
+function _createInput(className){
+	var input = document.createElement("input");
+	input.setAttribute("class",className);
+	input.addEventListener("keydown",function(event){
+		event.stopPropagation ? event.stopPropagation() : (event.cancelBubble=true);
+	},false); // STOP IT FROM TRIGGERING KEY.js
+	return input;
+}
+
 function _getBounds(points){
 
 	// Bounds
@@ -130,3 +139,13 @@ function _makeErrorFunc(msg){
 		throw Error(msg);
 	};
 }
+
+function _getParameterByName(name, url){
+	var url = window.top.location.href;
+	name = name.replace(/[\[\]]/g, "\\$&");
+	var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+	results = regex.exec(url);
+	if (!results) return null;
+	if (!results[2]) return '';
+	return decodeURIComponent(results[2].replace(/\+/g, " "));
+};
