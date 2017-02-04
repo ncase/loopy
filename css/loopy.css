@@ -123,6 +123,7 @@ canvas{
 	position: absolute;
 	width: 250px;
 	height: 40px;
+	cursor: pointer;
 }
 .component_slider_pointer{
 	position: absolute;
@@ -140,7 +141,7 @@ canvas{
 	background: #666;
 	color: #fff;
 	font-size: 20px;
-	font-weight: normal;
+	font-weight: 100;
 	text-align: center;
 	padding: 10px;
 
@@ -148,4 +149,13 @@ canvas{
 }
 .component_button:hover{
 	background: #777;
+}
+.component_button[header=yes]{
+	position: absolute;
+	top:0; left:0;
+	width: 280px;
+	background: #000;
+}
+.component_button[header=yes]:hover{
+	background: #333;
 }

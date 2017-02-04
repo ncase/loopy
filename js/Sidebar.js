@@ -51,6 +51,13 @@ function Sidebar(loopy){
 	// Node!
 	(function(){
 		var page = new SidebarPage();
+		/*page.addComponent(new ComponentButton({
+			header: true,
+			label: "back to top",
+			onclick: function(){
+				self.showPage("Edit");
+			}
+		}));*/
 		page.addComponent("label", new ComponentInput({
 			label: "Name:"
 		}));
@@ -65,34 +72,49 @@ function Sidebar(loopy){
 			options: [-1,-0.66,-0.33,0,0.33,0.66,1]
 		}));
 		page.onedit = function(){
-			var color = Node.COLORS[page.target.hue];
+
+			// Set color of Slider
+			var node = page.target;
+			var color = Node.COLORS[node.hue];
 			page.getComponent("init").setBGColor(color);
+
+			// Focus on the name field IF IT'S "" or "?"
+			var name = node.label;
+			if(name=="" || name=="?") page.getComponent("label").select();
+
 		};
-		/*page.addComponent(new ComponentButton({
+		page.addComponent(new ComponentButton({
 			label: "delete node",
 			onclick: function(node){
 				node.kill();
 				self.showPage("Edit");
 			}
-		}));*/
+		}));
 		self.addPage("Node", page);
 	})();
 
 	// Edge!
 	(function(){
 		var page = new SidebarPage();
+		/*page.addComponent(new ComponentButton({
+			header: true,
+			label: "back to top",
+			onclick: function(){
+				self.showPage("Edit");
+			}
+		}));*/
 		page.addComponent("strength", new ComponentSlider({
 			bg: "strength",
 			label: "Relationship:",
 			options: [-3,-2,-1,1,2,3]
 		}));
-		/*page.addComponent(new ComponentButton({
+		page.addComponent(new ComponentButton({
 			label: "delete edge",
 			onclick: function(edge){
 				edge.kill();
 				self.showPage("Edit");
 			}
-		}));*/
+		}));
 		self.addPage("Edge", page);
 	})();
 
@@ -115,7 +137,6 @@ function Sidebar(loopy){
 				output.output("saving...");
 				setTimeout(function(){
 					output.output(link);
-					output.focus();
 					output.dom.select();
 				},750);
 			}
@@ -189,11 +210,6 @@ function SidebarPage(){
 			self.components[i].show();
 		}
 
-		// Focus on first one.
-		setTimeout(function(){
-			if(self.components.length>0) self.components[0].focus();
-		},10);
-
 		// Callback!
 		self.onedit();
 
@@ -218,9 +234,6 @@ function Component(){
 	self.page = null;
 	self.propName = null;
 	self.show = function(){
-		// TO IMPLEMENT
-	};
-	self.focus = function(){
 		// TO IMPLEMENT
 	};
 	self.getValue = function(){
@@ -253,9 +266,9 @@ function ComponentInput(config){
 		input.value = self.getValue();
 	};
 
-	// Focus
-	self.focus = function(){
-		input.select();
+	// Select
+	self.select = function(){
+		setTimeout(function(){ input.select(); },10);
 	};
 
 }
@@ -326,11 +339,6 @@ function ComponentSlider(config){
 		movePointer();
 	};
 
-	// Focus
-	/*self.focus = function(){
-		input.select();
-	};*/
-
 	// BG Color!
 	self.setBGColor = function(color){
 		slider.style.background = color;
@@ -350,6 +358,11 @@ function ComponentButton(config){
 		config.onclick(self.page.target);
 	});
 	self.dom.appendChild(button);
+
+	// Unless it's a HEADER button!
+	if(config.header){
+		button.setAttribute("header","yes");
+	}
 
 }
 
@@ -381,11 +394,6 @@ function ComponentOutput(config){
 	// Output the string!
 	self.output = function(string){
 		self.dom.value = string;
-	};
-
-	// Focus
-	self.focus = function(){
-		self.dom.select();
 	};
 
 }
