@@ -2,8 +2,6 @@
 
 DRAGGER
 
-TODO: Dragging edges, too
-
 **********************************/
 
 function Dragger(loopy){
@@ -85,10 +83,26 @@ function Dragger(loopy){
 				// ooookay.
 				edge.arc = -newLabelPoint[1]; // WHY NEGATIVE? I DON'T KNOW.
 
-				// update coz visual glitches
-				loopy.model.update();
+			}else{
+
+				// For SELF-ARROWS: just get angle & mag for label.
+				var dx = labelX - edge.from.x,
+					dy = labelY - edge.from.y;
+				var a = Math.atan2(dy,dx);
+				var mag = Math.sqrt(dx*dx + dy*dy);
+
+				// Minimum mag
+				var minimum = edge.from.radius+25;
+				if(mag<minimum) mag=minimum;
+
+				// Update edge
+				edge.arc = mag;
+				edge.rotation = a*(360/Math.TAU)+90;
 
 			}
+
+			// update coz visual glitches
+			loopy.model.update();
 
 		}
 

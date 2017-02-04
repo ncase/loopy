@@ -4,6 +4,15 @@ NODE!
 
 **********************************/
 
+Node.COLORS = {
+	0: "#EA3E3E", // red
+	1: "#EA9D51", // orange
+	2: "#FEEE43", // yellow
+	3: "#BFEE3F", // green
+	4: "#7FD4FF", // blue
+	5: "#A97FFF" // purple
+};
+
 function Node(model, config){
 
 	var self = this;
@@ -142,7 +151,7 @@ function Node(model, config){
 		//var _circleRadiusGoto = r*Math.sqrt(self.value+1); // area
 		_circleRadius = _circleRadius*0.5 + _circleRadiusGoto*0.5;
 		ctx.arc(0, 0, _circleRadius, 0, Math.TAU, false);
-		ctx.fillStyle = "hsl("+self.hue+",80%,58%)";
+		ctx.fillStyle = Node.COLORS[self.hue];
 		ctx.fill();
 
 		// Dark alpha bubble
@@ -150,8 +159,8 @@ function Node(model, config){
 		ctx.arc(0, 0, r/2, 0, Math.TAU, false);
 		ctx.fillStyle = "rgba(0,0,0,0.1)";
 		ctx.fill();
-		/*ctx.strokeStyle = "rgba(0,0,0,0.2)";
-		ctx.lineWidth = 2;
+		/*ctx.strokeStyle = "rgba(0,0,0,0.1)";
+		ctx.lineWidth = 6;
 		ctx.stroke();*/
 
 		// Text!
@@ -163,7 +172,7 @@ function Node(model, config){
 
 		// Controls!
 		var cl = 40;
-		var cy = 10;
+		var cy = 0;
 		ctx.globalAlpha = _controlsAlpha;
 		ctx.strokeStyle = "#000";
 		// top arrow

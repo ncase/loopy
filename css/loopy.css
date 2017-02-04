@@ -115,8 +115,21 @@ canvas{
 	font-weight: 100;
 }
 .component_slider{
+	position: relative;
+	width: 250px;
+	height: 52px;
+}
+.component_slider_graphic{
+	position: absolute;
 	width: 250px;
 	height: 40px;
+}
+.component_slider_pointer{
+	position: absolute;
+	top: 42px;
+	width: 15px;
+	height: 10px;
+	/*transition: left 0.15s ease-in-out;*/
 }
 .component_label{
 	margin-bottom: 5px;

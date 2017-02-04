@@ -28,8 +28,6 @@ function _createCanvas(){
 
 }
 
-// TODO: put these helper methods somewhere else?
-
 function _createLabel(message){
 	var label = document.createElement("div");
 	label.innerHTML = message;
@@ -52,6 +50,54 @@ function _createInput(className){
 		event.stopPropagation ? event.stopPropagation() : (event.cancelBubble=true);
 	},false); // STOP IT FROM TRIGGERING KEY.js
 	return input;
+}
+
+function _blank(){
+	// just a blank function to toss in.
+}
+
+function _addMouseEvents(target, onmousedown, onmousemove, onmouseup){
+
+	// WRAP THEM CALLBACKS
+	var _onmousedown = function(event){
+		var _fakeEvent = _onmousemove(event);
+		onmousedown(_fakeEvent);
+	};
+	var _onmousemove = function(event){
+		
+		// Mouse position
+		var _fakeEvent = {};
+		if(event.changedTouches){
+			// Touch
+			_fakeEvent.x = event.changedTouches[0].offsetX - target.offsetLeft;
+			_fakeEvent.y = event.changedTouches[0].offsetY - target.offsetTop;
+			event.preventDefault();
+		}else{
+			// Not Touch
+			_fakeEvent.x = event.offsetX;
+			_fakeEvent.y = event.offsetY;
+		}
+
+		// Mousemove callback
+		onmousemove(_fakeEvent);
+		return _fakeEvent;
+
+	};
+	var _onmouseup = function(event){
+		var _fakeEvent = {};
+		onmouseup(_fakeEvent);
+	};
+
+	// Add events!
+	target.addEventListener("mousedown", _onmousedown);
+	target.addEventListener("mousemove", _onmousemove);
+	document.body.addEventListener("mouseup", _onmouseup);
+
+	// TOUCH.
+	target.addEventListener("touchstart",_onmousedown,false);
+	target.addEventListener("touchmove",_onmousemove,false);
+	document.body.addEventListener("touchend",_onmouseup,false);
+
 }
 
 function _getBounds(points){

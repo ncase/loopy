@@ -57,7 +57,7 @@ function Sidebar(loopy){
 		page.addComponent("hue", new ComponentSlider({
 			bg: "color",
 			label: "Color:",
-			options: [0,30,60,120,180,240]
+			options: [0,1,2,3,4,5]
 		}));
 		page.addComponent("init", new ComponentSlider({
 			bg: "initial",
@@ -65,7 +65,7 @@ function Sidebar(loopy){
 			options: [-1,-0.66,-0.33,0,0.33,0.66,1]
 		}));
 		page.onedit = function(){
-			var color = "hsl("+page.target.hue+",80%,58%)";
+			var color = Node.COLORS[page.target.hue];
 			page.getComponent("init").setBGColor(color);
 		};
 		/*page.addComponent(new ComponentButton({
@@ -269,42 +269,61 @@ function ComponentSlider(config){
 	// TODO: control with + / -, alt keys??
 
 	// DOM: label + slider
-	// TODO: DRAGGABLE SLIDER
 	self.dom = document.createElement("div");
 	var label = _createLabel(config.label);
+	self.dom.appendChild(label);
+	var sliderDOM = document.createElement("div");
+	sliderDOM.setAttribute("class","component_slider");
+	self.dom.appendChild(sliderDOM);
+
+	// Slider DOM: graphic + pointer
 	var slider = new Image();
 	slider.draggable = false;
 	slider.src = "css/sliders/"+config.bg+".png";
-	slider.setAttribute("class","component_slider");
-	self.dom.appendChild(label);
-	self.dom.appendChild(slider);
+	slider.setAttribute("class","component_slider_graphic");
+	var pointer = new Image();
+	pointer.draggable = false;
+	pointer.src = "css/sliders/slider_pointer.png";
+	pointer.setAttribute("class","component_slider_pointer");
+	sliderDOM.appendChild(slider);
+	sliderDOM.appendChild(pointer);
+	var movePointer = function(){
+		var value = self.getValue();
+		var optionIndex = config.options.indexOf(value);
+		var x = (optionIndex+0.5) * (250/config.options.length);
+		pointer.style.left = (x-7.5)+"px";
+	};
 
 	// On click... (or on drag)
+	var isDragging = false;
+	var onmousedown = function(event){
+		isDragging = true;
+		sliderInput(event);
+	};
+	var onmouseup = function(){
+		isDragging = false;
+	};
+	var onmousemove = function(event){
+		if(isDragging) sliderInput(event);
+	};
 	var sliderInput = function(event){
 
-		// The option selected?
-		var index = event.offsetX/250;
+		// What's the option?
+		var index = event.x/250;
 		var optionIndex = Math.floor(index*config.options.length);
 		var option = config.options[optionIndex];
 		if(option===undefined) return;
 		self.setValue(option);
 
+		// Move pointer there.
+		movePointer();
+
 	};
-	slider.onmousedown = sliderInput;
-	//slider.ondrag = sliderInput;
+	_addMouseEvents(slider, onmousedown, onmousemove, onmouseup);
 
 	// Show
 	self.show = function(){
-		/*var value = self.getValue();
-		if(config.map){
-			for(var key in config.map){
-				if(config.map[key]==value){
-					value=key;
-					break;
-				}
-			}
-		}*/
-		//input.value = value;
+		movePointer();
 	};
 
 	// Focus

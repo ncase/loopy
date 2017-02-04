@@ -4,10 +4,11 @@ LOOPY!
 - with edit & play mode
 
 TODO: smoother bezier curve?
+TODO: when switch away tool, clear the Ink canvas
 
 **********************************/
 
-Ink.MINIMUM_RADIUS = 15;
+Ink.MINIMUM_RADIUS = 50;
 Ink.SNAP_TO_RADIUS = 50;
 
 function Ink(loopy){
@@ -116,7 +117,7 @@ function Ink(loopy){
 			if(startNode==endNode){
 
 				// TODO: clockwise or counterclockwise???
-				// TODO: if the arc doesn't go beyond radius, don't make edge. also min distance.
+				// TODO: if the arc DOES NOT go beyond radius, don't make self-connecting edge. also min distance.
 
 				// Find rotation first by getting average point
 				var bounds = _getBounds(self.strokeData);
@@ -135,6 +136,16 @@ function Ink(loopy){
 				edgeConfig.rotation = angle*(360/Math.TAU) + 90;
 				edgeConfig.arc = bounds.right;
 
+				// ACTUALLY, IF THE ARC IS *NOT* GREATER THAN THE RADIUS, DON'T DO IT.
+				// (and otherwise, make sure minimum distance of radius+25)
+				if(edgeConfig.arc < startNode.radius){
+					edgeConfig=null;
+					loopy.sidebar.edit(startNode); // you were probably trying to edit the node
+				}else{
+					var minimum = startNode.radius+25;
+					if(edgeConfig.arc<minimum) edgeConfig.arc=minimum;
+				}
+
 			}else{
 
 				// Otherwise, find the arc by translating & rotating
@@ -152,8 +163,10 @@ function Ink(loopy){
 			}
 
 			// Add the edge!
-			var newEdge = loopy.model.addEdge(edgeConfig);
-			loopy.sidebar.edit(newEdge);
+			if(edgeConfig){
+				var newEdge = loopy.model.addEdge(edgeConfig);
+				loopy.sidebar.edit(newEdge);
+			}
 
 		}
 
@@ -167,11 +180,11 @@ function Ink(loopy){
 			var r = ((bounds.width/2)+(bounds.height/2))/2;
 
 			// Circle can't be TOO smol
-			if(r>Ink.MINIMUM_RADIUS){
+			if(r>15){
 
 				// Snap to radius
 				r = Math.round(r/Ink.SNAP_TO_RADIUS)*Ink.SNAP_TO_RADIUS;
-				if(r==0) r=Ink.SNAP_TO_RADIUS;
+				if(r<Ink.MINIMUM_RADIUS) r=Ink.MINIMUM_RADIUS;
 
 				// Make that node!
 				var newNode = loopy.model.addNode({

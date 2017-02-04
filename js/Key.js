@@ -10,7 +10,7 @@
 		17: "control",
 		91: "control", // macs
 
-		// TODO: Standardize the NAMING?!?!
+		// TODO: Standardize the NAMING across files?!?!
 		68: "ink", // (D)raw
 		77: "drag", // (M)ove
 		69: "erase" // (E)rase
@@ -24,7 +24,6 @@
 	];
 
 	// Event Handling
-	// TODO: ONLY WHEN BUBBLING UP. Whatever the code is for that! I don't know!
 	// TODO: cursors stay when click button? orrrrr switch over to fake-cursor.
 	Key.onKeyDown = function(event){
 		var code = KEY_CODES[event.keyCode];
