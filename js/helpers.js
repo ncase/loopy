@@ -56,6 +56,14 @@ function _blank(){
 	// just a blank function to toss in.
 }
 
+function _getTotalOffset(target){
+	var bounds = target.getBoundingClientRect();
+	return {
+		left: bounds.left,
+		top: bounds.top
+	};
+}
+
 function _addMouseEvents(target, onmousedown, onmousemove, onmouseup){
 
 	// WRAP THEM CALLBACKS
@@ -69,8 +77,9 @@ function _addMouseEvents(target, onmousedown, onmousemove, onmouseup){
 		var _fakeEvent = {};
 		if(event.changedTouches){
 			// Touch
-			_fakeEvent.x = event.changedTouches[0].offsetX - target.offsetLeft;
-			_fakeEvent.y = event.changedTouches[0].offsetY - target.offsetTop;
+			var offset = _getTotalOffset(target);
+			_fakeEvent.x = event.changedTouches[0].clientX - offset.left;
+			_fakeEvent.y = event.changedTouches[0].clientY - offset.top;
 			event.preventDefault();
 		}else{
 			// Not Touch
