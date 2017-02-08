@@ -51,15 +51,15 @@ function Sidebar(loopy){
 	// Node!
 	(function(){
 		var page = new SidebarPage();
-		/*page.addComponent(new ComponentButton({
+		page.addComponent(new ComponentButton({
 			header: true,
 			label: "back to top",
 			onclick: function(){
 				self.showPage("Edit");
 			}
-		}));*/
+		}));
 		page.addComponent("label", new ComponentInput({
-			label: "Name:"
+			label: "<br><br>Name:"
 		}));
 		page.addComponent("hue", new ComponentSlider({
 			bg: "color",
@@ -96,16 +96,16 @@ function Sidebar(loopy){
 	// Edge!
 	(function(){
 		var page = new SidebarPage();
-		/*page.addComponent(new ComponentButton({
+		page.addComponent(new ComponentButton({
 			header: true,
 			label: "back to top",
 			onclick: function(){
 				self.showPage("Edit");
 			}
-		}));*/
+		}));
 		page.addComponent("strength", new ComponentSlider({
 			bg: "strength",
-			label: "Relationship:",
+			label: "<br><br>Relationship:",
 			options: [-3,-2,-1,1,2,3]
 		}));
 		page.addComponent(new ComponentButton({
