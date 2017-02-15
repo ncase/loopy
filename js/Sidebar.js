@@ -69,7 +69,8 @@ function Sidebar(loopy){
 		page.addComponent("init", new ComponentSlider({
 			bg: "initial",
 			label: "Initial Value:",
-			options: [-1,-0.66,-0.33,0,0.33,0.66,1]
+			//options: [-1,-0.66,-0.33,0,0.33,0.66,1]
+			options: [0, 0.16, 0.33, 0.5, 0.66, 0.83, 1]
 		}));
 		page.onedit = function(){
 
