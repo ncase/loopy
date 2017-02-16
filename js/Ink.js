@@ -9,7 +9,7 @@ TODO: when switch away tool, clear the Ink canvas
 **********************************/
 
 Ink.MINIMUM_RADIUS = 50;
-Ink.SNAP_TO_RADIUS = 50;
+Ink.SNAP_TO_RADIUS = 25;
 
 function Ink(loopy){
 

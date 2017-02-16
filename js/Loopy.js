@@ -80,6 +80,8 @@ function Loopy(config){
 			self.sidebar.dom.setAttribute("mode","play");
 			self.toolbar.dom.setAttribute("mode","play");
 			document.getElementById("canvasses").removeAttribute("cursor"); // TODO: EVENT BASED
+		}else{
+			publish("model/reset");
 		}
 
 		// Edit mode!

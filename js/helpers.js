@@ -204,3 +204,30 @@ function _getParameterByName(name, url){
 	if (!results[2]) return '';
 	return decodeURIComponent(results[2].replace(/\+/g, " "));
 };
+
+
+function _blendColors(hex1, hex2, blend){
+	
+	var color = "#";
+	for(var i=0; i<3; i++) {
+		
+		// Into numbers...
+		var sub1 = hex1.substring(1+2*i, 3+2*i);
+		var sub2 = hex2.substring(1+2*i, 3+2*i);
+		var num1 = parseInt(sub1, 16);
+		var num2 = parseInt(sub2, 16);
+
+		// Blended number & sub
+		var num = Math.floor( num1*(1-blend) + num2*blend );
+		var sub = num.toString(16).toUpperCase();
+		var paddedSub = ('0'+sub).slice(-2); // in case it's only one digit long
+
+		// Add that babe
+		color += paddedSub;
+
+	}
+
+	return color;
+
+}
+

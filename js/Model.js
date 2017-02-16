@@ -81,6 +81,13 @@ function Model(loopy){
 		self.edges.splice(self.edges.indexOf(edge),1);
 	};
 
+	// Get all edges with start node
+	self.getEdgesByStartNode = function(startNode){
+		return self.edges.filter(function(edge){
+			return(edge.from==startNode);
+		});
+	};
+
 
 
 	///////////////////

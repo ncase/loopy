@@ -66,17 +66,17 @@ function Sidebar(loopy){
 			label: "Color:",
 			options: [0,1,2,3,4,5]
 		}));
-		page.addComponent("init", new ComponentSlider({
+		/*page.addComponent("init", new ComponentSlider({
 			bg: "initial",
 			label: "Initial Value:",
-			options: [-1,-0.66,-0.33,0,0.33,0.66,1]
-		}));
+			options: [0, 1/6, 2/6, 3/6, 4/6, 5/6, 1]
+		}));*/
 		page.onedit = function(){
 
 			// Set color of Slider
 			var node = page.target;
 			var color = Node.COLORS[node.hue];
-			page.getComponent("init").setBGColor(color);
+			//page.getComponent("init").setBGColor(color);
 
 			// Focus on the name field IF IT'S "" or "?"
 			var name = node.label;
@@ -152,6 +152,12 @@ function Sidebar(loopy){
 			label: "STOP SIMULATION",
 			onclick: function(){
 				loopy.setMode(Loopy.MODE_EDIT);
+			}
+		}));
+		page.addComponent(new ComponentButton({
+			label: "RESET SIMULATION",
+			onclick: function(){
+				publish("model/reset");
 			}
 		}));
 		self.addPage("Play", page);
