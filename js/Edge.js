@@ -29,7 +29,7 @@ function Edge(model, config){
 
 	// We have signals!
 	self.signals = [];
-	self.signalSpeed = 0.02;
+	self.signalSpeed = 0;
 	self.addSignal = function(signal){
 
 		// Re-create signal
@@ -57,7 +57,7 @@ function Edge(model, config){
 	self.updateSignals = function(){
 
 		// Speed?
-		self.signalSpeed = 7/self.getArrowLength();
+		self.signalSpeed = 8/self.getArrowLength();
 		// TODO: Decide if this is the right idea???
 
 		// Move all signals along
@@ -182,14 +182,6 @@ function Edge(model, config){
 		labelAngle, lx, ly, labelBuffer; // BECAUSE I'VE LOST CONTROL OF MY LIFE.
 	self.update = function(speed){
 
-		// When actually playing the simulation...
-		/*if(self.loopy.mode==Loopy.MODE_PLAY){
-			self.to.nextValue += self.from.value * self.strength * speed;
-		}*/
-
-		// Update signals
-		self.updateSignals();
-
 		////////////////////////////////////////////////
 		// PRE-CALCULATE THE MATH (for retina canvas) //
 		////////////////////////////////////////////////
@@ -275,6 +267,19 @@ function Edge(model, config){
 		if(self.arc<0) labelBuffer*=-1;
 		ly += labelBuffer;
 
+		///////////////////////////////////////
+		// AND THEN UPDATE OTHER STUFF AFTER //
+		// THE CALCULATIONS ARE DONE I GUESS //
+		///////////////////////////////////////
+
+		// When actually playing the simulation...
+		/*if(self.loopy.mode==Loopy.MODE_PLAY){
+			self.to.nextValue += self.from.value * self.strength * speed;
+		}*/
+
+		// Update signals
+		self.updateSignals();
+
 	};
 
 	// Get position along arrow, on what parameter?
@@ -283,10 +288,17 @@ function Edge(model, config){
 		if(self.from==self.to){
 			angle = Math.TAU;
 		}else{
-			if(self.arc>0){
-				angle = Math.abs(end-begin);
+			//debugger;
+			if(y<0){
+				// arc's center is above the horizon
+				if(self.arc<0){ // ccw
+					angle = Math.TAU + begin - end;
+				}else{ // cw
+					angle = Math.TAU + end - begin;
+				}
 			}else{
-				angle = Math.abs(-end+begin); // i dunno why this works but it does
+				// arc's center is below the horizon
+				angle = Math.abs(end-begin);
 			}
 		}
 		return r*angle;
