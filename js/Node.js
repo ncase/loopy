@@ -129,7 +129,8 @@ function Node(model, config){
 	var _offsetDamp = 0.3;
 	var _offsetHookes = 0.8;
 	self.bound = function(){
-		if(self.value<-1) self.value=-1;
+		//if(self.value<-1) self.value=-1;
+		if(self.value<0) self.value=0;
 		if(self.value>1) self.value=1;
 	};
 	self.update = function(speed){
@@ -195,6 +196,7 @@ function Node(model, config){
 
 		// Colored bubble
 		ctx.beginPath();
+		
 		var _innerCircle;
 		if(_circleRadius<=r){
 			_innerCircle = _circleRadius;
@@ -211,6 +213,25 @@ function Node(model, config){
 			ctx.fill();
 			ctx.globalAlpha = 1.0;
 		}
+
+		/*
+		var _circleRadiusGoto = r*self.value; // radius
+		//var _circleRadiusGoto = r*(self.value+1)*0.5; // radius
+		//var _circleRadiusGoto = r*Math.sqrt(self.value+1); // area
+		_circleRadius = _circleRadius*0.5 + _circleRadiusGoto*0.5;
+		ctx.arc(0, 0, _circleRadius, 0, Math.TAU, false);
+		ctx.fillStyle = Node.COLORS[self.hue];
+		ctx.fill();
+
+		// Dark alpha bubble
+		ctx.beginPath();
+		ctx.arc(0, 0, r/2, 0, Math.TAU, false);
+		ctx.fillStyle = "rgba(0,0,0,0.1)";
+		ctx.fill();
+		ctx.strokeStyle = "rgba(0,0,0,0.1)";
+		ctx.lineWidth = 6;
+		ctx.stroke();
+		*/
 
 		// Text!
 		ctx.font = "100 40px sans-serif";
