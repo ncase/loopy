@@ -34,7 +34,7 @@ function Ink(loopy){
 		var lastPoint = self.strokeData[self.strokeData.length-1];
 
 		// Style
-		ctx.strokeStyle = "#aaa";
+		ctx.strokeStyle = "#ccc";
 		ctx.lineWidth = 5;
 		ctx.lineCap = "round";
 

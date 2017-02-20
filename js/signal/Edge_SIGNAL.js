@@ -36,7 +36,7 @@ function Edge(model, config){
 		var delta = signal.delta;
 		var age;
 		if(signal.age===undefined){
-			age = 12; // cos divisible by 1,2,3,4
+			age = 13; // cos divisible by 1,2,3,4 + 1
 		}else{
 			age = signal.age-1;
 		}
@@ -78,8 +78,8 @@ function Edge(model, config){
 			// And also TWEEN the scale.
 			var gotoScaleX = Math.abs(signal.delta);
 			var gotoScaleY = signal.delta;
-			signal.scaleX = signal.scaleX*0.75 + gotoScaleX*0.25;
-			signal.scaleY = signal.scaleY*0.75 + gotoScaleY*0.25;
+			signal.scaleX = signal.scaleX*0.6 + gotoScaleX*0.4;
+			signal.scaleY = signal.scaleY*0.6 + gotoScaleY*0.4;
 
 		}
 
@@ -122,7 +122,7 @@ function Edge(model, config){
 			var fromColor = Node.COLORS[self.from.hue];
 			var toColor = Node.COLORS[self.to.hue];
 			var blend;
-			var bStart=0.3, bEnd=0.7;
+			var bStart=0.4, bEnd=0.6;
 			if(signal.position<bStart){
 				blend = 0;
 			}else if(signal.position<bEnd){
@@ -248,9 +248,9 @@ function Edge(model, config){
 		else if(s>=2) l="++";
 		else if(s>=1) l="+";
 		else if(s==0) l="?";
-		else if(s>=-1) l="-";
-		else if(s>=-2) l="- -";
-		else l="- - -";
+		else if(s>=-1) l="–"; // EM dash, not hyphen.
+		else if(s>=-2) l="– –";
+		else l="– – –";
 		self.label = l;
 
 		// Label position
@@ -332,7 +332,7 @@ function Edge(model, config){
 
 		// Width & Color
 		ctx.lineWidth = 4*Math.abs(self.strength)-2;
-		ctx.strokeStyle = "#000";
+		ctx.strokeStyle = "#666";
 
 		// Translate & Rotate!
 		ctx.save();
@@ -361,12 +361,13 @@ function Edge(model, config){
 		ctx.stroke();
 
 		// Draw label!
-		ctx.font = "100 40px sans-serif";
+		ctx.font = "100 60px sans-serif";
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
 		ctx.save();
 		ctx.translate(lx, ly);
 		ctx.rotate(-a);
+		ctx.fillStyle = "#999";
 		ctx.fillText(self.label, 0, 0);
 		ctx.restore();
 

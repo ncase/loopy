@@ -64,19 +64,22 @@ function Sidebar(loopy){
 		page.addComponent("hue", new ComponentSlider({
 			bg: "color",
 			label: "Color:",
-			options: [0,1,2,3,4,5]
+			options: [0,1,2,3,4,5],
+			carryover: true
 		}));
-		/*page.addComponent("init", new ComponentSlider({
+		page.addComponent("init", new ComponentSlider({
 			bg: "initial",
 			label: "Initial Value:",
-			options: [0, 1/6, 2/6, 3/6, 4/6, 5/6, 1]
-		}));*/
+			options: [0, 1/6, 2/6, 3/6, 4/6, 5/6, 1],
+			//options: [-1.3, -0.5, -0.15, 0, 0.15, 0.5, 1.3],
+			carryover: true
+		}));
 		page.onedit = function(){
 
 			// Set color of Slider
 			var node = page.target;
 			var color = Node.COLORS[node.hue];
-			//page.getComponent("init").setBGColor(color);
+			page.getComponent("init").setBGColor(color);
 
 			// Focus on the name field IF IT'S "" or "?"
 			var name = node.label;
@@ -106,7 +109,7 @@ function Sidebar(loopy){
 		page.addComponent("strength", new ComponentSlider({
 			bg: "strength",
 			label: "<br><br>Relationship:",
-			options: [-3,-2,-1,1,2,3]
+			options: [1, -1]
 		}));
 		page.addComponent(new ComponentButton({
 			label: "delete edge",
