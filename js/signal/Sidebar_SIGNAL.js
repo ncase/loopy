@@ -65,14 +65,18 @@ function Sidebar(loopy){
 			bg: "color",
 			label: "Color:",
 			options: [0,1,2,3,4,5],
-			carryover: true
+			oninput: function(value){
+				Node.defaultHue = value;
+			}
 		}));
 		page.addComponent("init", new ComponentSlider({
 			bg: "initial",
 			label: "Initial Value:",
 			options: [0, 1/6, 2/6, 3/6, 4/6, 5/6, 1],
 			//options: [-1.3, -0.5, -0.15, 0, 0.15, 0.5, 1.3],
-			carryover: true
+			oninput: function(value){
+				Node.defaultValue = value;
+			}
 		}));
 		page.onedit = function(){
 
@@ -205,7 +209,7 @@ function SidebarPage(){
 
 	};
 	self.getComponent = function(propName){
-		return self.componentsByID[propName];	
+		return self.componentsByID[propName];
 	};
 
 	// Edit
@@ -336,6 +340,11 @@ function ComponentSlider(config){
 		var option = config.options[optionIndex];
 		if(option===undefined) return;
 		self.setValue(option);
+
+		// Callback! (if any)
+		if(config.oninput){
+			config.oninput(option);
+		}
 
 		// Move pointer there.
 		movePointer();

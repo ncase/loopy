@@ -13,6 +13,9 @@ Node.COLORS = {
 	5: "#A97FFF" // purple
 };
 
+Node.defaultValue = 0.5;
+Node.defaultHue = 0;
+
 function Node(model, config){
 
 	var self = this;
@@ -28,17 +31,18 @@ function Node(model, config){
 		id: Node._getUID,
 		x: 0,
 		y: 0,
-		init: 1, // initial value!
+		init: Node.defaultValue, // initial value!
 		label: "?",
-		hue: 0,
+		hue: Node.defaultHue,
 		radius: 50
 	});
 
 	// Value: from 0 to 1
 	self.value = self.init;
-	self.bound = function(){
-		//if(self.value<0) self.value=0;
-		//if(self.value>1) self.value=1;
+	// TODO: ACTUALLY VISUALIZE AN INFINITE RANGE
+	self.bound = function(){ // bound ONLY when changing value.
+		// if(self.value<0) self.value=0;
+		// if(self.value>1) self.value=1;
 	};
 
 	// MOUSE.
@@ -72,9 +76,10 @@ function Node(model, config){
 		if(_controlsPressed){
 
 			// Change my value
+			// self.bound();
 			var delta = _controlsDirection*0.33; // HACK: hard-coded 0.33
 			self.value += delta;
-			self.bound();
+			// self.bound();
 
 			// And also PROPAGATE THE DELTA
 			self.sendSignal({
@@ -107,7 +112,7 @@ function Node(model, config){
 
 		// Change value
 		self.value += signal.delta;
-		self.bound();
+		// self.bound();
 
 		// Propagate signal
 		self.sendSignal(signal);
@@ -145,7 +150,7 @@ function Node(model, config){
 		if(_controlsSelected) Mouse.showCursor("pointer");
 
 		// Keep value within bounds!
-		self.bound();
+		// self.bound();
 
 		// Visually & vertically bump the node
 		var gotoAlpha = _controlsVisible ? 1 : 0;
@@ -197,11 +202,26 @@ function Node(model, config){
 		_r = _r/(Math.PI/2);
 		_r = (_r+1)/2;
 
+		// INFINITE RANGE FOR RADIUS
+		// linear from 0 to 1, asymptotic otherwise.
+		var _value;
+		if(self.value>=0 && self.value<=1){
+			// (0,1) -> (0.1, 0.9)
+			_value = 0.1 + 0.8*self.value;
+		}else{
+			if(self.value<0){
+				// asymptotically approach 0, starting at 0.1
+				_value = (1/(Math.abs(self.value)+1))*0.1;
+			}
+			if(self.value>1){
+				// asymptotically approach 1, starting at 0.9
+				_value = 1 - (1/self.value)*0.1;
+			}
+		}
+
 		// Colored bubble
 		ctx.beginPath();
-		var _circleRadiusGoto = r*self.value; // radius
-		if(_circleRadiusGoto<0) _circleRadiusGoto=0;
-		if(_circleRadiusGoto>r) _circleRadiusGoto=r;
+		var _circleRadiusGoto = r*_value; // radius
 		_circleRadius = _circleRadius*0.9 + _circleRadiusGoto*0.1;
 		ctx.arc(0, 0, _circleRadius, 0, Math.TAU, false);
 		ctx.fillStyle = color;
