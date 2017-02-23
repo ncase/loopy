@@ -1,46 +1,18 @@
 <!doctype html>
 <html class="no-js" lang="">
 <head>
-    
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>Loopy!</title>
-    
-    <!-- Styles! -->
-	<link href="css/loopy.css" rel="stylesheet"/>
-
+	<link href="index.css" rel="stylesheet"/>
 </head>
 <body>
-	<div id="canvasses"></div>
-	<div id="toolbar"></div>
-	<div id="sidebar"></div>
+	<div id="video">
+        <iframe width="800" height="450" src="https://www.youtube.com/embed/no1dxY_1v5Y" frameborder="0" allowfullscreen></iframe>   
+    </div>
+	<div id="buttons">
+        <a href="/make"><div class="button" style="float:left;">LOOPY (step-by-step)</div></a>
+        <a href="/make-alt"><div class="button" style="float:right;">LOOPY (continuous)</div></a>
+    </div>
 </body>
 </html>
-
-<!-- Scripts! -->
-
-<!-- Libraries -->
-<script src="js/helpers.js"></script>
-<script src="js/minpubsub.js"></script>
-<script src="js/Mouse.js"></script>
-<script src="js/Key.js"></script>
-
-<!-- Core Simulation Code -->
-<script src="js/Loopy.js"></script>
-<script src="js/Model.js"></script>
-<script src="js/signal/Node_SIGNAL.js"></script>
-<script src="js/signal/Edge_SIGNAL.js"></script>
-
-<!-- Tools -->
-<script src="js/signal/Sidebar_SIGNAL.js"></script>
-<script src="js/Toolbar.js"></script>
-<script src="js/Ink.js"></script>
-<script src="js/Dragger.js"></script>
-<script src="js/Eraser.js"></script>
-
-<!-- Start it -->
-<script>
-window.onload = function(){
-	window.loopy = new Loopy();
-};
-</script>

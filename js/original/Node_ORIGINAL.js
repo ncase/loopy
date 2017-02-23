@@ -155,11 +155,11 @@ function Node(model, config){
 		ctx.fill();
 
 		// Dark alpha bubble
-		ctx.beginPath();
+		/*ctx.beginPath();
 		ctx.arc(0, 0, r/2, 0, Math.TAU, false);
 		ctx.fillStyle = "rgba(0,0,0,0.1)";
 		ctx.fill();
-		/*ctx.strokeStyle = "rgba(0,0,0,0.1)";
+		ctx.strokeStyle = "rgba(0,0,0,0.1)";
 		ctx.lineWidth = 6;
 		ctx.stroke();*/
 

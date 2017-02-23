@@ -67,7 +67,7 @@ function Sidebar(loopy){
 			options: [0,1,2,3,4,5]
 		}));
 		page.addComponent("init", new ComponentSlider({
-			bg: "initial",
+			bg: "initial_original",
 			label: "Initial Value:",
 			options: [-1,-0.66,-0.33,0,0.33,0.66,1]
 		}));
@@ -104,7 +104,7 @@ function Sidebar(loopy){
 			}
 		}));
 		page.addComponent("strength", new ComponentSlider({
-			bg: "strength",
+			bg: "strength_original",
 			label: "<br><br>Relationship:",
 			options: [-3,-2,-1,1,2,3]
 		}));
