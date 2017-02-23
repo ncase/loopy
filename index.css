@@ -2,12 +2,15 @@ body{
 	margin:0;
 	background: #fff;
 	overflow: hidden;
+	font-family: Helvetica, Arial, sans-serif;
+	font-weight: 100;
 }
 
 #video{
 	width: 800px;
 	height: 450px;
-	margin: 50px auto 35px auto;
+	margin: 50px auto 25px auto;
+	box-shadow: 0px 0px 20px rgba(0,0,0,0.5);
 }
 #buttons{
 	width: 600px;
@@ -16,9 +19,7 @@ body{
 }
 #buttons .button{
 
-	font-size: 25px;
-	font-family: Helvetica, Arial, sans-serif;
-	font-weight: 100;
+	font-size: 20px;
 	text-align: center;
 
 	border-radius: 5px;
@@ -28,8 +29,8 @@ body{
 	top: 0px;
 	transition: all 0.15s ease-in-out;
 	
-	width:250px; height:30px;
-	padding:10px 20px;
+	width:290px; height:20px;
+	padding:15px 0px;
 
 	background: hsl(0, 80%, 60%);
 	color: #fff;
@@ -38,4 +39,10 @@ body{
 #buttons .button:hover{
 	top: -3px;
 	background: hsl(0, 80%, 70%);
+}
+#credits{
+	font-size: 18px;
+	color: #aaa;
+	text-align: center;
+	margin-top: 15px;
 }
