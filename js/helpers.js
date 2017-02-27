@@ -7,6 +7,8 @@ that I couldn't be arsed to put into separate classes
 
 Math.TAU = Math.PI*2;
 
+window.HIGHLIGHT_COLOR = "rgba(193, 220, 255, 0.6)";
+
 function _createCanvas(){
 
 	var canvasses = document.getElementById("canvasses");
@@ -230,4 +232,21 @@ function _blendColors(hex1, hex2, blend){
 	return color;
 
 }
+
+function _shuffle(array){
+	array = array.slice(0,array.length); // copy.
+	var currentIndex = array.length, temporaryValue, randomIndex;
+	// While there remain elements to shuffle...
+	while(0 !== currentIndex){
+		// Pick a remaining element...
+		randomIndex = Math.floor(Math.random() * currentIndex);
+		currentIndex -= 1;
+		// And swap it with the current element.
+		temporaryValue = array[currentIndex];
+		array[currentIndex] = array[randomIndex];
+		array[randomIndex] = temporaryValue;
+	}
+	return array;
+}
+
 

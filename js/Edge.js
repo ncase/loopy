@@ -4,6 +4,9 @@ EDGE!
 
 **********************************/
 
+Edge.allSignals = [];
+Edge.MAX_SIGNALS = 50;
+
 function Edge(model, config){
 
 	var self = this;
@@ -32,6 +35,11 @@ function Edge(model, config){
 	self.signalSpeed = 0;
 	self.addSignal = function(signal){
 
+		// IF ALREADY TOO MANY, FORGET IT
+		if(Edge.allSignals.length>Edge.MAX_SIGNALS){
+			return;
+		}
+
 		// Re-create signal
 		var delta = signal.delta;
 		var age;
@@ -53,6 +61,9 @@ function Edge(model, config){
 
 		self.signals.unshift(newSignal); // it's a queue!
 
+		// ALL signals.
+		Edge.allSignals.push(newSignal);
+
 	};
 	self.updateSignals = function(){
 
@@ -68,6 +79,7 @@ function Edge(model, config){
 			signal.position += self.signalSpeed;
 
 			// If crossed the 0.5 mark...
+			/*
 			if(lastPosition<0.5 && signal.position>=0.5){
 
 				// Multiply by this edge's strength!
@@ -78,8 +90,9 @@ function Edge(model, config){
 			// And also TWEEN the scale.
 			var gotoScaleX = Math.abs(signal.delta);
 			var gotoScaleY = signal.delta;
-			signal.scaleX = signal.scaleX*0.6 + gotoScaleX*0.4;
-			signal.scaleY = signal.scaleY*0.6 + gotoScaleY*0.4;
+			signal.scaleX = signal.scaleX*0.8 + gotoScaleX*0.2;
+			signal.scaleY = signal.scaleY*0.8 + gotoScaleY*0.2;
+			*/
 
 		}
 
@@ -88,14 +101,19 @@ function Edge(model, config){
 		while(lastSignal && lastSignal.position>=1){
 
 			// Actually pass it along
+			lastSignal.delta *= self.strength; // flip at the end only!
 			self.to.takeSignal(lastSignal);
 			
 			// Pop it, move on down
-			self.signals.pop();
+			self.removeSignal(lastSignal);
 			lastSignal = self.signals[self.signals.length-1];
 
 		}
 
+	};
+	self.removeSignal = function(signal){
+		self.signals.splice( self.signals.indexOf(signal), 1 );
+		Edge.allSignals.splice( Edge.allSignals.indexOf(signal), 1 );
 	};
 	self.drawSignals = function(ctx){
 	
@@ -132,6 +150,13 @@ function Edge(model, config){
 			}
 			var signalColor = _blendColors(fromColor, toColor, blend);
 
+			// Also, tween the scaleY, flipping, IF STRENGTH<0
+			if(self.strength<0){
+				// sin/cos-animate it for niceness.
+				var flip = Math.cos(blend*Math.PI); // (0,1) -> (1,-1)
+				ctx.scale(1, flip);
+			}
+
 			// Signal's age = alpha.
 			if(signal.age==2){
 				ctx.globalAlpha = 0.5;
@@ -157,11 +182,9 @@ function Edge(model, config){
 		}
 
 	};
-	self.clearSignals = function(){
-		self.signals = [];
-	};
 	var _listenerReset = subscribe("model/reset", function(){
-		self.clearSignals();
+		self.signals = [];
+		Edge.allSignals = [];
 	});
 
 
@@ -305,6 +328,8 @@ function Edge(model, config){
 	};
 	self.getPositionAlongArrow = function(param){
 
+		param = -0.05 + param*1.1; // (0,1) --> (-0.05, 1.05)
+
 		// If the arc's circle is actually BELOW the line...
 		var begin2 = begin;
 		if(y<0){
@@ -339,6 +364,18 @@ function Edge(model, config){
 		ctx.translate(fx, fy);
 		ctx.rotate(a);
 
+		// Highlight!
+		if(self.loopy.sidebar.currentPage.target == self){
+			ctx.save();
+			ctx.translate(lx, ly);
+			ctx.rotate(-a);
+			ctx.beginPath();
+			ctx.arc(0, 5, 60, 0, Math.TAU, false);
+			ctx.fillStyle = HIGHLIGHT_COLOR;
+			ctx.fill();
+			ctx.restore();
+		}
+
 		// Arc it!
 		ctx.beginPath();
 		if(self.arc>0){
@@ -360,7 +397,7 @@ function Edge(model, config){
 		// Stroke!
 		ctx.stroke();
 
-		// Draw label!
+		// Draw label
 		ctx.font = "100 60px sans-serif";
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";

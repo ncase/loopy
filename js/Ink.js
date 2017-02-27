@@ -183,8 +183,11 @@ function Ink(loopy){
 			if(r>15){
 
 				// Snap to radius
-				r = Math.round(r/Ink.SNAP_TO_RADIUS)*Ink.SNAP_TO_RADIUS;
-				if(r<Ink.MINIMUM_RADIUS) r=Ink.MINIMUM_RADIUS;
+				/*r = Math.round(r/Ink.SNAP_TO_RADIUS)*Ink.SNAP_TO_RADIUS;
+				if(r<Ink.MINIMUM_RADIUS) r=Ink.MINIMUM_RADIUS;*/
+
+				// LOCK TO JUST SMALLEST CIRCLE.
+				r = Ink.MINIMUM_RADIUS;
 
 				// Make that node!
 				var newNode = loopy.model.addNode({
