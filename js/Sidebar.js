@@ -138,11 +138,24 @@ function Sidebar(loopy){
 		page.addComponent("text", new ComponentInput({
 			label: "<br><br>Label:"
 		}));
-		page.onedit = function(){
-			// Focus on the text field IF IT'S "" or "..."
+		page.onshow = function(){
+			// Focus on the text field
+			page.getComponent("text").select();
+		};
+		page.onhide = function(){
+			
+			// If you'd just edited it...
 			var label = page.target;
+			if(!page.target) return;
+
+			// If text is "" or all spaces, DELETE.
 			var text = label.text;
-			if(text=="" || text=="...") page.getComponent("text").select();
+			if(/^\s*$/.test(text)){
+				// that was all whitespace, KILL.
+				page.target = null;
+				label.kill();
+			}
+
 		};
 		page.addComponent(new ComponentButton({
 			label: "delete label",
@@ -210,9 +223,8 @@ function SidebarPage(){
 
 	// DOM
 	self.dom = document.createElement("div");
-	self.show = function(){ self.dom.style.display="block"; };
-	self.hide = function(){ self.dom.style.display="none"; };
-	self.hide();
+	self.show = function(){ self.dom.style.display="block"; self.onshow(); };
+	self.hide = function(){ self.dom.style.display="none"; self.onhide(); };
 
 	// Components
 	self.components = [];
@@ -257,10 +269,13 @@ function SidebarPage(){
 
 	};
 
-	// On edit: TO IMPLEMENT
-	self.onedit = function(){
-		// TO BE IMPLEMENTED
-	};
+	// TO IMPLEMENT: callbacks
+	self.onedit = function(){};
+	self.onshow = function(){};
+	self.onhide = function(){};
+
+	// Start hiding!
+	self.hide();
 
 }
 

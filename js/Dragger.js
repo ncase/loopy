@@ -40,6 +40,16 @@ function Dragger(loopy){
 			return;
 		}
 
+		// Any label under here? If so, start dragging!
+		var dragLabel = loopy.model.getLabelByPoint(Mouse.x, Mouse.y);
+		if(dragLabel){
+			self.dragging = dragLabel;
+			self.offsetX = Mouse.x - dragLabel.x;
+			self.offsetY = Mouse.y - dragLabel.y;
+			loopy.sidebar.edit(dragLabel); // and edit!
+			return;
+		}
+
 	});
 	subscribe("mousemove",function(){
 
@@ -104,6 +114,18 @@ function Dragger(loopy){
 			// update coz visual glitches
 			loopy.model.update();
 
+		}
+
+		// If you're dragging a LABEL, move it around!
+		if(self.dragging && self.dragging._CLASS_=="Label"){
+			
+			var label = self.dragging;
+			label.x = Mouse.x - self.offsetX;
+			label.y = Mouse.y - self.offsetY;
+
+			// update coz visual glitches
+			loopy.model.update();
+			
 		}
 
 	});

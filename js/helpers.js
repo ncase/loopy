@@ -190,6 +190,17 @@ function _isPointInCircle(x, y, cx, cy, radius){
 
 }
 
+function _isPointInBox(x, y, box){
+
+	if(x<box.x) return false;
+	if(x>box.x+box.width) return false;
+	if(y<box.y) return false;
+	if(y>box.y+box.height) return false;
+
+	return true;
+
+}
+
 // TODO: Make more use of this???
 function _makeErrorFunc(msg){
 	return function(){

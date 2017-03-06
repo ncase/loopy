@@ -4,6 +4,8 @@ LABEL!
 
 **********************************/
 
+Label.FONTSIZE = 40;
+
 function Label(model, config){
 
 	var self = this;
@@ -29,18 +31,25 @@ function Label(model, config){
 		var x = self.x*2;
 		var y = self.y*2;
 
+		// DRAW HIGHLIGHT???
+		if(self.loopy.sidebar.currentPage.target == self){
+			var bounds = self.getBounds();
+			ctx.save();
+			ctx.scale(2,2); // RETINA
+			ctx.beginPath();
+			ctx.rect(bounds.x, bounds.y, bounds.width, bounds.height);
+			ctx.fillStyle = HIGHLIGHT_COLOR;
+			ctx.fill();
+			ctx.restore();
+		}
+
 		// Translate!
 		ctx.save();
 		ctx.translate(x,y);
 
-		// DRAW HIGHLIGHT???
-		if(self.loopy.sidebar.currentPage.target == self){
-			// TODO.
-		}
-
 		// Text!
 		var fontsize = 40;
-		ctx.font = "100 "+fontsize+"px sans-serif";
+		ctx.font = "100 "+Label.FONTSIZE+"px sans-serif";
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
 		ctx.fillStyle = "#000";
@@ -70,6 +79,19 @@ function Label(model, config){
 	//////////////////////////////////////
 
 	self.getBounds = function(){
+		var ctx = self.model.context;
+		var w = (ctx.measureText(self.text).width + 10)*2;
+		var h = Label.FONTSIZE;
+		return {
+			x: self.x-w/2,
+			y: self.y-h/2,
+			width: w,
+			height: h
+		};
+	};
+
+	self.isPointInLabel = function(x, y){
+		return _isPointInBox(x,y, self.getBounds());
 	};
 
 }

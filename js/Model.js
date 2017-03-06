@@ -260,7 +260,12 @@ function Model(loopy){
 	};
 
 	self.getLabelByPoint = function(x, y){
-		// TODO: IMPLEMENT "GET LABEL BY POINT"
+		var result;
+		for(var i=self.labels.length-1; i>=0; i--){ // top-down
+			var label = self.labels[i];
+			if(label.isPointInLabel(x,y)) return label;
+		}
+		return null;
 	};
 
 	// Click to edit!
