@@ -125,6 +125,35 @@ function Sidebar(loopy){
 		self.addPage("Edge", page);
 	})();
 
+	// Label!
+	(function(){
+		var page = new SidebarPage();
+		page.addComponent(new ComponentButton({
+			header: true,
+			label: "back to top",
+			onclick: function(){
+				self.showPage("Edit");
+			}
+		}));
+		page.addComponent("text", new ComponentInput({
+			label: "<br><br>Label:"
+		}));
+		page.onedit = function(){
+			// Focus on the text field IF IT'S "" or "..."
+			var label = page.target;
+			var text = label.text;
+			if(text=="" || text=="...") page.getComponent("text").select();
+		};
+		page.addComponent(new ComponentButton({
+			label: "delete label",
+			onclick: function(label){
+				label.kill();
+				self.showPage("Edit");
+			}
+		}));
+		self.addPage("Label", page);
+	})();
+
 	// Edit
 	(function(){
 		var page = new SidebarPage();

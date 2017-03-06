@@ -54,6 +54,9 @@ function Toolbar(loopy){
 	self.addButton("ink", function(){
 		self.setTool("ink");
 	});
+	self.addButton("label", function(){
+		self.setTool("label");
+	});
 	self.addButton("drag", function(){
 		self.setTool("drag");
 	});

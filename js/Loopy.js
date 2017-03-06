@@ -11,6 +11,7 @@ Loopy.MODE_PLAY = 1;
 Loopy.TOOL_INK = 0;
 Loopy.TOOL_DRAG = 1;
 Loopy.TOOL_ERASE = 2;
+Loopy.TOOL_LABEL = 3;
 
 function Loopy(config){
 
@@ -36,6 +37,7 @@ function Loopy(config){
 	self.ink = new Ink(self);
 	self.drag = new Dragger(self);
 	self.erase = new Eraser(self);
+	self.label = new Labeller(self);
 
 	//////////
 	// INIT //

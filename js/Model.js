@@ -90,6 +90,29 @@ function Model(loopy){
 
 
 
+
+	///////////////////
+	// LABELS /////////
+	///////////////////
+
+	// Labels
+	self.labels = [];
+
+	// Remove label
+	self.addLabel = function(config){
+		var label = new Label(self,config);
+		self.labels.push(label);
+		self.update();
+		return label;
+	};
+
+	// Remove label
+	self.removeLabel = function(label){
+		self.labels.splice(self.labels.indexOf(label),1);
+	};
+
+
+
 	///////////////////
 	// UPDATE & DRAW //
 	///////////////////
@@ -107,7 +130,8 @@ function Model(loopy){
 		// Clear!
 		ctx.clearRect(0,0,self.canvas.width,self.canvas.height);
 
-		// Draw edges THEN nodes
+		// Draw labels THEN edges THEN nodes
+		for(var i=0;i<self.labels.length;i++) self.labels[i].draw(ctx);
 		for(var i=0;i<self.edges.length;i++) self.edges[i].draw(ctx);
 		for(var i=0;i<self.nodes.length;i++) self.nodes[i].draw(ctx);
 
@@ -235,6 +259,10 @@ function Model(loopy){
 		return null;
 	};
 
+	self.getLabelByPoint = function(x, y){
+		// TODO: IMPLEMENT "GET LABEL BY POINT"
+	};
+
 	// Click to edit!
 	subscribe("mouseclick",function(){
 
@@ -253,6 +281,19 @@ function Model(loopy){
 		var clickedEdge = self.getEdgeByPoint(Mouse.x, Mouse.y);
 		if(clickedEdge){
 			loopy.sidebar.edit(clickedEdge);
+			return;
+		}
+
+		// Did you click on a label? If so, edit THAT label.
+		var clickedLabel = self.getLabelByPoint(Mouse.x, Mouse.y);
+		if(clickedLabel){
+			loopy.sidebar.edit(clickedLabel);
+			return;
+		}
+
+		// If the tool LABEL? If so, TRY TO CREATE LABEL.
+		if(self.loopy.tool==Loopy.TOOL_LABEL){
+			loopy.label.tryMakingLabel();
 			return;
 		}
 

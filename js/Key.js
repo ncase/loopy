@@ -11,9 +11,10 @@
 		91: "control", // macs
 
 		// TODO: Standardize the NAMING across files?!?!
-		68: "ink", // (D)raw
-		77: "drag", // (M)ove
-		69: "erase" // (E)rase
+		78: "ink", // Pe(n)cil
+		86: "drag", // Mo(v)e
+		69: "erase", // (E)rase
+		84: "label" // (T)ext
 
 	};
 
