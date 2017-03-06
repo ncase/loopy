@@ -176,6 +176,17 @@ function Model(loopy){
 			});
 		}
 
+		// Labels
+		data.labels = [];
+		for(var i=0;i<self.labels.length;i++){
+			var label = self.labels[i];
+			data.labels.push({
+				x: Math.round(label.x),
+				y: Math.round(label.y),
+				text: label.text
+			});
+		}
+
 		// META.
 		data.UID = Node._UID;
 
@@ -214,6 +225,16 @@ function Model(loopy){
 				arc: edge.arc,
 				rotation: edge.rotation,
 				strength: edge.strength
+			});
+		}
+
+		// Labels
+		for(var i=0;i<data.labels.length;i++){
+			var label = data.labels[i];
+			self.addLabel({
+				x: label.x,
+				y: label.y,
+				text: label.text
 			});
 		}
 

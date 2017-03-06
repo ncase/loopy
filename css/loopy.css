@@ -109,6 +109,14 @@ canvas{
 	font-size: 20px;
 	font-weight: 100;
 }
+.component_textarea{
+	border: none;
+	width:calc(100% - 10px);
+	height: 100px;
+	padding: 5px;
+	font-size: 16px;
+	font-weight: 100;
+}
 .component_output{
 	border: 1px solid #aaa;
 	width:100%;

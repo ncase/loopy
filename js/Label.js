@@ -48,12 +48,19 @@ function Label(model, config){
 		ctx.translate(x,y);
 
 		// Text!
-		var fontsize = 40;
 		ctx.font = "100 "+Label.FONTSIZE+"px sans-serif";
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
 		ctx.fillStyle = "#000";
-		ctx.fillText(self.text, 0, 0);
+
+		// ugh new lines are a PAIN.
+		var lines = self.breakText();
+		ctx.translate(0, -(Label.FONTSIZE*lines.length)/2);
+		for(var i=0; i<lines.length; i++){
+			var line = lines[i];
+			ctx.fillText(line, 0, 0);
+			ctx.translate(0, Label.FONTSIZE);
+		}
 
 		// Restore
 		ctx.restore();
@@ -78,16 +85,35 @@ function Label(model, config){
 	// HELPER METHODS ////////////////////
 	//////////////////////////////////////
 
+	self.breakText = function(){
+		return self.text.split(/\n/);
+	};
+
 	self.getBounds = function(){
+
 		var ctx = self.model.context;
-		var w = (ctx.measureText(self.text).width + 10)*2;
-		var h = Label.FONTSIZE;
+
+		// Get MAX width...
+		var lines = self.breakText();
+		var maxWidth = 0;
+		for(var i=0; i<lines.length; i++){
+			var line = lines[i];
+			var w = (ctx.measureText(line).width + 10)*2;
+			if(maxWidth<w) maxWidth=w;
+		}
+
+		// Dimensions, then:
+		var w = maxWidth;
+		var h = (Label.FONTSIZE*lines.length)/2;
+
+		// Bounds, then:
 		return {
 			x: self.x-w/2,
-			y: self.y-h/2,
+			y: self.y-h/2-Label.FONTSIZE/2,
 			width: w,
-			height: h
+			height: h+Label.FONTSIZE/2
 		};
+
 	};
 
 	self.isPointInLabel = function(x, y){

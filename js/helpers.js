@@ -45,8 +45,8 @@ function _createButton(label, onclick){
 	return button;
 }
 
-function _createInput(className){
-	var input = document.createElement("input");
+function _createInput(className, textarea){
+	var input = textarea ? document.createElement("textarea") : document.createElement("input");
 	input.setAttribute("class",className);
 	input.addEventListener("keydown",function(event){
 		event.stopPropagation ? event.stopPropagation() : (event.cancelBubble=true);

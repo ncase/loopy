@@ -136,7 +136,8 @@ function Sidebar(loopy){
 			}
 		}));
 		page.addComponent("text", new ComponentInput({
-			label: "<br><br>Label:"
+			label: "<br><br>Label:",
+			textarea: true
 		}));
 		page.onshow = function(){
 			// Focus on the text field
@@ -311,7 +312,8 @@ function ComponentInput(config){
 	// DOM: label + text input
 	self.dom = document.createElement("div");
 	var label = _createLabel(config.label);
-	var input = _createInput("component_input");
+	var className = config.textarea ? "component_textarea" : "component_input";
+	var input = _createInput(className, config.textarea);
 	input.oninput = function(event){
 		self.setValue(input.value);
 	};
