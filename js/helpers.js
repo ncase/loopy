@@ -9,6 +9,8 @@ Math.TAU = Math.PI*2;
 
 window.HIGHLIGHT_COLOR = "rgba(193, 220, 255, 0.6)";
 
+var isMacLike = navigator.platform.match(/(Mac|iPhone|iPod|iPad)/i)?true:false;
+
 function _createCanvas(){
 
 	var canvasses = document.getElementById("canvasses");

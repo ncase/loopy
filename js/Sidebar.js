@@ -8,7 +8,7 @@ function PageUI(dom){
 
 	var self = this;
 	self.dom = dom;
-	
+
 	self.pages = [];
 	self.addPage = function(id, page){
 		page.id = id;
@@ -207,7 +207,7 @@ function Sidebar(loopy){
 	// Play
 	(function(){
 		var page = new SidebarPage();
-		page.addComponent(new ComponentButton({
+		/*page.addComponent(new ComponentButton({
 			label: "STOP SIMULATION",
 			onclick: function(){
 				loopy.setMode(Loopy.MODE_EDIT);
@@ -218,7 +218,7 @@ function Sidebar(loopy){
 			onclick: function(){
 				publish("model/reset");
 			}
-		}));
+		}));*/
 		self.addPage("Play", page);
 	})();
 

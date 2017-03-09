@@ -9,6 +9,7 @@
 		
 		17: "control",
 		91: "control", // macs
+		13: "enter", // enter
 
 		// TODO: Standardize the NAMING across files?!?!
 		78: "ink", // Pe(n)cil
@@ -17,12 +18,6 @@
 		84: "label" // (T)ext
 
 	};
-
-	// Keyboard Combos
-	// TODO: Keyboard c-c-c-combos
-	var KEY_COMBOS = [
-		//{combo:[], publish:""}
-	];
 
 	// Event Handling
 	// TODO: cursors stay when click button? orrrrr switch over to fake-cursor.

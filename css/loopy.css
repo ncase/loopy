@@ -40,7 +40,7 @@ canvas{
 
 #playbar{
 	position: absolute;
-	bottom: 10px;
+	bottom: 15px;
 	left: calc(50% - 275px); /* 50% - half of (playbar width + sidebar width)*/
 
 	width: 250px;
@@ -52,11 +52,18 @@ canvas{
 	user-select: none;
 }
 #playbar .component_button{
-	width: 250px;
+	position: absolute;
+	bottom: 0;
+	width: 230px;
+	height: 25px;
 	background: #444;
 }
 #playbar .component_button:hover{
-	background: #666;
+	background: #555;
+}
+#playbar .play_slider{
+	width: 100%;
+	position: absolute;
 }
 
 
@@ -178,17 +185,18 @@ canvas{
 .component_button{
 
 	width: calc(100% - 20px);
-	background: #666;
+	background: #888;
 	color: #fff;
 	font-size: 20px;
 	font-weight: 100;
 	text-align: center;
 	padding: 10px;
+	border-radius: 5px;
 
 	cursor: pointer;
 }
 .component_button:hover{
-	background: #777;
+	background: #999;
 }
 .component_button[header=yes]{
 	position: absolute;

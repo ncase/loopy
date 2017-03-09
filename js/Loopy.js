@@ -24,6 +24,9 @@ function Loopy(config){
 	// Model
 	self.model = new Model(self);
 
+	// Loopy: SPEED!
+	self.signalSpeed = 3;
+
 	// Sidebar
 	self.sidebar = new Sidebar(self);
 	self.sidebar.showPage("Edit"); // start here
@@ -41,6 +44,7 @@ function Loopy(config){
 
 	// Play Controls
 	self.playbar = new PlayControls(self);
+	self.playbar.showPage("Editor"); // start here
 
 	//////////
 	// INIT //
