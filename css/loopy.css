@@ -33,6 +33,34 @@ canvas{
 }
 
 
+
+/**********
+ PLAY CONTROLS
+**********/
+
+#playbar{
+	position: absolute;
+	bottom: 10px;
+	left: calc(50% - 275px); /* 50% - half of (playbar width + sidebar width)*/
+
+	width: 250px;
+	height: 75px;
+
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+#playbar .component_button{
+	width: 250px;
+	background: #444;
+}
+#playbar .component_button:hover{
+	background: #666;
+}
+
+
+
 /**********
  TOOLBAR 
 **********/
@@ -42,9 +70,9 @@ canvas{
 	left: 0px;
 	top: calc(33% - 142.5px); /* 33% - half of toolbar height */
 
-	width:65px; height:275px;
+	width:75px; height:280px;
 	padding: 5px;
-	background: #ddd;
+	background-color: #ddd;
 
 	-webkit-user-select: none;
 	-moz-user-select: none;
@@ -56,14 +84,15 @@ canvas{
 }
 
 .toolbar_button{
-	width:50px; height:50px;
-	padding:5px;
+	width:60px; height:60px;
+	margin: 5px;
 	border: 2px solid #ddd;
 	cursor: pointer;
+	background-size: 100% 100%;
 }
 .toolbar_button[selected=yes]{
 	border: 2px solid #888;
-	background: #999;
+	background-color: #999;
 }
 
 /**********

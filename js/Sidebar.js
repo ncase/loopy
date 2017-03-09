@@ -4,25 +4,11 @@ SIDEBAR CODE
 
 **********************************/
 
-function Sidebar(loopy){
+function PageUI(dom){
 
 	var self = this;
-
-	// Edit
-	self.edit = function(object){
-		self.showPage(object._CLASS_);
-		self.currentPage.edit(object);
-	};
-
-	// Go back to main when the thing you're editing is killed
-	subscribe("kill",function(object){
-		if(self.currentPage.target==object){
-			self.showPage("Edit");
-		}
-	});
-
-	// Pages
-	self.dom = document.getElementById("sidebar");
+	self.dom = dom;
+	
 	self.pages = [];
 	self.addPage = function(id, page){
 		page.id = id;
@@ -44,6 +30,26 @@ function Sidebar(loopy){
 		self.currentPage = shownPage;
 	};
 
+}
+
+function Sidebar(loopy){
+
+	var self = this;
+	PageUI.call(self, document.getElementById("sidebar"));
+
+	// Edit
+	self.edit = function(object){
+		self.showPage(object._CLASS_);
+		self.currentPage.edit(object);
+	};
+
+	// Go back to main when the thing you're editing is killed
+	subscribe("kill",function(object){
+		if(self.currentPage.target==object){
+			self.showPage("Edit");
+		}
+	});
+
 	////////////////////////////////////////////////////////////////////////////////////////////
 	// ACTUAL PAGES ////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -51,15 +57,16 @@ function Sidebar(loopy){
 	// Node!
 	(function(){
 		var page = new SidebarPage();
-		page.addComponent(new ComponentButton({
+		/*page.addComponent(new ComponentButton({
 			header: true,
 			label: "back to top",
 			onclick: function(){
 				self.showPage("Edit");
 			}
-		}));
+		}));*/
 		page.addComponent("label", new ComponentInput({
-			label: "<br><br>Name:"
+			//label: "<br><br>Name:"
+			label: "Name:"
 		}));
 		page.addComponent("hue", new ComponentSlider({
 			bg: "color",
@@ -103,16 +110,17 @@ function Sidebar(loopy){
 	// Edge!
 	(function(){
 		var page = new SidebarPage();
-		page.addComponent(new ComponentButton({
+		/*page.addComponent(new ComponentButton({
 			header: true,
 			label: "back to top",
 			onclick: function(){
 				self.showPage("Edit");
 			}
-		}));
+		}));*/
 		page.addComponent("strength", new ComponentSlider({
 			bg: "strength",
-			label: "<br><br>Relationship:",
+			//label: "<br><br>Relationship:",
+			label: "Relationship:",
 			options: [1, -1]
 		}));
 		page.addComponent(new ComponentButton({
@@ -128,15 +136,16 @@ function Sidebar(loopy){
 	// Label!
 	(function(){
 		var page = new SidebarPage();
-		page.addComponent(new ComponentButton({
+		/*page.addComponent(new ComponentButton({
 			header: true,
 			label: "back to top",
 			onclick: function(){
 				self.showPage("Edit");
 			}
-		}));
+		}));*/
 		page.addComponent("text", new ComponentInput({
-			label: "<br><br>Label:",
+			//label: "<br><br>Label:",
+			label: "Label:",
 			textarea: true
 		}));
 		page.onshow = function(){
@@ -171,14 +180,14 @@ function Sidebar(loopy){
 	// Edit
 	(function(){
 		var page = new SidebarPage();
-		page.addComponent(new ComponentButton({
+		/*page.addComponent(new ComponentButton({
 			label: "START SIMULATION",
 			onclick: function(){
 				loopy.setMode(Loopy.MODE_PLAY);
 			}
-		}));
+		}));*/
 		page.addComponent(new ComponentHTML({
-			html: "<hr/>You can also save &amp; share your LOOPY model, as a link!"
+			html: "herp derp<hr/>You can also save &amp; share your LOOPY model, as a link!"
 		}));
 		page.addComponent(new ComponentButton({
 			label: "save as link:",

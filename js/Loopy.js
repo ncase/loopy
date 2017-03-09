@@ -39,6 +39,9 @@ function Loopy(config){
 	self.erase = new Eraser(self);
 	self.label = new Labeller(self);
 
+	// Play Controls
+	self.playbar = new PlayControls(self);
+
 	//////////
 	// INIT //
 	//////////
@@ -79,6 +82,7 @@ function Loopy(config){
 		// Play mode!
 		if(mode==Loopy.MODE_PLAY){
 			self.sidebar.showPage("Play");
+			self.playbar.showPage("Player");
 			self.sidebar.dom.setAttribute("mode","play");
 			self.toolbar.dom.setAttribute("mode","play");
 			document.getElementById("canvasses").removeAttribute("cursor"); // TODO: EVENT BASED
@@ -89,6 +93,7 @@ function Loopy(config){
 		// Edit mode!
 		if(mode==Loopy.MODE_EDIT){
 			self.sidebar.showPage("Edit");
+			self.playbar.showPage("Editor");
 			self.sidebar.dom.setAttribute("mode","edit");
 			self.toolbar.dom.setAttribute("mode","edit");
 			document.getElementById("canvasses").setAttribute("cursor", self.toolbar.currentTool); // TODO: EVENT BASED
