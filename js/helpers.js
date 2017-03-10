@@ -17,15 +17,23 @@ function _createCanvas(){
 	var canvas = document.createElement("canvas");
 
 	// Dimensions
-	var width = canvasses.clientWidth;
-	var height = canvasses.clientHeight;
-	canvas.width = width*2; // retina
-	canvas.style.width = width+"px";
-	canvas.height = height*2; // retina
-	canvas.style.height = height+"px";
+	var _onResize = function(){
+		var width = canvasses.clientWidth;
+		var height = canvasses.clientHeight;
+		canvas.width = width*2; // retina
+		canvas.style.width = width+"px";
+		canvas.height = height*2; // retina
+		canvas.style.height = height+"px";
+	};
+	_onResize();
 
 	// Add to body!
 	canvasses.appendChild(canvas);
+
+	// subscribe to RESIZE
+	subscribe("resize",function(){
+		_onResize();
+	});
 
 	// Gimme
 	return canvas;

@@ -74,7 +74,7 @@ function PlayControls(loopy){
 		// SPEED SLIDER
 		var speedSlider = page.addComponent(new PlaySlider({
 			value: loopy.signalSpeed,
-			min:0, max:6, step:0.1,
+			min:0, max:6, step:0.2,
 			oninput: function(value){
 				loopy.signalSpeed = value;
 			}
@@ -118,9 +118,20 @@ function PlayButton(config){
 function PlaySlider(config){
 
 	var self = this;
+	self.dom = document.createElement("div");
+	self.dom.style.bottom = "0px";
+    self.dom.style.position = "absolute";
+    self.dom.style.width = "100%";
+    self.dom.style.height = "20px";
+
+	// Input
 	var input = document.createElement("input");
 	input.setAttribute("class","play_slider");
-	self.dom = input;
+	self.dom.appendChild(input);
+
+	// Labels!
+	var img = new Image();
+	img.src
 
 	// Properties
 	input.type = "range";

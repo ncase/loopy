@@ -46,6 +46,22 @@ function Loopy(config){
 	self.playbar = new PlayControls(self);
 	self.playbar.showPage("Editor"); // start here
 
+	// Loopy: EMBED???
+	self.embedded = _getParameterByName("embed");
+	self.embedded = !!parseInt(self.embedded); // force to Boolean
+	if(self.embedded){
+
+		// Hide all that UI
+		self.toolbar.dom.style.display = "none";
+		self.sidebar.dom.style.display = "none";
+
+		// Fullscreen canvas
+		document.getElementById("canvasses").setAttribute("fullscreen","yes");
+		self.playbar.dom.setAttribute("fullscreen","yes");
+		publish("resize");
+
+	}
+
 	//////////
 	// INIT //
 	//////////

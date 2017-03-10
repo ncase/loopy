@@ -19,6 +19,9 @@ canvas{
 	width: calc(100% - 300px);
 	height: 100%;
 }
+#canvasses[fullscreen=yes]{
+	width: 100%;
+}
 #canvasses[cursor=ink]{
 	cursor: url('cursors/ink.png') 0 30, auto;
 }
@@ -51,6 +54,9 @@ canvas{
 	-ms-user-select: none;
 	user-select: none;
 }
+#playbar[fullscreen=yes]{
+	left: calc(50% - 125px); /* 50% - half of (playbar width)*/
+}
 #playbar .component_button{
 	position: absolute;
 	bottom: 0;
@@ -62,8 +68,9 @@ canvas{
 	background: #555;
 }
 #playbar .play_slider{
-	width: 100%;
-	position: absolute;
+	width: 190px;
+    position: absolute;
+    left: 30px;
 }
 
 
