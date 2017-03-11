@@ -47,17 +47,21 @@ function PlayControls(loopy){
 	(function(){
 		var page = new PlayPage();
 
-		// STOP BUTTON
-		var buttonDOM = page.addComponent(new PlayButton({
-			header: true,
-			label: "Stop",
-			onclick: function(){
-				loopy.setMode(Loopy.MODE_EDIT);
-			}
-		})).dom;
-		buttonDOM.style.width = "100px";
-		buttonDOM.style.left = "0px";
-		buttonDOM.style.top = "0px";
+		if(!loopy.embedded){
+
+			// STOP BUTTON
+			var buttonDOM = page.addComponent(new PlayButton({
+				header: true,
+				label: "Stop",
+				onclick: function(){
+					loopy.setMode(Loopy.MODE_EDIT);
+				}
+			})).dom;
+			buttonDOM.style.width = "100px";
+			buttonDOM.style.left = "0px";
+			buttonDOM.style.top = "0px";
+
+		}
 
 		// RESET BUTTON
 		var buttonDOM = page.addComponent(new PlayButton({
@@ -67,9 +71,15 @@ function PlayControls(loopy){
 				publish("model/reset");
 			}
 		})).dom;
-		buttonDOM.style.width = "100px";
-		buttonDOM.style.right = "0px";
-		buttonDOM.style.top = "0px";
+		if(loopy.embedded){
+			buttonDOM.style.width = "230px";
+			buttonDOM.style.right = "0px";
+			buttonDOM.style.top = "0px";
+		}else{
+			buttonDOM.style.width = "100px";
+			buttonDOM.style.right = "0px";
+			buttonDOM.style.top = "0px";
+		}
 
 		// SPEED SLIDER
 		var speedSlider = page.addComponent(new PlaySlider({
@@ -129,9 +139,23 @@ function PlaySlider(config){
 	input.setAttribute("class","play_slider");
 	self.dom.appendChild(input);
 
-	// Labels!
+	// Slow & Fast Icons
 	var img = new Image();
-	img.src
+	img.src = "css/sliders/speed_slow.png";
+	img.width = 20;
+	img.height = 15;
+	img.style.position = "absolute";
+	img.style.left = "5px";
+	img.style.top = "-2px";
+	self.dom.appendChild(img);
+	var img = new Image();
+	img.src = "css/sliders/speed_fast.png";
+	img.width = 20;
+	img.height = 15;
+	img.style.position = "absolute";
+	img.style.right = "5px";
+	img.style.top = "-2px";
+	self.dom.appendChild(img);
 
 	// Properties
 	input.type = "range";

@@ -18,6 +18,10 @@ function Loopy(config){
 	var self = this;
 	self.config = config;
 
+	// Loopy: EMBED???
+	self.embedded = _getParameterByName("embed");
+	self.embedded = !!parseInt(self.embedded); // force to Boolean
+
 	// Mouse
 	Mouse.init(document.getElementById("canvasses")); // TODO: ugly fix, ew
 	
@@ -45,22 +49,6 @@ function Loopy(config){
 	// Play Controls
 	self.playbar = new PlayControls(self);
 	self.playbar.showPage("Editor"); // start here
-
-	// Loopy: EMBED???
-	self.embedded = _getParameterByName("embed");
-	self.embedded = !!parseInt(self.embedded); // force to Boolean
-	if(self.embedded){
-
-		// Hide all that UI
-		self.toolbar.dom.style.display = "none";
-		self.sidebar.dom.style.display = "none";
-
-		// Fullscreen canvas
-		document.getElementById("canvasses").setAttribute("fullscreen","yes");
-		self.playbar.dom.setAttribute("fullscreen","yes");
-		publish("resize");
-
-	}
 
 	//////////
 	// INIT //
@@ -138,8 +126,26 @@ function Loopy(config){
 		if(data) self.model.deserialize(data);
 	}; 
 
+
 	///////////////////////////
+	//////// EMBEDDED? ////////
 	///////////////////////////
+
+	if(self.embedded){
+
+		// Hide all that UI
+		self.toolbar.dom.style.display = "none";
+		self.sidebar.dom.style.display = "none";
+
+		// Fullscreen canvas
+		document.getElementById("canvasses").setAttribute("fullscreen","yes");
+		self.playbar.dom.setAttribute("fullscreen","yes");
+		publish("resize");
+
+		// Autoplay!
+		self.setMode(Loopy.MODE_PLAY);
+
+	}
 
 	self.init();
 
