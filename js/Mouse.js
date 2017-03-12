@@ -9,10 +9,38 @@ Mouse.init = function(target){
 		publish("mousedown");
 	};
 	var _onmousemove = function(event){
-		Mouse.x = event.x;
-		Mouse.y = event.y;
+
+		// DO THE INVERSE
+		var canvasses = document.getElementById("canvasses");
+		var tx = 0;
+		var ty = 0;
+		var s = 1/loopy.offsetScale;
+		var CW = canvasses.clientWidth - 25 - 25;
+		var CH = canvasses.clientHeight - 110 - 25;
+		
+		tx -= CW/2;
+		ty -= CH/2;
+		
+		tx = s*tx;
+		ty = s*ty;
+
+		tx += CW/2;
+		ty += CH/2;
+
+		tx -= loopy.offsetX;
+		ty -= loopy.offsetY;
+
+		// Mutliply by Mouse vector
+		var mx = event.x*s + tx;
+		var my = event.y*s + ty;
+
+		// Mouse!
+		Mouse.x = mx;
+		Mouse.y = my;
+
 		Mouse.moved = true;
 		publish("mousemove");
+
 	};
 	var _onmouseup = function(){
 		Mouse.pressed = false;

@@ -22,6 +22,11 @@ function Loopy(config){
 	self.embedded = _getParameterByName("embed");
 	self.embedded = !!parseInt(self.embedded); // force to Boolean
 
+	// Offset & Scale?!?!
+	self.offsetX = 0;
+	self.offsetY = 0;
+	self.offsetScale = 1;
+
 	// Mouse
 	Mouse.init(document.getElementById("canvasses")); // TODO: ugly fix, ew
 	
@@ -131,6 +136,8 @@ function Loopy(config){
 	//////// EMBEDDED? ////////
 	///////////////////////////
 
+	self.init();
+
 	if(self.embedded){
 
 		// Hide all that UI
@@ -142,12 +149,16 @@ function Loopy(config){
 		self.playbar.dom.setAttribute("fullscreen","yes");
 		publish("resize");
 
+		// Center & SCALE The Model
+		self.model.center(true);
+		subscribe("resize",function(){
+			self.model.center(true);
+		});
+
 		// Autoplay!
 		self.setMode(Loopy.MODE_PLAY);
 
 	}
-
-	self.init();
 
 
 }

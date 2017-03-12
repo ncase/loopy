@@ -442,5 +442,14 @@ function Edge(model, config){
 		return _isPointInCircle(x, y, self.labelX, self.labelY, 40);
 	};
 
+	self.getBoundingBox = function(){
+		return {
+			left: self.from.x,
+			top: self.from.y,
+			right: self.from.x,
+			bottom: self.from.y
+		};
+	};
+
 
 }

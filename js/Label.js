@@ -120,4 +120,14 @@ function Label(model, config){
 		return _isPointInBox(x,y, self.getBounds());
 	};
 
+	self.getBoundingBox = function(){
+		var bounds = self.getBounds();
+		return {
+			left: bounds.x,
+			top: bounds.y,
+			right: bounds.x + bounds.width,
+			bottom: bounds.y + bounds.height
+		};
+	};
+
 }

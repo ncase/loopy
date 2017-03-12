@@ -130,10 +130,31 @@ function Model(loopy){
 		// Clear!
 		ctx.clearRect(0,0,self.canvas.width,self.canvas.height);
 
+		// Translate
+		ctx.save();
+
+		// Translate to center, (translate, scale, translate) to expand to size
+		var canvasses = document.getElementById("canvasses");
+		var CW = canvasses.clientWidth - 25 - 25;
+		var CH = canvasses.clientHeight - 110 - 25;
+		var tx = loopy.offsetX*2;
+		var ty = loopy.offsetY*2;
+		tx -= CW;
+		ty -= CH;
+		var s = loopy.offsetScale;
+		tx = s*tx;
+		ty = s*ty;
+		tx += CW;
+		ty += CH;
+		ctx.setTransform(s, 0, 0, s, tx, ty);
+
 		// Draw labels THEN edges THEN nodes
 		for(var i=0;i<self.labels.length;i++) self.labels[i].draw(ctx);
 		for(var i=0;i<self.edges.length;i++) self.edges[i].draw(ctx);
 		for(var i=0;i<self.nodes.length;i++) self.nodes[i].draw(ctx);
+
+		// Restore
+		ctx.restore();
 
 	};
 
@@ -327,5 +348,64 @@ function Model(loopy){
 		loopy.sidebar.showPage("Edit");
 
 	});
+
+	// Centering & Scaling
+	self.center = function(andScale){
+
+		// If no nodes & no labels, forget it.
+		if(self.nodes.length==0 && self.labels.length==0) return;
+
+		// Get bounds of ALL objects...
+		var left = Infinity;
+		var top = Infinity;
+		var right = -Infinity;
+		var bottom = -Infinity;
+		var _testObjects = function(objects){
+			for(var i=0; i<objects.length; i++){
+				var obj = objects[i];
+				var bounds = obj.getBoundingBox();
+				if(left>bounds.left) left=bounds.left;
+				if(top>bounds.top) top=bounds.top;
+				if(right<bounds.right) right=bounds.right;
+				if(bottom<bounds.bottom) bottom=bounds.bottom;
+			}
+		};
+		_testObjects(self.nodes);
+		_testObjects(self.edges);
+		_testObjects(self.labels);
+
+		// Re-center!
+		var canvasses = document.getElementById("canvasses");
+		var fitWidth = canvasses.clientWidth - 25 - 25;
+		var fitHeight = canvasses.clientHeight - 110 - 25;
+		var cx = (left+right)/2;
+		var cy = (top+bottom)/2;
+		loopy.offsetX = 25/2 + fitWidth/2 - cx;
+		loopy.offsetY = 25/2 + fitHeight/2 - cy;
+
+		// SCALE.
+		if(andScale){
+
+			var w = right-left;
+			var h = bottom-top;
+
+			// Wider or taller than screen?
+			var modelRatio = w/h;
+			var screenRatio = fitWidth/fitHeight;
+			var scaleRatio;
+			if(modelRatio > screenRatio){
+				// wider...
+				scaleRatio = fitWidth/w;
+			}else{
+				// taller...
+				scaleRatio = fitHeight/h;
+			}
+
+			// Loopy, then!
+			loopy.offsetScale = scaleRatio;
+
+		}
+
+	};
 
 }

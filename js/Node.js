@@ -302,6 +302,15 @@ function Node(model, config){
 		return _isPointInCircle(x, y, self.x, self.y, self.radius+buffer);
 	};
 
+	self.getBoundingBox = function(){
+		return {
+			left: self.x - self.radius,
+			top: self.y - self.radius,
+			right: self.x + self.radius,
+			bottom: self.y + self.radius
+		};
+	};
+
 }
 
 ////////////////////////////
