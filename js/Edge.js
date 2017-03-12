@@ -223,7 +223,7 @@ function Edge(model, config){
 			rotation *= Math.TAU/360;
 			tx += Math.cos(rotation);
 			ty += Math.sin(rotation);
-		}		
+		}
 		dx = tx-fx;
 		dy = ty-fy;
 		w = Math.sqrt(dx*dx+dy*dy);
@@ -443,11 +443,61 @@ function Edge(model, config){
 	};
 
 	self.getBoundingBox = function(){
+
+		// SPECIAL CASE: SELF-ARC
+		if(self.from==self.to){
+
+			var perpendicular = a-Math.TAU/4;
+			var cx = fx + Math.cos(perpendicular)*-y2;
+			var cy = fy + Math.sin(perpendicular)*-y2;
+			cx = cx/2; // un-retina
+			cy = cy/2; // un-retina
+
+			var _radius = r/2; // un-retina
+
+			return {
+				left: cx - _radius,
+				top: cy - _radius,
+				right: cx + _radius,
+				bottom: cy + _radius
+			};
+
+		}
+
+		// THREE POINTS: start, end, and perpendicular with r
+		var from = {x:self.from.x, y:self.from.y};
+		var to = {x:self.to.x, y:self.to.y};
+		var mid = {
+			x:(from.x+to.x)/2,
+			y:(from.y+to.y)/2
+		};
+
+		var perpendicular = a-Math.TAU/4;
+		mid.x += Math.cos(perpendicular)*self.arc;
+		mid.y += Math.sin(perpendicular)*self.arc;
+
+		// TEST ALL POINTS
+
+		var left = Infinity;
+		var top = Infinity;
+		var right = -Infinity;
+		var bottom = -Infinity;
+		var points = [from, to, mid];
+		for(var i=0; i<points.length; i++){
+			var point = points[i];
+			var x = point.x;
+			var y = point.y;
+			if(left>x) left=x;
+			if(top>y) top=y;
+			if(right<x) right=x;
+			if(bottom<y) bottom=y;
+		}
+
 		return {
-			left: self.from.x,
-			top: self.from.y,
-			right: self.from.x,
-			bottom: self.from.y
+			left: left,
+			top: top,
+			right: right,
+			bottom: bottom
 		};
 	};
 

@@ -15,17 +15,20 @@ Mouse.init = function(target){
 		var tx = 0;
 		var ty = 0;
 		var s = 1/loopy.offsetScale;
-		var CW = canvasses.clientWidth - 25 - 25;
-		var CH = canvasses.clientHeight - 110 - 25;
+		var CW = canvasses.clientWidth - _PADDING - _PADDING;
+		var CH = canvasses.clientHeight - _PADDING_BOTTOM - _PADDING;
+
+		tx -= _PADDING/2; // dunno why but this is needed
+		ty -= _PADDING/2; // dunno why but this is needed
 		
-		tx -= CW/2;
-		ty -= CH/2;
+		tx -= (CW+_PADDING)/2;
+		ty -= (CH+_PADDING)/2;
 		
 		tx = s*tx;
 		ty = s*ty;
 
-		tx += CW/2;
-		ty += CH/2;
+		tx += (CW+_PADDING)/2;
+		ty += (CH+_PADDING)/2;
 
 		tx -= loopy.offsetX;
 		ty -= loopy.offsetY;

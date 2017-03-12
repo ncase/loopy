@@ -135,17 +135,19 @@ function Model(loopy){
 
 		// Translate to center, (translate, scale, translate) to expand to size
 		var canvasses = document.getElementById("canvasses");
-		var CW = canvasses.clientWidth - 25 - 25;
-		var CH = canvasses.clientHeight - 110 - 25;
+		var CW = canvasses.clientWidth - _PADDING - _PADDING;
+		var CH = canvasses.clientHeight - _PADDING_BOTTOM - _PADDING;
 		var tx = loopy.offsetX*2;
 		var ty = loopy.offsetY*2;
-		tx -= CW;
-		ty -= CH;
+		tx -= CW+_PADDING;
+		ty -= CH+_PADDING;
 		var s = loopy.offsetScale;
 		tx = s*tx;
 		ty = s*ty;
-		tx += CW;
-		ty += CH;
+		tx += CW+_PADDING;
+		ty += CH+_PADDING;
+		tx += _PADDING; // dunno why but this is needed
+		ty += _PADDING; // dunno why but this is needed
 		ctx.setTransform(s, 0, 0, s, tx, ty);
 
 		// Draw labels THEN edges THEN nodes
@@ -376,12 +378,12 @@ function Model(loopy){
 
 		// Re-center!
 		var canvasses = document.getElementById("canvasses");
-		var fitWidth = canvasses.clientWidth - 25 - 25;
-		var fitHeight = canvasses.clientHeight - 110 - 25;
+		var fitWidth = canvasses.clientWidth - _PADDING - _PADDING;
+		var fitHeight = canvasses.clientHeight - _PADDING_BOTTOM - _PADDING;
 		var cx = (left+right)/2;
 		var cy = (top+bottom)/2;
-		loopy.offsetX = 25/2 + fitWidth/2 - cx;
-		loopy.offsetY = 25/2 + fitHeight/2 - cy;
+		loopy.offsetX = (_PADDING+fitWidth)/2 - cx;
+		loopy.offsetY = (_PADDING+fitHeight)/2 - cy;
 
 		// SCALE.
 		if(andScale){
