@@ -71,6 +71,41 @@ function _createInput(className, textarea){
 	return input;
 }
 
+function _createNumberInput(onUpdate){
+
+	var self = {};
+
+	// dom!
+	self.dom = document.createElement("input");
+	self.dom.style.border = "none";
+	self.dom.style.width = "40px";
+	self.dom.style.padding = "5px";
+
+	self.dom.addEventListener("keydown",function(event){
+		event.stopPropagation ? event.stopPropagation() : (event.cancelBubble=true);
+	},false); // STOP IT FROM TRIGGERING KEY.js
+
+	// on update
+	self.dom.oninput = function(){
+		var value = parseInt(self.getValue());
+		if(isNaN(value)) value=0;
+		self.setValue(value);
+		onUpdate(value);
+	};
+
+	// set & get value
+	self.getValue = function(){
+		return self.dom.value;
+	};
+	self.setValue = function(num){
+		self.dom.value = num;
+	};
+
+	// return an OBJECT.
+	return self;
+
+}
+
 function _blank(){
 	// just a blank function to toss in.
 }
@@ -226,7 +261,7 @@ function _makeErrorFunc(msg){
 }
 
 function _getParameterByName(name, url){
-	var url = window.top.location.href;
+	var url = window.location.href;
 	name = name.replace(/[\[\]]/g, "\\$&");
 	var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
 	results = regex.exec(url);

@@ -55,6 +55,9 @@ function Loopy(config){
 	self.playbar = new PlayControls(self);
 	self.playbar.showPage("Editor"); // start here
 
+	// Modal
+	self.modal = new Modal(self);
+
 	//////////
 	// INIT //
 	//////////
@@ -94,7 +97,7 @@ function Loopy(config){
 
 		// Play mode!
 		if(mode==Loopy.MODE_PLAY){
-			self.sidebar.showPage("Play");
+			self.sidebar.showPage("Edit");
 			self.playbar.showPage("Player");
 			self.sidebar.dom.setAttribute("mode","play");
 			self.toolbar.dom.setAttribute("mode","play");
@@ -118,11 +121,16 @@ function Loopy(config){
 	// SAVE & LOAD //
 	/////////////////
 
-	self.saveToURL = function(){
+	self.saveToURL = function(embed){
 		var dataString = self.model.serialize();
 		var uri = encodeURIComponent(dataString);
 		var base = window.location.origin + window.location.pathname;
-		var link = base+"?data="+uri;
+		var link;
+		if(embed){
+			link = base+"?embed=1&data="+uri;
+		}else{
+			link = base+"?data="+uri;
+		}
 		return link;
 	};
 

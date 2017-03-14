@@ -18,8 +18,10 @@ Mouse.init = function(target){
 		var CW = canvasses.clientWidth - _PADDING - _PADDING;
 		var CH = canvasses.clientHeight - _PADDING_BOTTOM - _PADDING;
 
-		tx -= _PADDING/2; // dunno why but this is needed
-		ty -= _PADDING/2; // dunno why but this is needed
+		if(loopy.embedded){
+			tx -= _PADDING/2; // dunno why but this is needed
+			ty -= _PADDING/2; // dunno why but this is needed
+		}
 		
 		tx -= (CW+_PADDING)/2;
 		ty -= (CH+_PADDING)/2;

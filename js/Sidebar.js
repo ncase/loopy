@@ -4,34 +4,6 @@ SIDEBAR CODE
 
 **********************************/
 
-function PageUI(dom){
-
-	var self = this;
-	self.dom = dom;
-
-	self.pages = [];
-	self.addPage = function(id, page){
-		page.id = id;
-		self.dom.appendChild(page.dom);
-		self.pages.push(page);
-	};
-	self.currentPage = null;
-	self.showPage = function(id){
-		var shownPage = null;
-		for(var i=0; i<self.pages.length; i++){
-			var page = self.pages[i];
-			if(page.id==id){
-				page.show();
-				shownPage = page;
-			}else{
-				page.hide();
-			}
-		}
-		self.currentPage = shownPage;
-	};
-
-}
-
 function Sidebar(loopy){
 
 	var self = this;
@@ -57,16 +29,16 @@ function Sidebar(loopy){
 	// Node!
 	(function(){
 		var page = new SidebarPage();
-		/*page.addComponent(new ComponentButton({
+		page.addComponent(new ComponentButton({
 			header: true,
 			label: "back to top",
 			onclick: function(){
 				self.showPage("Edit");
 			}
-		}));*/
+		}));
 		page.addComponent("label", new ComponentInput({
-			//label: "<br><br>Name:"
-			label: "Name:"
+			label: "<br><br>Name:"
+			//label: "Name:"
 		}));
 		page.addComponent("hue", new ComponentSlider({
 			bg: "color",
@@ -110,17 +82,17 @@ function Sidebar(loopy){
 	// Edge!
 	(function(){
 		var page = new SidebarPage();
-		/*page.addComponent(new ComponentButton({
+		page.addComponent(new ComponentButton({
 			header: true,
 			label: "back to top",
 			onclick: function(){
 				self.showPage("Edit");
 			}
-		}));*/
+		}));
 		page.addComponent("strength", new ComponentSlider({
 			bg: "strength",
-			//label: "<br><br>Relationship:",
-			label: "Relationship:",
+			label: "<br><br>Relationship:",
+			//label: "Relationship:",
 			options: [1, -1]
 		}));
 		page.addComponent(new ComponentButton({
@@ -136,16 +108,16 @@ function Sidebar(loopy){
 	// Label!
 	(function(){
 		var page = new SidebarPage();
-		/*page.addComponent(new ComponentButton({
+		page.addComponent(new ComponentButton({
 			header: true,
 			label: "back to top",
 			onclick: function(){
 				self.showPage("Edit");
 			}
-		}));*/
+		}));
 		page.addComponent("text", new ComponentInput({
-			//label: "<br><br>Label:",
-			label: "Label:",
+			label: "<br><br>Label:",
+			//label: "Label:",
 			textarea: true
 		}));
 		page.onshow = function(){
@@ -180,46 +152,29 @@ function Sidebar(loopy){
 	// Edit
 	(function(){
 		var page = new SidebarPage();
-		/*page.addComponent(new ComponentButton({
-			label: "START SIMULATION",
-			onclick: function(){
-				loopy.setMode(Loopy.MODE_PLAY);
-			}
-		}));*/
 		page.addComponent(new ComponentHTML({
-			html: "herp derp<hr/>You can also save &amp; share your LOOPY model, as a link!"
-		}));
-		page.addComponent(new ComponentButton({
-			label: "save as link:",
-			onclick: function(){
-				var link = loopy.saveToURL();
-				output.output("saving...");
-				setTimeout(function(){
-					output.output(link);
-					output.dom.select();
-				},750);
-			}
-		}));
-		var output = page.addComponent(new ComponentOutput({}));
-		self.addPage("Edit", page);
-	})();
+			html: ""+
+			
+			"<b style='font-size:1.4em'>LOOPY</b> (v1.0)<br>a tool to model feedback loops <br><br>"+
 
-	// Play
-	(function(){
-		var page = new SidebarPage();
-		/*page.addComponent(new ComponentButton({
-			label: "STOP SIMULATION",
-			onclick: function(){
-				loopy.setMode(Loopy.MODE_EDIT);
-			}
+			"<span class='mini_button' onclick='publish(\"modal\",[\"examples\"])'>see examples</span> "+
+			"<span class='mini_button' onclick='publish(\"modal\",[\"howto\"])'>how to</span> "+
+			"<span class='mini_button' onclick='publish(\"modal\",[\"credits\"])'>credits</span><br><br>"+
+
+			"<hr/><br>"+
+
+			"<span class='mini_button' onclick='publish(\"modal\",[\"save_link\"])'>save as link</span> <br><br>"+
+			//"<span class='mini_button' onclick='publish(\"modal\",[\"save_image\"])'>save as image</span> <br><br>"+
+			"<span class='mini_button' onclick='publish(\"modal\",[\"embed\"])'>embed in your website</span> <br><br>"+
+			"<span class='mini_button' onclick='publish(\"modal\",[\"save_gif\"])'>make a GIF using LICEcap</span> <br><br>"+
+
+			"<hr/><br>"+
+			
+			"made by <a target='_blank' href='http://ncase.me'>nicky case</a> "+
+			"with your support <a target='_blank' href='https://www.patreon.com/ncase'>on patreon</a> &lt;3"
+
 		}));
-		page.addComponent(new ComponentButton({
-			label: "RESET SIMULATION",
-			onclick: function(){
-				publish("model/reset");
-			}
-		}));*/
-		self.addPage("Play", page);
+		self.addPage("Edit", page);
 	})();
 
 }
@@ -459,7 +414,7 @@ function ComponentOutput(config){
 
 	// DOM: just a readonly input that selects all when clicked
 	self.dom = _createInput("component_output");
-	self.dom.readonly = true;
+	self.dom.setAttribute("readonly", "true");
 	self.dom.onclick = function(){
 		self.dom.select();
 	};

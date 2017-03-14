@@ -22,6 +22,7 @@
 	// Event Handling
 	// TODO: cursors stay when click button? orrrrr switch over to fake-cursor.
 	Key.onKeyDown = function(event){
+		if(loopy.model.isShowing) return;
 		var code = KEY_CODES[event.keyCode];
 	    Key[code] = true;
 	    publish("key/"+code);
@@ -29,6 +30,7 @@
 	    event.preventDefault();
 	}
 	Key.onKeyUp = function(event){
+		if(loopy.model.isShowing) return;
 		var code = KEY_CODES[event.keyCode];
 	    Key[code] = false;
 	    event.stopPropagation();

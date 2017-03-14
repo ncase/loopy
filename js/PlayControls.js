@@ -25,7 +25,7 @@ function PlayControls(loopy){
 
 	// During the Editor
 	(function(){
-		var page = new PlayPage();
+		var page = new Page();
 
 		// PLAY BUTTON
 		var buttonDOM = page.addComponent(new PlayButton({
@@ -45,7 +45,7 @@ function PlayControls(loopy){
 
 	// During the Player
 	(function(){
-		var page = new PlayPage();
+		var page = new Page();
 
 		if(!loopy.embedded){
 
@@ -97,22 +97,6 @@ function PlayControls(loopy){
 	
 }
 
-function PlayPage(){
-
-	var self = this;
-
-	// DOM
-	self.dom = document.createElement("div");
-	self.show = function(){ self.dom.style.display="block"; };
-	self.hide = function(){ self.dom.style.display="none"; };
-
-	// Add Component
-	self.addComponent = function(component){
-		self.dom.appendChild(component.dom); // add to DOM
-		return component;
-	};
-
-}
 function PlayButton(config){
 	var self = this;
 	self.dom = _createButton(config.label, function(){

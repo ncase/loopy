@@ -146,8 +146,10 @@ function Model(loopy){
 		ty = s*ty;
 		tx += CW+_PADDING;
 		ty += CH+_PADDING;
-		tx += _PADDING; // dunno why but this is needed
-		ty += _PADDING; // dunno why but this is needed
+		if(loopy.embedded){
+			tx += _PADDING; // dunno why but this is needed
+			ty += _PADDING; // dunno why but this is needed
+		}
 		ctx.setTransform(s, 0, 0, s, tx, ty);
 
 		// Draw labels THEN edges THEN nodes
