@@ -51,33 +51,42 @@ function Modal(loopy){
 	// Examples
 	(function(){
 		var page = new Page();
-		page.width = 500;
-		page.height = 200;
-		page.addComponent(new ComponentHTML({
-			html: "// examples"
-		}));
+		page.width = 530;
+		page.height = 400;
+		page.addComponent(new ModalIframe({
+			page: page,
+			src: "pages/examples.html",
+			width: 500,
+			height: 350
+		}))
 		self.addPage("examples", page);
 	})();
 
 	// How To
 	(function(){
 		var page = new Page();
-		page.width = 500;
-		page.height = 200;
-		page.addComponent(new ComponentHTML({
-			html: "// how to"
-		}));
+		page.width = 530;
+		page.height = 400;
+		page.addComponent(new ModalIframe({
+			page: page,
+			src: "pages/howto.html",
+			width: 500,
+			height: 350
+		}))
 		self.addPage("howto", page);
 	})();
 
 	// Credits
 	(function(){
 		var page = new Page();
-		page.width = 500;
-		page.height = 200;
-		page.addComponent(new ComponentHTML({
-			html: "// credits"
-		}));
+		page.width = 530;
+		page.height = 400;
+		page.addComponent(new ModalIframe({
+			page: page,
+			src: "pages/credits.html",
+			width: 500,
+			height: 350
+		}))
 		self.addPage("credits", page);
 	})();
 
@@ -188,11 +197,14 @@ function Modal(loopy){
 	// GIF
 	(function(){
 		var page = new Page();
-		page.width = 500;
-		page.height = 200;
-		page.addComponent(new ComponentHTML({
-			html: "// gif"
-		}));
+		page.width = 530;
+		page.height = 400;
+		page.addComponent(new ModalIframe({
+			page: page,
+			src: "pages/gif.html",
+			width: 500,
+			height: 350
+		}))
 		self.addPage("save_gif", page);
 	})();
 
