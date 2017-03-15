@@ -33,15 +33,24 @@ function Model(loopy){
 
 	// Remove Node
 	self.addNode = function(config){
+
+		// Model's been changed!
+		publish("model/changed");
+
+		// Add Node
 		var node = new Node(self,config);
 		self.nodeByID[node.id] = node;
 		self.nodes.push(node);
 		self.update();
 		return node;
+
 	};
 
 	// Remove Node
 	self.removeNode = function(node){
+
+		// Model's been changed!
+		publish("model/changed");
 
 		// Remove from array
 		self.nodes.splice(self.nodes.indexOf(node),1);
@@ -70,6 +79,11 @@ function Model(loopy){
 
 	// Remove edge
 	self.addEdge = function(config){
+
+		// Model's been changed!
+		publish("model/changed");
+
+		// Add Edge
 		var edge = new Edge(self,config);
 		self.edges.push(edge);
 		self.update();
@@ -78,7 +92,13 @@ function Model(loopy){
 
 	// Remove edge
 	self.removeEdge = function(edge){
+
+		// Model's been changed!
+		publish("model/changed");
+
+		// Remove edge
 		self.edges.splice(self.edges.indexOf(edge),1);
+
 	};
 
 	// Get all edges with start node
@@ -100,6 +120,11 @@ function Model(loopy){
 
 	// Remove label
 	self.addLabel = function(config){
+
+		// Model's been changed!
+		publish("model/changed");
+
+		// Add label
 		var label = new Label(self,config);
 		self.labels.push(label);
 		self.update();
@@ -108,7 +133,13 @@ function Model(loopy){
 
 	// Remove label
 	self.removeLabel = function(label){
+
+		// Model's been changed!
+		publish("model/changed");
+
+		// Remove label
 		self.labels.splice(self.labels.indexOf(label),1);
+		
 	};
 
 

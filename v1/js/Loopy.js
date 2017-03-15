@@ -73,13 +73,17 @@ function Loopy(config){
 	// Update
 	self.update = function(){
 		Mouse.update();
-		self.model.update();
+		if(!self.modal.isShowing){ // modAl
+			self.model.update(); // modEl
+		}
 	};
 	setInterval(self.update, 1000/30); // 30 FPS, why not.
 
 	// Draw
 	self.draw = function(){
-		self.model.draw();
+		if(!self.modal.isShowing){ // modAl
+			self.model.draw(); // modEl
+		}
 		requestAnimationFrame(self.draw);
 	};
 	requestAnimationFrame(self.draw);
@@ -121,17 +125,35 @@ function Loopy(config){
 	// SAVE & LOAD //
 	/////////////////
 
+	self.dirty = false;
+
+	// YOU'RE A DIRTY BOY
+	subscribe("model/changed", function(){
+		if(!self.embedded) self.dirty = true;
+	});
+
 	self.saveToURL = function(embed){
+
+		// Create link
 		var dataString = self.model.serialize();
 		var uri = encodeURIComponent(dataString);
 		var base = window.location.origin + window.location.pathname;
+		var historyLink = base+"?data="+uri;
 		var link;
 		if(embed){
 			link = base+"?embed=1&data="+uri;
 		}else{
-			link = base+"?data="+uri;
+			link = historyLink;
 		}
+
+		// NO LONGER DIRTY!
+		self.dirty = false;
+
+		// PUSH TO HISTORY
+		window.history.replaceState(null, null, historyLink);
+
 		return link;
+
 	};
 
 	self.loadFromURL = function(){
@@ -167,6 +189,12 @@ function Loopy(config){
 		self.setMode(Loopy.MODE_PLAY);
 
 	}
+
+	// NOT DIRTY, THANKS
+	self.dirty = false;
+
+	// SHOW ME, THANKS
+	document.body.style.opacity = "";
 
 
 }

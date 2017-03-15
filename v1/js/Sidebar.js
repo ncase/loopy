@@ -70,7 +70,8 @@ function Sidebar(loopy){
 
 		};
 		page.addComponent(new ComponentButton({
-			label: "delete node",
+			//label: "delete node",
+			label: "delete circle",
 			onclick: function(node){
 				node.kill();
 				self.showPage("Edit");
@@ -96,7 +97,9 @@ function Sidebar(loopy){
 			options: [1, -1]
 		}));
 		page.addComponent(new ComponentButton({
-			label: "delete edge",
+			//label: "delete edge",
+			//label: "delete arrow",
+			label: "delete relationship",
 			onclick: function(edge){
 				edge.kill();
 				self.showPage("Edit");
@@ -262,8 +265,14 @@ function Component(){
 		return self.page.target[self.propName];
 	};
 	self.setValue = function(value){
+		
+		// Model's been changed!
+		publish("model/changed");
+
+		// Edit the value!
 		self.page.target[self.propName] = value;
 		self.page.onedit(); // callback!
+		
 	};
 }
 

@@ -101,9 +101,12 @@ function Modal(loopy){
 		}));
 		var output = page.addComponent(new ComponentOutput({}));
 		page.onshow = function(){
+
+			// Copy-able link
 			var link = loopy.saveToURL();
 			output.output(link);
 			output.dom.select();
+
 		};
 		// or, tweet it
 		self.addPage("save_link", page);

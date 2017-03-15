@@ -24,7 +24,7 @@ function Labeller(loopy){
 		// Otherwise, make it & edit it!
 		var newLabel = loopy.model.addLabel({
 			x: Mouse.x,
-			y: Mouse.y
+			y: Mouse.y+10 // whatever, to make text actually centered.
 		});
 		loopy.sidebar.edit(newLabel);
 

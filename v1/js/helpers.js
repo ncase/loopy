@@ -18,6 +18,14 @@ window.onresize = function(){
 	publish("resize");
 };
 
+window.onbeforeunload = function(e) {
+	if(loopy.dirty){
+		var dialogText = "Are you sure you want to leave without saving your changes?";
+		e.returnValue = dialogText;
+		return dialogText;
+	}
+};
+
 function _createCanvas(){
 
 	var canvasses = document.getElementById("canvasses");
