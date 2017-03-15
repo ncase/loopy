@@ -1,0 +1,107 @@
+body{
+	margin:0;
+	background: #fff;
+
+	font-family: Helvetica, Arial, sans-serif;
+	font-weight: 100;
+
+	color: #444;
+	font-size: 25px;
+	text-align: justify;
+
+	line-height: 1.5em;
+
+}
+.section{
+	padding: 50px;
+}
+.white.section{ background: #fff; }
+.light-gray.section{ background: #eee; }
+.dark-gray.section{ background: #444; }
+.black.section{ background: #222; }
+
+#logo{
+	width: 800px;
+	height: 300px;
+	margin: 0 auto;
+	background-image: url(../img/logo.png);
+	background-size: 100% 100%;
+}
+.section .content{
+	width: 640px;
+	margin: 0 auto;
+	margin-top: 2em; 
+}
+.section .content:first-child{
+	margin-top: 0em;
+}
+
+.dark-gray .content{
+	font-size: 20px;
+	color: #aaa;
+}
+.black .content{
+	font-size: 20px;
+	color: #fff;
+}
+
+/**********
+
+INFORMATION:
+- a "why" statement
+- three features
+
+**********/
+
+#why{}
+#features{
+	overflow: hidden;
+	color: #777;
+	font-size: 20px;
+}
+#features > div{
+	float: left;
+	margin-bottom: 2em;
+}
+#features > div:nth-child(even){
+	margin-left: 15px;
+}
+#features > div:nth-child(n+5){
+	margin-bottom: 0;
+}
+#features > .feature-image{
+	width: 310px;
+	height: 200px;
+	background: #888;
+}
+#features > .feature-text{
+	width: 310px;
+	height: 200px;
+}
+#features > .feature-text > div{
+	font-size: 24px;
+	font-weight: bold;
+	color: #444;
+}
+
+
+/**********
+
+EXAMPLES:
+
+**********/
+
+#examples{
+	overflow: hidden;
+	margin-top: 1em;
+}
+#examples > div{
+	width: 200px;
+	height: 200px;
+	background: #888;
+	border-radius: 100px;
+	float: left;
+}
+#examples > div:nth-child(n+2){
+	margin-left: 20px;
+}
