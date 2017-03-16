@@ -9,7 +9,7 @@ body{
 	font-size: 25px;
 	text-align: justify;
 
-	line-height: 1.5em;
+	line-height: 1.7em;
 
 }
 .section{
@@ -17,8 +17,8 @@ body{
 }
 .white.section{ background: #fff; }
 .light-gray.section{ background: #eee; }
-.dark-gray.section{ background: #444; }
-.black.section{ background: #222; }
+.dark-gray.section{ background: #444; color: #aaa; }
+.black.section{ background: #222; color: #fff; }
 
 #logo{
 	width: 800px;
@@ -36,13 +36,9 @@ body{
 	margin-top: 0em;
 }
 
-.dark-gray .content{
+.dark-gray .content, .black .content{
 	font-size: 20px;
-	color: #aaa;
-}
-.black .content{
-	font-size: 20px;
-	color: #fff;
+	line-height: 1.7em;
 }
 
 /**********
@@ -57,31 +53,33 @@ INFORMATION:
 #features{
 	overflow: hidden;
 	color: #777;
-	font-size: 20px;
+	font-size: 18px;
 }
 #features > div{
 	float: left;
 	margin-bottom: 2em;
 }
 #features > div:nth-child(even){
-	margin-left: 15px;
+	margin-left: 30px;
 }
 #features > div:nth-child(n+5){
 	margin-bottom: 0;
 }
 #features > .feature-image{
-	width: 310px;
-	height: 200px;
+	width: 305px;
+	height: 220px;
 	background: #888;
 }
 #features > .feature-text{
-	width: 310px;
-	height: 200px;
+	width: 305px;
+	height: 220px;
+	line-height: 1.5em;
 }
 #features > .feature-text > div{
 	font-size: 24px;
 	font-weight: bold;
 	color: #444;
+	margin-bottom: 0.7em;
 }
 
 
@@ -91,9 +89,14 @@ EXAMPLES:
 
 **********/
 
+#example_header{
+	font-size: 40px;
+	text-align: center;
+	font-weight: bold;
+}
 #examples{
 	overflow: hidden;
-	margin-top: 1em;
+	margin-top: 1.2em;
 }
 #examples > div{
 	width: 200px;
@@ -101,7 +104,94 @@ EXAMPLES:
 	background: #888;
 	border-radius: 100px;
 	float: left;
+	position: relative;
+}
+#examples > div > div{
+	width: 70px;
+    height: 45px;
+	position: absolute;
+	top:0; left:0; right:0; bottom:0;
+	margin: auto;
+	color: rgba(0,0,0,0.5);
 }
 #examples > div:nth-child(n+2){
 	margin-left: 20px;
+}
+
+#start_blank{
+
+	/*background: #888;
+	color: #eee;*/
+
+	border: 2px solid #aaa;
+	border-color: #999;
+	color: #555;
+
+	text-align: center;
+	text-decoration: none;
+	line-height: 25px;
+
+	width: 490px;
+	height: 20px;
+	padding: 15px;
+	border-radius: 10px;
+
+	margin: 0 auto;
+	margin-top: 35px;
+
+	cursor: pointer;
+
+	position: relative;
+	top: 0;
+
+	transition: all 0.1s ease-in-out;
+
+}
+#start_blank:hover{
+	/*background: #aaa;
+	color: #fff;
+	top: -3px;*/
+	
+	border-color: #ccc;
+	color: #999;
+	top: -2px;
+}
+#start_blank:active{
+	/*background: #666;
+	color: #ddd;
+	top: 2px;*/
+	
+	border-color: #666;
+	color: #333;
+	top: 2px;
+}
+
+/**********
+
+CONCLUSION:
+
+**********/
+
+#uses{
+	overflow: hidden;
+	text-align: center;
+}
+#uses > img{
+	width:120px;
+}
+#uses > img:nth-child(n+2){
+	margin-left: 9px;
+}
+
+/**********
+
+CREDITS:
+
+**********/
+
+.dark-gray a{
+	color: hsl(0,80%,60%);
+}
+.dark-gray a:hover{
+	color: hsl(0,80%,70%);
 }

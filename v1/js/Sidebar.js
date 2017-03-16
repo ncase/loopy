@@ -51,8 +51,8 @@ function Sidebar(loopy){
 		page.addComponent("init", new ComponentSlider({
 			bg: "initial",
 			label: "Initial Value:",
-			options: [0, 1/6, 2/6, 3/6, 4/6, 5/6, 1],
-			//options: [-1.3, -0.5, -0.15, 0, 0.15, 0.5, 1.3],
+			options: [0, 0.16, 0.33, 0.50, 0.66, 0.83, 1],
+			//options: [0, 1/6, 2/6, 3/6, 4/6, 5/6, 1],
 			oninput: function(value){
 				Node.defaultValue = value;
 			}

@@ -5,6 +5,13 @@ https://www.sublimetext.com/
 
 ===========
 
+EXAMPLES:
+- simple ecosystem
+- ???
+- automation & education
+
+===========
+
 LOOPY
 a tool for thinking in systems
 
