@@ -439,7 +439,12 @@ function Edge(model, config){
 	//////////////////////////////////////
 
 	self.isPointOnLabel = function(x, y){
-		return _isPointInCircle(x, y, self.labelX, self.labelY, 40);
+		// TOTAL HACK: radius based on TOOL BEING USED.
+		var radius;
+		if(self.loopy.tool==Loopy.TOOL_DRAG || self.loopy.tool==Loopy.TOOL_INK) radius=40; // selecting, wide radius!
+		else if(self.loopy.tool==Loopy.TOOL_ERASE) radius=25; // no accidental erase
+		else radius = 15; // you wanna label close to edges
+		return _isPointInCircle(x, y, self.labelX, self.labelY, radius);
 	};
 
 	self.getBoundingBox = function(){

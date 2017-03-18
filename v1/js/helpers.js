@@ -94,11 +94,16 @@ function _createNumberInput(onUpdate){
 	},false); // STOP IT FROM TRIGGERING KEY.js
 
 	// on update
-	self.dom.oninput = function(){
+	self.dom.onchange = function(){
 		var value = parseInt(self.getValue());
 		if(isNaN(value)) value=0;
 		self.setValue(value);
 		onUpdate(value);
+	};
+
+	// select on click, yo
+	self.dom.onclick = function(){
+		self.dom.select();
 	};
 
 	// set & get value
@@ -304,20 +309,10 @@ function _blendColors(hex1, hex2, blend){
 
 }
 
-function _shuffle(array){
-	array = array.slice(0,array.length); // copy.
-	var currentIndex = array.length, temporaryValue, randomIndex;
-	// While there remain elements to shuffle...
-	while(0 !== currentIndex){
-		// Pick a remaining element...
-		randomIndex = Math.floor(Math.random() * currentIndex);
-		currentIndex -= 1;
-		// And swap it with the current element.
-		temporaryValue = array[currentIndex];
-		array[currentIndex] = array[randomIndex];
-		array[randomIndex] = temporaryValue;
-	}
-	return array;
+function _shiftArray(array, shiftIndex){
+	var moveThisAround = array.splice(-shiftIndex);
+	var shifted = moveThisAround.concat(array);
+	return shifted;
 }
 
 

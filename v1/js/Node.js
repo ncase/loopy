@@ -61,6 +61,7 @@ function Node(model, config){
 		_controlsSelected = self.isPointInNode(Mouse.x, Mouse.y);
 		if(_controlsSelected){
 			_controlsVisible = true;
+			self.loopy.showPlayTutorial = false;
 			_controlsDirection = (Mouse.y<self.y) ? 1 : -1;
 		}else{
 			_controlsVisible = false;
@@ -100,9 +101,11 @@ function Node(model, config){
 	// SIGNALS ///////////////////////////
 	//////////////////////////////////////
 
+	var shiftIndex = 0;
 	self.sendSignal = function(signal){
 		var myEdges = self.model.getEdgesByStartNode(self);
-		myEdges = _shuffle(myEdges);
+		myEdges = _shiftArray(myEdges, shiftIndex);
+		shiftIndex = (shiftIndex+1)%myEdges.length;
 		for(var i=0; i<myEdges.length; i++){
 			myEdges[i].addSignal(signal);
 		}
@@ -152,7 +155,7 @@ function Node(model, config){
 		self.bound();
 
 		// Visually & vertically bump the node
-		var gotoAlpha = _controlsVisible ? 1 : 0;
+		var gotoAlpha = (_controlsVisible || self.loopy.showPlayTutorial) ? 1 : 0;
 		_controlsAlpha = _controlsAlpha*0.5 + gotoAlpha*0.5;
 		if(_isPlaying && _controlsPressed){
 			_offsetGoto = -_controlsDirection*20; // by 20 pixels
@@ -229,7 +232,7 @@ function Node(model, config){
 		// Colored bubble
 		ctx.beginPath();
 		var _circleRadiusGoto = r*_value; // radius
-		_circleRadius = _circleRadius*0.9 + _circleRadiusGoto*0.1;
+		_circleRadius = _circleRadius*0.8 + _circleRadiusGoto*0.2;
 		ctx.arc(0, 0, _circleRadius, 0, Math.TAU, false);
 		ctx.fillStyle = color;
 		ctx.fill();
@@ -252,13 +255,14 @@ function Node(model, config){
 		var cl = 40;
 		var cy = 0;
 		ctx.globalAlpha = _controlsAlpha;
-		ctx.strokeStyle = "#000";
+		ctx.strokeStyle = "rgba(0,0,0,0.8)";
 		// top arrow
 		ctx.beginPath();
 		ctx.moveTo(-cl,-cy-cl);
 		ctx.lineTo(0,-cy-cl*2);
 		ctx.lineTo(cl,-cy-cl);
 		ctx.lineWidth = (_controlsDirection>0) ? 10: 3;
+		if(self.loopy.showPlayTutorial) ctx.lineWidth=6;
 		ctx.stroke();
 		// bottom arrow
 		ctx.beginPath();
@@ -266,6 +270,7 @@ function Node(model, config){
 		ctx.lineTo(0,cy+cl*2);
 		ctx.lineTo(cl,cy+cl);
 		ctx.lineWidth = (_controlsDirection<0) ? 10: 3;
+		if(self.loopy.showPlayTutorial) ctx.lineWidth=6;
 		ctx.stroke();
 
 		// Restore

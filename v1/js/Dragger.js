@@ -30,16 +30,6 @@ function Dragger(loopy){
 			return;
 		}
 
-		// Any edge under here? If so, start dragging!
-		var dragEdge = loopy.model.getEdgeByPoint(Mouse.x, Mouse.y);
-		if(dragEdge){
-			self.dragging = dragEdge;
-			self.offsetX = Mouse.x - dragEdge.labelX;
-			self.offsetY = Mouse.y - dragEdge.labelY;
-			loopy.sidebar.edit(dragEdge); // and edit!
-			return;
-		}
-
 		// Any label under here? If so, start dragging!
 		var dragLabel = loopy.model.getLabelByPoint(Mouse.x, Mouse.y);
 		if(dragLabel){
@@ -47,6 +37,16 @@ function Dragger(loopy){
 			self.offsetX = Mouse.x - dragLabel.x;
 			self.offsetY = Mouse.y - dragLabel.y;
 			loopy.sidebar.edit(dragLabel); // and edit!
+			return;
+		}
+
+		// Any edge under here? If so, start dragging!
+		var dragEdge = loopy.model.getEdgeByPoint(Mouse.x, Mouse.y);
+		if(dragEdge){
+			self.dragging = dragEdge;
+			self.offsetX = Mouse.x - dragEdge.labelX;
+			self.offsetY = Mouse.y - dragEdge.labelY;
+			loopy.sidebar.edit(dragEdge); // and edit!
 			return;
 		}
 

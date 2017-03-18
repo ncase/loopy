@@ -148,15 +148,59 @@ function Model(loopy){
 	// UPDATE & DRAW //
 	///////////////////
 
+	var _canvasDirty = false;
+
 	self.update = function(){
 
 		// Update edges THEN nodes
 		for(var i=0;i<self.edges.length;i++) self.edges[i].update(self.speed);
 		for(var i=0;i<self.nodes.length;i++) self.nodes[i].update(self.speed);
 
+		// Dirty!
+		_canvasDirty = true;
+
 	};
 
+	// SHOULD WE DRAW?
+	var drawCountdownFull = 60; // two-second buffer!
+	var drawCountdown = drawCountdownFull; 
+	
+	// ONLY IF MOUSE MOVE / CLICK
+	subscribe("mousemove", function(){
+		drawCountdown=drawCountdownFull;
+	});
+	subscribe("mousedown", function(){
+		drawCountdown=drawCountdownFull;
+	});
+
+	// OR INFO CHANGED
+	subscribe("model/changed", function(){
+		if(self.loopy.mode==Loopy.MODE_EDIT) drawCountdown=drawCountdownFull;
+	});
+
+	// OR RESIZE
+	subscribe("resize",function(){
+		drawCountdown = drawCountdownFull;
+	});
+
 	self.draw = function(){
+
+		// SHOULD WE DRAW?
+		// ONLY IF ARROW-SIGNALS ARE MOVING
+		for(var i=0;i<self.edges.length;i++){
+			if(self.edges[i].signals.length>0){
+				drawCountdown = drawCountdownFull;
+				break;
+			}
+		}
+
+		// DRAW???????
+		drawCountdown--;
+		if(drawCountdown<=0) return;
+
+		// Also only draw if last updated...
+		if(!_canvasDirty) return console.log('nope');
+		_canvasDirty = false;
 
 		// Clear!
 		ctx.clearRect(0,0,self.canvas.width,self.canvas.height);
@@ -359,17 +403,17 @@ function Model(loopy){
 			return;
 		}
 
-		// Did you click on an edge label? If so, edit THAT edge.
-		var clickedEdge = self.getEdgeByPoint(Mouse.x, Mouse.y);
-		if(clickedEdge){
-			loopy.sidebar.edit(clickedEdge);
-			return;
-		}
-
 		// Did you click on a label? If so, edit THAT label.
 		var clickedLabel = self.getLabelByPoint(Mouse.x, Mouse.y);
 		if(clickedLabel){
 			loopy.sidebar.edit(clickedLabel);
+			return;
+		}
+
+		// Did you click on an edge label? If so, edit THAT edge.
+		var clickedEdge = self.getEdgeByPoint(Mouse.x, Mouse.y);
+		if(clickedEdge){
+			loopy.sidebar.edit(clickedEdge);
 			return;
 		}
 

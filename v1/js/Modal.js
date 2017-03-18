@@ -95,11 +95,19 @@ function Modal(loopy){
 	(function(){
 		var page = new Page();
 		page.width = 500;
-		page.height = 120;
+		page.height = 135;
 		page.addComponent(new ComponentHTML({
 			html: "copy your link:"
 		}));
 		var output = page.addComponent(new ComponentOutput({}));
+
+		var label = document.createElement("div");
+		label.style.textAlign = "right";
+		label.style.fontSize = "14px";
+		label.style.marginTop = "6px";
+		label.innerHTML = "(this is a long URL, so you may want to use a link-shortener like <a target='_blank' href='https://bitly.com/'>bitly.com</a>)";
+		page.dom.appendChild(label);
+
 		page.onshow = function(){
 
 			// Copy-able link

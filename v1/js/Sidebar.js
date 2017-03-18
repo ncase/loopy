@@ -70,8 +70,8 @@ function Sidebar(loopy){
 
 		};
 		page.addComponent(new ComponentButton({
-			//label: "delete node",
-			label: "delete circle",
+			label: "delete node",
+			//label: "delete circle",
 			onclick: function(node){
 				node.kill();
 				self.showPage("Edit");

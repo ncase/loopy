@@ -95,12 +95,14 @@ function Loopy(config){
 	// PLAY & EDIT MODE //
 	//////////////////////
 
+	self.showPlayTutorial = false;
 	self.setMode = function(mode){
 
 		self.mode = mode;
 
 		// Play mode!
 		if(mode==Loopy.MODE_PLAY){
+			self.showPlayTutorial = true; // show once!
 			self.sidebar.showPage("Edit");
 			self.playbar.showPage("Player");
 			self.sidebar.dom.setAttribute("mode","play");
