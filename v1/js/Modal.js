@@ -51,13 +51,13 @@ function Modal(loopy){
 	// Examples
 	(function(){
 		var page = new Page();
-		page.width = 530;
-		page.height = 400;
+		page.width = 650;
+		page.height = 270;
 		page.addComponent(new ModalIframe({
 			page: page,
 			src: "pages/examples.html",
-			width: 500,
-			height: 350
+			width: 620,
+			height: 220
 		}))
 		self.addPage("examples", page);
 	})();
@@ -103,9 +103,10 @@ function Modal(loopy){
 
 		var label = document.createElement("div");
 		label.style.textAlign = "right";
-		label.style.fontSize = "14px";
+		label.style.fontSize = "15px";
 		label.style.marginTop = "6px";
-		label.innerHTML = "(this is a long URL, so you may want to use a link-shortener like <a target='_blank' href='https://bitly.com/'>bitly.com</a>)";
+		label.style.color = "#888";
+		label.innerHTML = "(this is a long URL, so you may want to use a link-shortener like <a target='_blank' href='https://bitly.com/'>bit.ly</a>)";
 		page.dom.appendChild(label);
 
 		page.onshow = function(){

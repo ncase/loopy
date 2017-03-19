@@ -20,13 +20,6 @@ body{
 .dark-gray.section{ background: #444; color: #aaa; }
 .black.section{ background: #222; color: #fff; }
 
-#logo{
-	width: 800px;
-	height: 300px;
-	margin: 0 auto;
-	background-image: url(../img/logo.png);
-	background-size: 100% 100%;
-}
 .section .content{
 	width: 640px;
 	margin: 0 auto;
@@ -39,6 +32,20 @@ body{
 .dark-gray .content, .black .content{
 	font-size: 20px;
 	line-height: 1.7em;
+}
+
+/**********
+
+SPLASH
+
+**********/
+
+#logo{
+	width: 800px;
+	height: 300px;
+	margin: 0 auto;
+	background-image: url(../img/logo.png);
+	background-size: 100% 100%;
 }
 
 /**********
@@ -96,35 +103,17 @@ EXAMPLES:
 }
 #examples{
 	overflow: hidden;
-	margin-top: 1.2em;
-}
-#examples > div{
-	width: 200px;
-	height: 200px;
-	background: #888;
-	border-radius: 100px;
-	float: left;
-	position: relative;
-}
-#examples > div > div{
-	width: 70px;
-    height: 45px;
-	position: absolute;
-	top:0; left:0; right:0; bottom:0;
-	margin: auto;
-	color: rgba(0,0,0,0.5);
-}
-#examples > div:nth-child(n+2){
-	margin-left: 20px;
+	width: 620px;
+	margin-top: 0;
 }
 
-#start_blank{
+.cool_button{
+	text-decoration:none;
+	display: block;	
+}
+.cool_button > div{
 
-	/*background: #888;
-	color: #eee;*/
-
-	border: 2px solid #aaa;
-	border-color: #999;
+	border: 2px solid #999;
 	color: #555;
 
 	text-align: center;
@@ -137,7 +126,7 @@ EXAMPLES:
 	border-radius: 10px;
 
 	margin: 0 auto;
-	margin-top: 35px;
+	margin-top: 0px;
 
 	cursor: pointer;
 
@@ -147,23 +136,58 @@ EXAMPLES:
 	transition: all 0.1s ease-in-out;
 
 }
-#start_blank:hover{
-	/*background: #aaa;
-	color: #fff;
-	top: -3px;*/
-	
+.cool_button:hover > div{
 	border-color: #ccc;
 	color: #999;
 	top: -2px;
 }
-#start_blank:active{
-	/*background: #666;
-	color: #ddd;
-	top: 2px;*/
-	
+.cool_button:active > div{
 	border-color: #666;
 	color: #333;
 	top: 2px;
+}
+#start_blank{
+	width:520px; 
+	margin: 0 auto;
+}
+#splash_buttons{
+	width: 280px;
+	margin: 0 auto;
+	overflow: hidden;
+	padding: 5px 0;
+}
+.splash_button{
+	width: 140px;
+	font-size: 20px;
+	float: left;
+}
+.splash_button > div{
+	width: 100px;
+	line-height: 22px;
+}
+#final_button{
+	width:400px; 
+	margin: 0 auto;
+}
+#final_button > div{
+	background: #ee3939;
+	color: #fff;
+
+	font-size: 35px;
+	line-height: 35px;
+	width: 360px;
+	height: 30px;
+
+	border:none;
+	border-bottom: 4px solid rgba(0,0,0,0.25);
+}
+#final_button:hover > div{
+	background: #ff4f4f;
+	color: #fff;
+}
+#final_button:active > div{
+	background: #aa1616;
+	color: #fff;
 }
 
 /**********

@@ -166,22 +166,18 @@ function Model(loopy){
 	var drawCountdown = drawCountdownFull; 
 	
 	// ONLY IF MOUSE MOVE / CLICK
-	subscribe("mousemove", function(){
-		drawCountdown=drawCountdownFull;
-	});
-	subscribe("mousedown", function(){
-		drawCountdown=drawCountdownFull;
-	});
+	subscribe("mousemove", function(){ drawCountdown=drawCountdownFull; });
+	subscribe("mousedown", function(){ drawCountdown=drawCountdownFull; });
 
 	// OR INFO CHANGED
 	subscribe("model/changed", function(){
 		if(self.loopy.mode==Loopy.MODE_EDIT) drawCountdown=drawCountdownFull;
 	});
 
-	// OR RESIZE
-	subscribe("resize",function(){
-		drawCountdown = drawCountdownFull;
-	});
+	// OR RESIZE or RESET
+	subscribe("resize",function(){ drawCountdown=drawCountdownFull; });
+	subscribe("model/reset",function(){ drawCountdown=drawCountdownFull; });
+	subscribe("loopy/mode",function(){ drawCountdown=drawCountdownFull; });
 
 	self.draw = function(){
 

@@ -4,4 +4,51 @@ body{
 	font-weight: 100;
 	font-size: 19px;
 	color: #222;
+	margin: 0;
+}
+.full{
+	width:100%;
+	margin: 0;
+	display: block;
+}
+.shadow{
+	width:100%; height: 100%;
+	position: fixed;
+	top:0; left:0;
+	box-shadow: inset 0 0 20px rgba(0,0,0,0.75);
+}
+
+.example{
+	display: block;
+	float: left;
+	width: 180px;
+	height: 180px;
+
+	cursor: pointer;
+	transform: scale(1);
+	transition: all 0.2s ease-in-out;
+}
+.example:hover{
+	transform: scale(1.1);
+}
+.example > div{
+	width: 180px;
+	height: 180px;
+	background: #888;
+	border-radius: 100px;
+	float: left;
+	position: relative;
+}
+.example > div > div{
+	font-size: 25px;
+	color: #fff;
+	width: 150px;
+    height: 55px;
+	position: absolute;
+	top:0; left:0; right:0; bottom:0;
+	margin: auto;
+	text-align: center;
+}
+.example:nth-child(n+2){
+	margin-left: 19px;
 }

@@ -22,7 +22,7 @@
 	// Event Handling
 	// TODO: cursors stay when click button? orrrrr switch over to fake-cursor.
 	Key.onKeyDown = function(event){
-		if(loopy && loopy.modal && loopy.modal.isShowing) return;
+		if(window.loopy && loopy.modal && loopy.modal.isShowing) return;
 		var code = KEY_CODES[event.keyCode];
 	    Key[code] = true;
 	    publish("key/"+code);
@@ -30,7 +30,7 @@
 	    event.preventDefault();
 	}
 	Key.onKeyUp = function(event){
-		if(loopy && loopy.modal && loopy.modal.isShowing) return;
+		if(window.loopy && loopy.modal && loopy.modal.isShowing) return;
 		var code = KEY_CODES[event.keyCode];
 	    Key[code] = false;
 	    event.stopPropagation();

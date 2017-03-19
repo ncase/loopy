@@ -99,6 +99,7 @@ function Loopy(config){
 	self.setMode = function(mode){
 
 		self.mode = mode;
+		publish("loopy/mode");
 
 		// Play mode!
 		if(mode==Loopy.MODE_PLAY){
@@ -114,6 +115,7 @@ function Loopy(config){
 
 		// Edit mode!
 		if(mode==Loopy.MODE_EDIT){
+			self.showPlayTutorial = false; // donezo
 			self.sidebar.showPage("Edit");
 			self.playbar.showPage("Editor");
 			self.sidebar.dom.setAttribute("mode","edit");

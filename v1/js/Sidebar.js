@@ -98,8 +98,8 @@ function Sidebar(loopy){
 		}));
 		page.addComponent(new ComponentButton({
 			//label: "delete edge",
-			//label: "delete arrow",
-			label: "delete relationship",
+			label: "delete arrow",
+			//label: "delete relationship",
 			onclick: function(edge){
 				edge.kill();
 				self.showPage("Edit");
