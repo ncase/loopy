@@ -199,7 +199,7 @@ function Model(loopy){
 		if(drawCountdown<=0) return;
 
 		// Also only draw if last updated...
-		if(!_canvasDirty) return console.log('nope');
+		if(!_canvasDirty) return;
 		_canvasDirty = false;
 
 		// Clear!
