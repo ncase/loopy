@@ -248,29 +248,39 @@ function Model(loopy){
 		data.n = [];
 		for(var i=0;i<self.nodes.length;i++){
 			var node = self.nodes[i];
-			data.n.push({
-				id: node.id,
-				x: Math.round(node.x),
-				y: Math.round(node.y),
-				i: node.init,
-				l: encodeURIComponent(encodeURIComponent(node.label)),
-				h: node.hue,
-				r: node.radius
-			});
+			// 0 - id
+			// 1 - x
+			// 2 - y
+			// 3 - init value
+			// 4 - label
+			// 5 - hue
+			data.n.push([
+				node.id,
+				Math.round(node.x),
+				Math.round(node.y),
+				node.init,
+				encodeURIComponent(encodeURIComponent(node.label)),
+				node.hue
+			]);
 		}
 
 		// Edges
 		data.e = [];
 		for(var i=0;i<self.edges.length;i++){
 			var edge = self.edges[i];
-			var dataEdge = {
-				f: edge.from.id,
-				t: edge.to.id,
-				a: Math.round(edge.arc),
-				s: edge.strength
-			};
+			// 0 - from
+			// 1 - to
+			// 2 - arc
+			// 3 - strength
+			// 4 - rotation (optional)
+			var dataEdge = [
+				edge.from.id,
+				edge.to.id,
+				Math.round(edge.arc),
+				edge.strength
+			];
 			if(dataEdge.f==dataEdge.t){
-				dataEdge.r = Math.round(edge.rotation);
+				dataEdge.push(Math.round(edge.rotation));
 			}
 			data.e.push(dataEdge);
 		}
@@ -279,11 +289,14 @@ function Model(loopy){
 		data.l = [];
 		for(var i=0;i<self.labels.length;i++){
 			var label = self.labels[i];
-			data.l.push({
-				x: Math.round(label.x),
-				y: Math.round(label.y),
-				t: encodeURIComponent(encodeURIComponent(label.text))
-			});
+			// 0 - x
+			// 1 - y
+			// 2 - text
+			data.l.push([
+				Math.round(label.x),
+				Math.round(label.y),
+				encodeURIComponent(encodeURIComponent(label.text))
+			]);
 		}
 
 		// META.
@@ -305,35 +318,35 @@ function Model(loopy){
 		for(var i=0;i<data.n.length;i++){
 			var node = data.n[i];
 			self.addNode({
-				id: node.id,
-				x: node.x,
-				y: node.y,
-				init: node.i,
-				label: decodeURIComponent(node.l),
-				hue: node.h,
-				radius: node.r
+				id: node[0],
+				x: node[1],
+				y: node[2],
+				init: node[3],
+				label: decodeURIComponent(node[4]),
+				hue: node[5]
 			});
 		}
 
 		// Edges
 		for(var i=0;i<data.e.length;i++){
 			var edge = data.e[i];
-			self.addEdge({
-				from: edge.f,
-				to: edge.t,
-				arc: edge.a,
-				rotation: edge.r,
-				strength: edge.s
-			});
+			var edgeConfig = {
+				from: edge[0],
+				to: edge[1],
+				arc: edge[2],
+				strength: edge[3]
+			};
+			if(edge[4]) edgeConfig.rotation=edge[4];
+			self.addEdge(edgeConfig);
 		}
 
 		// Labels
 		for(var i=0;i<data.l.length;i++){
 			var label = data.l[i];
 			self.addLabel({
-				x: label.x,
-				y: label.y,
-				text: decodeURIComponent(label.t)
+				x: label[0],
+				y: label[1],
+				text: decodeURIComponent(label[2])
 			});
 		}
 

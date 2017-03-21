@@ -16,6 +16,8 @@ Node.COLORS = {
 Node.defaultValue = 0.5;
 Node.defaultHue = 0;
 
+Node.DEFAULT_RADIUS = 60;
+
 function Node(model, config){
 
 	var self = this;
@@ -34,7 +36,7 @@ function Node(model, config){
 		init: Node.defaultValue, // initial value!
 		label: "?",
 		hue: Node.defaultHue,
-		radius: 50
+		radius: Node.DEFAULT_RADIUS
 	});
 
 	// Value: from 0 to 1
