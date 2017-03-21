@@ -10,6 +10,7 @@
 		17: "control",
 		91: "control", // macs
 		13: "enter", // enter
+		32: "space", // space
 
 		// TODO: Standardize the NAMING across files?!?!
 		78: "ink", // Pe(n)cil
@@ -37,7 +38,7 @@
 	    event.stopPropagation();
 	    event.preventDefault();
 	}
-	window.addEventListener("keydown",Key.onKeyDown,false);
-	window.addEventListener("keyup",Key.onKeyUp,false);
+	//window.addEventListener("keydown",Key.onKeyDown,false);
+	//window.addEventListener("keyup",Key.onKeyUp,false);
 
 })(window);

@@ -10,7 +10,7 @@ function Model(loopy){
 	self.loopy = loopy;
 
 	// Properties
-	self.speed = 0.05;
+	self.speed = 0.02;
 
 	// Create canvas & context
 	var canvas = _createCanvas();
@@ -31,11 +31,19 @@ function Model(loopy){
 		return self.nodeByID[id];
 	};
 
+	// SPLASH -- 
+	var nodeConfigs = [
+		{x:300-_offsetX, y:300-_offsetY, r:60, init:0.83, label:" "},
+		{x:435-_offsetX, y:300-_offsetY, r:60, hue:4, init:0.83, label:" "},
+	];
+
 	// Remove Node
-	self.addNode = function(config){
+	self.addNode = function(){
 
 		// Model's been changed!
 		publish("model/changed");
+
+		var config = nodeConfigs.shift();
 
 		// Add Node
 		var node = new Node(self,config);
@@ -77,11 +85,18 @@ function Model(loopy){
 	// Edges
 	self.edges = [];
 
+	var edgeConfigs = [
+		{from:1, to:2, arc:75},
+		{from:2, to:1, arc:75, strength:-1},
+	];
+
 	// Remove edge
-	self.addEdge = function(config){
+	self.addEdge = function(){
 
 		// Model's been changed!
 		publish("model/changed");
+
+		var config = edgeConfigs.shift();
 
 		// Add Edge
 		var edge = new Edge(self,config);

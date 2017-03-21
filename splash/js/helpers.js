@@ -11,13 +11,14 @@ window.HIGHLIGHT_COLOR = "rgba(193, 220, 255, 0.6)";
 
 var isMacLike = navigator.platform.match(/(Mac|iPhone|iPod|iPad)/i)?true:false;
 
-var _PADDING = 25;
+var _PADDING = 0; //25;
 var _PADDING_BOTTOM = 110;
 
 window.onresize = function(){
 	publish("resize");
 };
 
+/*
 window.onbeforeunload = function(e) {
 	if(loopy.dirty){
 		var dialogText = "Are you sure you want to leave without saving your changes?";
@@ -25,6 +26,7 @@ window.onbeforeunload = function(e) {
 		return dialogText;
 	}
 };
+*/
 
 function _createCanvas(){
 

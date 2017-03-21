@@ -140,7 +140,7 @@ function Loopy(config){
 
 		// Create link
 		var dataString = self.model.serialize();
-		var uri = encodeURIComponent(dataString);
+		var uri = dataString; // encodeURIComponent(dataString);
 		var base = window.location.origin + window.location.pathname;
 		var historyLink = base+"?data="+uri;
 		var link;
