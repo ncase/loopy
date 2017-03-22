@@ -16,7 +16,7 @@ body{
 	padding: 50px;
 }
 .white.section{ background: #fff; }
-.light-gray.section{ background: #eee; }
+.light-gray.section{ background: #e9e9e9; }
 .dark-gray.section{ background: #444; color: #aaa; }
 .black.section{ background: #222; color: #fff; }
 
@@ -71,6 +71,14 @@ SPLASH
 	background-image: url(../img/logo.png);
 	background-size: 100% 100%;
 	pointer-events: none;
+}
+#arrow{
+	margin: 0 auto;
+	width: 0; 
+	height: 0; 
+	border-left: 30px solid transparent;
+	border-right: 30px solid transparent;
+	border-top: 30px solid #fff;
 }
 
 /**********
@@ -243,4 +251,18 @@ CREDITS:
 }
 .dark-gray a:hover{
 	color: hsl(0,80%,70%);
+}
+
+#sharing{
+	text-align: center;
+}
+
+ul.share-buttons{
+	display: inline-block;
+	list-style: none;
+	padding: 0;
+}
+ul.share-buttons li{
+	display: inline;
+	margin-right: -6px;
 }

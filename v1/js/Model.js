@@ -242,10 +242,14 @@ function Model(loopy){
 
 	self.serialize = function(){
 
-		var data = {};
+		var data = [];
+		// 0 - nodes
+		// 1 - edges
+		// 2 - labels
+		// 3 - UID
 
 		// Nodes
-		data.n = [];
+		var nodes = [];
 		for(var i=0;i<self.nodes.length;i++){
 			var node = self.nodes[i];
 			// 0 - id
@@ -254,7 +258,7 @@ function Model(loopy){
 			// 3 - init value
 			// 4 - label
 			// 5 - hue
-			data.n.push([
+			nodes.push([
 				node.id,
 				Math.round(node.x),
 				Math.round(node.y),
@@ -263,9 +267,10 @@ function Model(loopy){
 				node.hue
 			]);
 		}
+		data.push(nodes);
 
 		// Edges
-		data.e = [];
+		var edges = [];
 		for(var i=0;i<self.edges.length;i++){
 			var edge = self.edges[i];
 			// 0 - from
@@ -282,28 +287,31 @@ function Model(loopy){
 			if(dataEdge.f==dataEdge.t){
 				dataEdge.push(Math.round(edge.rotation));
 			}
-			data.e.push(dataEdge);
+			edges.push(dataEdge);
 		}
+		data.push(edges);
 
 		// Labels
-		data.l = [];
+		var labels = [];
 		for(var i=0;i<self.labels.length;i++){
 			var label = self.labels[i];
 			// 0 - x
 			// 1 - y
 			// 2 - text
-			data.l.push([
+			labels.push([
 				Math.round(label.x),
 				Math.round(label.y),
 				encodeURIComponent(encodeURIComponent(label.text))
 			]);
 		}
+		data.push(labels);
 
 		// META.
-		data.UID = Node._UID;
+		data.push(Node._UID);
 
 		// Return as string!
 		var dataString = JSON.stringify(data);
+		dataString = dataString.replace(/"/gi, "%22"); // and ONLY URIENCODE THE QUOTES
 		return dataString;
 
 	};
@@ -314,9 +322,15 @@ function Model(loopy){
 
 		var data = JSON.parse(dataString);
 
+		// Get from array!
+		var nodes = data[0];
+		var edges = data[1];
+		var labels = data[2];
+		var UID = data[3];
+
 		// Nodes
-		for(var i=0;i<data.n.length;i++){
-			var node = data.n[i];
+		for(var i=0;i<nodes.length;i++){
+			var node = nodes[i];
 			self.addNode({
 				id: node[0],
 				x: node[1],
@@ -328,8 +342,8 @@ function Model(loopy){
 		}
 
 		// Edges
-		for(var i=0;i<data.e.length;i++){
-			var edge = data.e[i];
+		for(var i=0;i<edges.length;i++){
+			var edge = edges[i];
 			var edgeConfig = {
 				from: edge[0],
 				to: edge[1],
@@ -341,8 +355,8 @@ function Model(loopy){
 		}
 
 		// Labels
-		for(var i=0;i<data.l.length;i++){
-			var label = data.l[i];
+		for(var i=0;i<labels.length;i++){
+			var label = labels[i];
 			self.addLabel({
 				x: label[0],
 				y: label[1],
@@ -351,7 +365,7 @@ function Model(loopy){
 		}
 
 		// META.
-		Node._UID = data.UID;
+		Node._UID = UID;
 
 	};
 
