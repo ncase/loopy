@@ -50,7 +50,7 @@ function Sidebar(loopy){
 		}));
 		page.addComponent("init", new ComponentSlider({
 			bg: "initial",
-			label: "Initial Value:",
+			label: "Start Amount:",
 			options: [0, 0.16, 0.33, 0.50, 0.66, 0.83, 1],
 			//options: [0, 1/6, 2/6, 3/6, 4/6, 5/6, 1],
 			oninput: function(value){
@@ -95,6 +95,9 @@ function Sidebar(loopy){
 			label: "<br><br>Relationship:",
 			//label: "Relationship:",
 			options: [1, -1]
+		}));
+		page.addComponent(new ComponentHTML({
+			html: "(to make a stronger relationship, draw multiple arrows!)"
 		}));
 		page.addComponent(new ComponentButton({
 			//label: "delete edge",
