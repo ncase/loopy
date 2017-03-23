@@ -82,7 +82,6 @@ function Dragger(loopy){
 			var labelX = Mouse.x - self.offsetX;
 			var labelY = Mouse.y - self.offsetY;
 
-			// TODO: also works for self-arrow!
 			if(edge.from!=edge.to){
 
 				// The Arc: whatever label *Y* is, relative to angle & first node's pos

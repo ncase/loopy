@@ -70,7 +70,6 @@ function Edge(model, config){
 		// Speed?
 		var speed = Math.pow(2,self.loopy.signalSpeed);
 		self.signalSpeed = speed/self.getArrowLength();
-		// TODO: Decide if this is the right idea???
 
 		// Move all signals along
 		for(var i=0; i<self.signals.length; i++){

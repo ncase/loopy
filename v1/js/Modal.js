@@ -88,13 +88,13 @@ function Modal(loopy){
 	// Credits
 	(function(){
 		var page = new Page();
-		page.width = 530;
-		page.height = 400;
+		page.width = 690;
+		page.height = 550;
 		page.addComponent(new ModalIframe({
 			page: page,
-			src: "pages/credits.html",
-			width: 500,
-			height: 350
+			src: "pages/credits/",
+			width: 660,
+			height: 500
 		}))
 		self.addPage("credits", page);
 	})();
