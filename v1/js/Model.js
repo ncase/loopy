@@ -312,6 +312,7 @@ function Model(loopy){
 		// Return as string!
 		var dataString = JSON.stringify(data);
 		dataString = dataString.replace(/"/gi, "%22"); // and ONLY URIENCODE THE QUOTES
+		dataString = dataString.substr(0, dataString.length-1) + "%5D";// also replace THE LAST CHARACTER
 		return dataString;
 
 	};
