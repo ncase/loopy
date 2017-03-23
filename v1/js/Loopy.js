@@ -159,10 +159,14 @@ function Loopy(config){
 		return link;
 
 	};
+	
+	// "BLANK START" DATA:
+	var _blankData = "[[[1,330,193,1,%22something%22,4],[2,332,352,1,%22something%2520else%22,5]],[[2,1,94,-1,0],[1,2,89,1,0]],[[536,277,%22need%2520ideas%2520on%2520what%2520to%250Asimulate%253F%2520how%2520about%253A%250A%250A%25E3%2583%25BBtechnology%250A%25E3%2583%25BBenvironment%250A%25E3%2583%25BBeconomics%250A%25E3%2583%25BBbusiness%250A%25E3%2583%25BBpolitics%250A%25E3%2583%25BBculture%250A%25E3%2583%25BBpsychology%250A%250A...or%2520anything%2520else%250Ayou%2520can%2520think%2520of!%22]],2]";
 
 	self.loadFromURL = function(){
 		var data = _getParameterByName("data");
-		if(data) self.model.deserialize(data);
+		if(!data) data=decodeURIComponent(_blankData);
+		self.model.deserialize(data);
 	}; 
 
 
