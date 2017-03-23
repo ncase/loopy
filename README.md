@@ -1,50 +1,14 @@
-Website Inspirations:
+![](https://i.imgur.com/S8c7E8o.gif)
 
-http://bigfootjs.com/
-https://www.sublimetext.com/
+**[LOOPY - a tool for thinking in systems](http://ncase.me/loopy/)**
 
-===========
+[Zero Rights Reserved](http://creativecommons.org/publicdomain/zero/1.0/):    
+LOOPY is entirely open source/public domain.
 
-EXAMPLES:
-- simple ecosystem
-- ???
-- automation & education
+To mirror LOOPY, just clone this Github Repo with the gh-pages branch.    
+([learn more about these free Github Pages](https://pages.github.com/))
 
-===========
-
-LOOPY
-a tool for thinking in systems
-
-WHY: one/two sentences about systems thinking for a complex world,
-feedback loops or whatever
-
-THREE GIFS:
-1. interactive simulations to ask "what if"
-2. program by DRAWING (drag and drop is too mainstream)
-3. remix (a dialogue, not just a monologue. thinking in -> talking in)
-
-mini: use it for...
-
-TRY AN EXAMPLE:
-(or, make your own from scratch)
-
-Happy simulating!
-
-. . .
-
-part of the EXPLORABLE EXPLANATIONS project
-
-Loopy is PUBLIC DOMAIN
-(source code)
-
-And is public domain, thanks to my patreon supporters
-made by Nicky Case
-
-Social sharing...
-
----
-
----
-
-MIRROR LOOPY
-(just clone github pages)
+Other Peeps' Code I Used:
+- [minpubsub](https://github.com/daniellmb/MinPubSub)
+- [balloon.css](https://kazzkiq.github.io/balloon.css/)
+- [simple sharing buttons](https://simplesharingbuttons.com/)
