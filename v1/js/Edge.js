@@ -44,7 +44,8 @@ function Edge(model, config){
 		var delta = signal.delta;
 		var age;
 		if(signal.age===undefined){
-			age = 13; // cos divisible by 1,2,3,4 + 1
+			// age = 13; // cos divisible by 1,2,3,4 + 1
+			age = 1000000; // actually just make signals last "forever".
 		}else{
 			age = signal.age-1;
 		}
