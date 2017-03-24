@@ -177,7 +177,13 @@ function Model(loopy){
 	// OR RESIZE or RESET
 	subscribe("resize",function(){ drawCountdown=drawCountdownFull; });
 	subscribe("model/reset",function(){ drawCountdown=drawCountdownFull; });
-	subscribe("loopy/mode",function(){ drawCountdown=drawCountdownFull; });
+	subscribe("loopy/mode",function(){
+		if(loopy.mode==Loopy.MODE_PLAY){
+			drawCountdown=drawCountdownFull*2;
+		}else{
+			drawCountdown=drawCountdownFull;
+		}
+	});
 
 	self.draw = function(){
 
@@ -453,7 +459,7 @@ function Model(loopy){
 	});
 
 	// Centering & Scaling
-	self.center = function(andScale){
+	self.getBounds = function(){
 
 		// If no nodes & no labels, forget it.
 		if(self.nodes.length==0 && self.labels.length==0) return;
@@ -476,6 +482,27 @@ function Model(loopy){
 		_testObjects(self.nodes);
 		_testObjects(self.edges);
 		_testObjects(self.labels);
+
+		// Return
+		return {
+			left:left,
+			top:top,
+			right:right,
+			bottom:bottom
+		};
+
+	};
+	self.center = function(andScale){
+
+		// If no nodes & no labels, forget it.
+		if(self.nodes.length==0 && self.labels.length==0) return;
+
+		// Get bounds of ALL objects...
+		var bounds = self.getBounds();
+		var left = bounds.left;
+		var top = bounds.top;
+		var right = bounds.right;
+		var bottom = bounds.bottom;
 
 		// Re-center!
 		var canvasses = document.getElementById("canvasses");

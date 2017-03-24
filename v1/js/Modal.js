@@ -202,6 +202,13 @@ function Modal(loopy){
 		output.dom.style.fontSize = "12px";
 		sidebar.appendChild(output.dom);
 
+		// Label 3
+		var label = document.createElement("div");
+		label.style.fontSize = "15px";
+		label.style.textAlign = "right";
+		label.innerHTML = "<br><br>(note: the REMIX button lets someone else, well, remix your model! don't worry, it'll just be a copy, it won't affect the original.)";
+		sidebar.appendChild(label);
+
 		// IFRAME
 		var iframe = page.addComponent(new ModalIframe({
 			page: page,

@@ -253,9 +253,15 @@ function Node(model, config){
 		}
 		ctx.fillText(self.label, 0, 0);
 
-		// Controls!
+		// WOBBLE CONTROLS
 		var cl = 40;
 		var cy = 0;
+		if(self.loopy.showPlayTutorial && self.loopy.wobbleControls>0){
+			var wobble = self.loopy.wobbleControls*(Math.TAU/30);
+			cy = Math.abs(Math.sin(wobble))*10;
+		}
+
+		// Controls!
 		ctx.globalAlpha = _controlsAlpha;
 		ctx.strokeStyle = "rgba(0,0,0,0.8)";
 		// top arrow

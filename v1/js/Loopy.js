@@ -73,6 +73,7 @@ function Loopy(config){
 	// Update
 	self.update = function(){
 		Mouse.update();
+		if(self.wobbleControls>=0) self.wobbleControls--; // wobble
 		if(!self.modal.isShowing){ // modAl
 			self.model.update(); // modEl
 		}
@@ -86,7 +87,6 @@ function Loopy(config){
 		}
 		requestAnimationFrame(self.draw);
 	};
-	requestAnimationFrame(self.draw);
 
 	// TODO: Smarter drawing of Ink, Edges, and Nodes
 	// (only Nodes need redrawing often. And only in PLAY mode.)
@@ -96,6 +96,7 @@ function Loopy(config){
 	//////////////////////
 
 	self.showPlayTutorial = false;
+	self.wobbleControls = -1;
 	self.setMode = function(mode){
 
 		self.mode = mode;
@@ -104,6 +105,7 @@ function Loopy(config){
 		// Play mode!
 		if(mode==Loopy.MODE_PLAY){
 			self.showPlayTutorial = true; // show once!
+			if(!self.embedded) self.wobbleControls=45; // only if NOT embedded
 			self.sidebar.showPage("Edit");
 			self.playbar.showPage("Player");
 			self.sidebar.dom.setAttribute("mode","play");
@@ -116,6 +118,7 @@ function Loopy(config){
 		// Edit mode!
 		if(mode==Loopy.MODE_EDIT){
 			self.showPlayTutorial = false; // donezo
+			self.wobbleControls = -1; // donezo
 			self.sidebar.showPage("Edit");
 			self.playbar.showPage("Editor");
 			self.sidebar.dom.setAttribute("mode","edit");
@@ -161,7 +164,7 @@ function Loopy(config){
 	};
 	
 	// "BLANK START" DATA:
-	var _blankData = "[[[1,330,193,1,%22something%22,4],[2,332,352,1,%22something%2520else%22,5]],[[2,1,94,-1,0],[1,2,89,1,0]],[[536,277,%22need%2520ideas%2520on%2520what%2520to%250Asimulate%253F%2520how%2520about%253A%250A%250A%25E3%2583%25BBtechnology%250A%25E3%2583%25BBenvironment%250A%25E3%2583%25BBeconomics%250A%25E3%2583%25BBbusiness%250A%25E3%2583%25BBpolitics%250A%25E3%2583%25BBculture%250A%25E3%2583%25BBpsychology%250A%250A...or%2520anything%2520else%250Ayou%2520can%2520think%2520of!%22]],2]";
+	var _blankData = "[[[1,403,224,1,%22something%22,4],[2,405,383,1,%22something%2520else%22,5]],[[2,1,94,-1,0],[1,2,89,1,0]],[[609,312,%22need%2520ideas%2520on%2520what%2520to%250Asimulate%253F%2520how%2520about%253A%250A%250A%25E3%2583%25BBtechnology%250A%25E3%2583%25BBenvironment%250A%25E3%2583%25BBeconomics%250A%25E3%2583%25BBbusiness%250A%25E3%2583%25BBpolitics%250A%25E3%2583%25BBculture%250A%25E3%2583%25BBpsychology%250A%250A...or%252C%2520better%2520yet%252C%2520some%250A*combination*%2520of%2520the%250Aabove%2520systems!%22]],2%5D";
 
 	self.loadFromURL = function(){
 		var data = _getParameterByName("data");
@@ -196,6 +199,43 @@ function Loopy(config){
 		// Autoplay!
 		self.setMode(Loopy.MODE_PLAY);
 
+	}else{
+
+		// Center all the nodes & labels
+
+		// If no nodes & no labels, forget it.
+		if(self.model.nodes.length>0 || self.model.labels.length>0){
+
+			// Get bounds of ALL objects...
+			var bounds = self.model.getBounds();
+			var left = bounds.left;
+			var top = bounds.top;
+			var right = bounds.right;
+			var bottom = bounds.bottom;
+
+			// Re-center!
+			var canvasses = document.getElementById("canvasses");
+			var cx = (left+right)/2;
+			var cy = (top+bottom)/2;
+			var offsetX = (canvasses.clientWidth+50)/2 - cx;
+			var offsetY = (canvasses.clientHeight-80)/2 - cy;
+
+			// MOVE ALL NODES
+			for(var i=0;i<self.model.nodes.length;i++){
+				var node = self.model.nodes[i];
+				node.x += offsetX;
+				node.y += offsetY;
+			}
+
+			// MOVE ALL LABELS
+			for(var i=0;i<self.model.labels.length;i++){
+				var label = self.model.labels[i];
+				label.x += offsetX;
+				label.y += offsetY;
+			}
+
+		}
+
 	}
 
 	// NOT DIRTY, THANKS
@@ -203,6 +243,9 @@ function Loopy(config){
 
 	// SHOW ME, THANKS
 	document.body.style.opacity = "";
+
+	// GO.
+	requestAnimationFrame(self.draw);
 
 
 }
