@@ -1,6 +1,6 @@
 ![](https://i.imgur.com/S8c7E8o.gif)
 
-###[LOOPY - a tool for thinking in systems](http://ncase.me/loopy/)
+### [LOOPY - a tool for thinking in systems](http://ncase.me/loopy/)
 
 [Zero Rights Reserved](http://creativecommons.org/publicdomain/zero/1.0/): 
 LOOPY is entirely open source/public domain.
