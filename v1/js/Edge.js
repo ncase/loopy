@@ -6,6 +6,7 @@ EDGE!
 
 Edge.allSignals = [];
 Edge.MAX_SIGNALS = 50;
+Edge.defaultStrength = 1;
 
 function Edge(model, config){
 
@@ -23,7 +24,7 @@ function Edge(model, config){
 		to: _makeErrorFunc("CAN'T LEAVE 'TO' BLANK"),
 		arc: 100,
 		rotation: 0,
-		strength: 1
+		strength: Edge.defaultStrength
 	});
 
 	// Get my NODES

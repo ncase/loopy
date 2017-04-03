@@ -94,10 +94,14 @@ function Sidebar(loopy){
 			bg: "strength",
 			label: "<br><br>Relationship:",
 			//label: "Relationship:",
-			options: [1, -1]
+			options: [1, -1],
+			oninput: function(value){
+				Edge.defaultStrength = value;
+			}
 		}));
 		page.addComponent(new ComponentHTML({
-			html: "(to make a stronger relationship, draw multiple arrows!)"
+			html: "(to make a stronger relationship, draw multiple arrows!)<br><br>"+
+			"(to make a delayed relationship, draw longer arrows)"
 		}));
 		page.addComponent(new ComponentButton({
 			//label: "delete edge",
