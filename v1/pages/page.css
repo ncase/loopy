@@ -18,6 +18,44 @@ body{
 	box-shadow: inset 0 0 20px rgba(0,0,0,0.75);
 }
 
+/********************************/
+/********************************/
+
+#examples{
+	width: 620px;
+	margin:0 auto;
+	overflow: hidden;
+}
+
+#examples hr{
+	border:none;
+	border-bottom: 2px dashed #aaa;
+	width: 560px;
+	margin: 0 auto;
+	margin-top: 15px;
+}
+
+#more_examples{
+	color: #333;
+	width: 500px;
+	margin: 30px auto;
+}
+#more_examples li{
+	color: #666;
+	margin-bottom: 1em;
+	position: relative;
+    left: -0.8em;
+}
+#more_examples li a{
+	color: #dd4040;
+}
+#more_examples li a:hover{
+	color: #ee6060;
+}
+#more_examples li a.twitter{
+	color: inherit;
+}
+
 .example{
 	display: block;
 	float: left;
