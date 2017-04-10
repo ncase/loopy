@@ -12,3 +12,13 @@ Other Peeps' Open Source Code I Used:
 - [minpubsub](https://github.com/daniellmb/MinPubSub)
 - [balloon.css](https://kazzkiq.github.io/balloon.css/)
 - [simple sharing buttons](https://simplesharingbuttons.com/)
+
+Check out these [user-made LOOPY's!](http://ncase.me/loopy/v1/pages/examples)
+
+---
+
+Version 1.1:    
+- node amounts are now "uncapped"    
+- better distribution of "signals"
+
+Version 1.0: the whole everything.
