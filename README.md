@@ -13,7 +13,7 @@ Other Peeps' Open Source Code I Used:
 - [balloon.css](https://kazzkiq.github.io/balloon.css/)
 - [simple sharing buttons](https://simplesharingbuttons.com/)
 
-Check out these [user-made LOOPY's!](http://ncase.me/loopy/v1/pages/examples)
+Check out these [user-made LOOPY's!](http://ncase.me/loopy/v1.1/pages/examples)
 
 ---
 

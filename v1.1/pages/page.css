@@ -121,13 +121,15 @@ body{
 .credits_peeps{
 	overflow: hidden;
 	padding-bottom: 20px;
+	text-align: center;
 }
 .credits_peeps > div{
 	position: relative;
 	width: 150px;
 	height: 210px;
-	float: left;
 	text-align: center;
+	display: inline-block;
+	margin-right: -6px;
 }
 .credits_peeps > div > img:nth-child(1){
 	position: absolute;
