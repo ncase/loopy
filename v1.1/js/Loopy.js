@@ -206,6 +206,16 @@ function Loopy(config){
 		// Autoplay!
 		self.setMode(Loopy.MODE_PLAY);
 
+		// Also, HACK: auto signal
+		var signal = _getParameterByName("signal");
+		if(signal){
+			signal = JSON.parse(signal);
+			var node = self.model.getNode(signal[0]);
+			node.takeSignal({
+				delta: signal[1]*0.33
+			});
+		}
+
 	}else{
 
 		// Center all the nodes & labels
