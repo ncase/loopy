@@ -118,12 +118,14 @@ function Node(model, config){
 		if (signal.delta < 0) {
 			if (self.value < 0.1) {
 				self.sendSignal(signal);
+				self.value = 0;
 			} else {
 				self.value += signal.delta;	
 			}
 		} else if (signal.delta > 0) {
 			if (self.value > 0.9) {
 				self.sendSignal(signal);
+				self.value = 1;
 			} else {
 				self.value += signal.delta;	
 			}
