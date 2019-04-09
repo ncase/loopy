@@ -139,6 +139,34 @@ function Loopy(config){
 		if(!self.embedded) self.dirty = true;
 	});
 
+	subscribe("export/file", function(){
+		var element = document.createElement('a');
+		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + self.model.serialize());
+		element.setAttribute('download', "system_model.loopy");
+
+		element.style.display = 'none';
+		document.body.appendChild(element);
+
+		element.click();
+
+		document.body.removeChild(element);
+	});
+
+	subscribe("import/file", function(){
+		let input = document.createElement('input');
+		input.type = 'file';
+		input.onchange = e => {
+			var file = e.target.files[0];
+			var reader = new FileReader();
+			reader.readAsText(file,'UTF-8');
+			reader.onload = readerEvent => {
+				var content = readerEvent.target.result;
+				self.model.deserialize(content);
+			}
+		};
+		input.click();
+	});
+
 	self.saveToURL = function(embed){
 
 		// Create link
@@ -160,7 +188,6 @@ function Loopy(config){
 		window.history.replaceState(null, null, historyLink);
 
 		return link;
-
 	};
 	
 	// "BLANK START" DATA:

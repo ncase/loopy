@@ -383,6 +383,10 @@ function Model(loopy){
 			self.nodes[0].kill();
 		}
 
+		// Just kill ALL labels.
+		while(self.labels.length>0){
+			self.labels[0].kill();
+		}
 	};
 
 
