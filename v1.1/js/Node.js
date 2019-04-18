@@ -82,6 +82,13 @@ function Node(model, config){
 			// Change my value
 			var delta = _controlsDirection*0.33; // HACK: hard-coded 0.33
 			self.value += delta;
+			
+			// Don't allow the node to pass threshold
+			if (self.value > 1) {
+				self.value = 1;
+			} else if (self.value < 0) {
+				self.value = 0;
+			}
 
 			// And also PROPAGATE THE DELTA
 			self.sendSignal({
@@ -112,14 +119,26 @@ function Node(model, config){
 			myEdges[i].addSignal(signal);
 		}
 	};
-
+	
 	self.takeSignal = function(signal){
-
-		// Change value
-		self.value += signal.delta;
-
-		// Propagate signal
-		self.sendSignal(signal);
+		
+		// Only propagate beyond threshold
+		if (signal.delta < 0) {
+			if (self.value < 0.1) {
+				self.sendSignal(signal);
+			} else {
+				self.value += signal.delta;	
+			}
+		} else if (signal.delta > 0) {
+			if (self.value > 0.9) {
+				self.sendSignal(signal);
+			} else {
+				self.value += signal.delta;	
+			}
+		} else {
+			self.value += signal.delta;
+		}
+		
 		// self.sendSignal(signal.delta*0.9); // PROPAGATE SLIGHTLY WEAKER
 
 		// Animation
