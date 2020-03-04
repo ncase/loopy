@@ -114,12 +114,25 @@ function Node(model, config){
 	};
 
 	self.takeSignal = function(signal){
-
-		// Change value
-		self.value += signal.delta;
-
-		// Propagate signal
-		self.sendSignal(signal);
+		// Only propagate beyond threshold
+		if (signal.delta < 0) {
+			if (self.value < 0.1) {
+				self.sendSignal(signal);
+				self.value = 0;
+			} else {
+				self.value += signal.delta;	
+			}
+		} else if (signal.delta > 0) {
+			if (self.value > 0.9) {
+				self.sendSignal(signal);
+				self.value = 1;
+			} else {
+				self.value += signal.delta;	
+			}
+		} else {
+			self.value += signal.delta;
+		}
+		
 		// self.sendSignal(signal.delta*0.9); // PROPAGATE SLIGHTLY WEAKER
 
 		// Animation
