@@ -10,11 +10,13 @@ Node.COLORS = {
 	2: "#FEEE43", // yellow
 	3: "#BFEE3F", // green
 	4: "#7FD4FF", // blue
-	5: "#A97FFF" // purple
+	5: "#A97FFF", // purple
+	6: "#eeeeee"  // light grey -> died
 };
 
 Node.defaultValue = 0.5;
 Node.defaultHue = 0;
+Node.defaultTransmissionBehavior = 0;
 
 Node.DEFAULT_RADIUS = 60;
 
@@ -36,6 +38,7 @@ function Node(model, config){
 		init: Node.defaultValue, // initial value!
 		label: "?",
 		hue: Node.defaultHue,
+		transmissionBehavior: Node.defaultTransmissionBehavior,
 		radius: Node.DEFAULT_RADIUS
 	});
 
@@ -81,13 +84,10 @@ function Node(model, config){
 
 			// Change my value
 			var delta = _controlsDirection*0.33; // HACK: hard-coded 0.33
-			self.value += delta;
-
-			// And also PROPAGATE THE DELTA
-			self.sendSignal({
+			self.live();
+			self.takeSignal({
 				delta: delta
 			});
-
 		}
 
 	});
@@ -114,30 +114,20 @@ function Node(model, config){
 	};
 
 	self.takeSignal = function(signal){
+		if(self.died) return;
+		self.value += signal.delta;
 		// Only propagate beyond threshold
-		if (signal.delta < 0) {
-			if (self.value < 0.1) {
-				self.sendSignal(signal);
-				self.value = 0;
-			} else {
-				self.value += signal.delta;	
-			}
-		} else if (signal.delta > 0) {
-			if (self.value > 0.9) {
-				self.sendSignal(signal);
-				self.value = 1;
-			} else {
-				self.value += signal.delta;	
-			}
-		} else {
-			self.value += signal.delta;
-		}
-		
+		if(!self.transmissionBehavior) return self.sendSignal(signal);
+		if (self.value < 0 && self.transmissionBehavior===2) return self.die();
+		if(self.value<0 || self.value>1) self.sendSignal(signal);
+		if(self.value<0) self.value = 0;
+		if(self.value>1) self.value = 1;
+
 		// self.sendSignal(signal.delta*0.9); // PROPAGATE SLIGHTLY WEAKER
 
 		// Animation
 		// _offsetVel += 0.08 * (signal.delta/Math.abs(signal.delta));
-		_offsetVel -= 6 * (signal.delta/Math.abs(signal.delta));
+		//??????_offsetVel -= 6 * (signal.delta/Math.abs(signal.delta));
 
 	};
 
@@ -317,6 +307,23 @@ function Node(model, config){
 		// Killed!
 		publish("kill",[self]);
 
+	};
+
+	//////////////////////////////////////
+	// NODE DIE //////////////////////////
+	//////////////////////////////////////
+
+	self.die = function(){
+		self.died=true;
+		self.oldhue = self.hue;
+		self.hue=6;
+		self.value = 0;
+		publish("died",[self]);
+	};
+	self.live = function(){
+		self.died=false;
+		self.hue = self.oldhue || self.hue;
+		publish("live",[self]);
 	};
 
 	//////////////////////////////////////

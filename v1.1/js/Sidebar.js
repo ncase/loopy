@@ -57,6 +57,14 @@ function Sidebar(loopy){
 				Node.defaultValue = value;
 			}
 		}));
+		page.addComponent('transmissionBehavior', new ComponentSlider({
+			bg: "transmissionBehavior",
+			label: "Transmission behavior :",
+			options: [0,1,2], //["allwaysTransmit", "accumulate to limit then transmit", "accumulate to limit then transmit, if empty, die"],
+			oninput: function(value){
+				Node.defaultTransmissionBehavior = value;
+			}
+		}));
 		page.onedit = function(){
 
 			// Set color of Slider

@@ -264,13 +264,15 @@ function Model(loopy){
 			// 3 - init value
 			// 4 - label
 			// 5 - hue
+			// 6 - transmissionBehavior
 			nodes.push([
 				node.id,
 				Math.round(node.x),
 				Math.round(node.y),
 				node.init,
 				encodeURIComponent(encodeURIComponent(node.label)),
-				node.hue
+				node.hue,
+				node.transmissionBehavior
 			]);
 		}
 		data.push(nodes);
@@ -344,7 +346,8 @@ function Model(loopy){
 				y: node[2],
 				init: node[3],
 				label: decodeURIComponent(node[4]),
-				hue: node[5]
+				hue: node[5],
+				transmissionBehavior: node[6]
 			});
 		}
 
