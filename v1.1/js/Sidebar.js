@@ -107,7 +107,7 @@ function Sidebar(loopy){
 			bg: "strength",
 			label: "<br><br>Relationship:",
 			//label: "Relationship:",
-			options: [1, -1],
+			options: [-9, -1, 1, 9],
 			oninput: function(value){
 				Edge.defaultStrength = value;
 			}

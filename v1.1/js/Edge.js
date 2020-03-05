@@ -109,7 +109,13 @@ function Edge(model, config){
 		while(lastSignal && lastSignal.position>=1){
 
 			// Actually pass it along
-			lastSignal.delta *= self.strength; // flip at the end only!
+			switch (self.strength) {
+				case -9: lastSignal.delta = -Math.abs(lastSignal.delta); break; // any signal -> negative signal
+				case -1: lastSignal.delta = -lastSignal.delta; break; // inverter mode
+				case 1: break; // transmit signal as is
+				case 9:  lastSignal.delta = Math.abs(lastSignal.delta); break; // any signal -> positive signal
+				default: lastSignal.delta *= self.strength;
+			}
 			self.to.takeSignal(lastSignal);
 			
 			// Pop it, move on down
@@ -158,17 +164,21 @@ function Edge(model, config){
 			}
 			var signalColor = _blendColors(fromColor, toColor, blend);
 
-			// Also, tween the scaleY, flipping, IF STRENGTH<0
-			if(self.strength<0){
+			// Also, tween the scaleY, flipping, IF delta change
+			if(
+				(self.strength===9 && signal.delta<0)
+				|| (self.strength===-9 && signal.delta>0)
+				|| (self.strength<0 && self.strength!==-9)
+			){
 				// sin/cos-animate it for niceness.
 				var flip = Math.cos(blend*Math.PI); // (0,1) -> (1,-1)
 				ctx.scale(1, flip);
 			}
 
 			// Signal's age = alpha.
-			if(signal.age==2){
+			if(signal.age===2){
 				ctx.globalAlpha = 0.5;
-			}else if(signal.age==1){
+			}else if(signal.age===1){
 				ctx.globalAlpha = 0.25;
 			}
 
@@ -275,7 +285,9 @@ function Edge(model, config){
 		// My label is...
 		var s = self.strength;
 		var l;
-		if(s>=3) l="+++";
+		if(s===9) l="|+|";
+		else if(s===-9) l="|–|";
+		else if(s>=3) l="+++";
 		else if(s>=2) l="++";
 		else if(s>=1) l="+";
 		else if(s==0) l="?";
@@ -365,7 +377,10 @@ function Edge(model, config){
 	self.draw = function(ctx){
 
 		// Width & Color
-		ctx.lineWidth = 4*Math.abs(self.strength)-2;
+		switch (self.strength) {
+			case -9: case -1: case 1: case 9: ctx.lineWidth = 2; break;
+			default: ctx.lineWidth = 4*Math.abs(self.strength)-2;
+		}
 		ctx.strokeStyle = "#666";
 
 		// Translate & Rotate!
