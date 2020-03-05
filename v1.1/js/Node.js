@@ -11,7 +11,7 @@ Node.COLORS = {
 	3: "#BFEE3F", // green
 	4: "#7FD4FF", // blue
 	5: "#A97FFF", // purple
-	6: "#eeeeee"  // light grey -> died
+	6: "#DDDDDD"  // light grey -> died
 };
 
 Node.defaultValue = 0.5;
@@ -97,6 +97,7 @@ function Node(model, config){
 	});
 	var _listenerReset = subscribe("model/reset", function(){
 		self.value = self.init;
+		self.live();
 	});
 
 	//////////////////////////////////////
