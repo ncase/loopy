@@ -57,9 +57,14 @@ function Sidebar(loopy){
 				Node.defaultValue = value;
 			}
 		}));
+		const transmissionBehaviorLabel = [
+			"On signal : <br/>allways transmit",
+			"On signal : <br/>transmit if outbound",
+			"On signal : <br/>transmit if overflow, die if empty",
+		];
 		page.addComponent('transmissionBehavior', new ComponentSlider({
 			bg: "transmissionBehavior",
-			label: "Transmission behavior :",
+			label: "On signal :",
 			options: [0,1,2], //["allwaysTransmit", "accumulate to limit then transmit", "accumulate to limit then transmit, if empty, die"],
 			oninput: function(value){
 				Node.defaultTransmissionBehavior = value;
@@ -75,7 +80,7 @@ function Sidebar(loopy){
 			// Focus on the name field IF IT'S "" or "?"
 			var name = node.label;
 			if(name=="" || name=="?") page.getComponent("label").select();
-
+			page.getComponent("transmissionBehavior").dom.querySelector('.component_label').innerHTML = transmissionBehaviorLabel[node.transmissionBehavior];
 		};
 		page.addComponent(new ComponentButton({
 			label: "delete node",
