@@ -104,15 +104,17 @@ function Sidebar(loopy){
 			}
 		}));
 		const strengthLinkLabel = [];
-		strengthLinkLabel[-9] =	"<br><br>Relationship mode : <br/>any signal ↘ signal less";
-		strengthLinkLabel[-1] =	"<br><br>Relationship mode : <br/>any signal ⤨ opposite signal";
-		strengthLinkLabel[1] =	"<br><br>Relationship mode : <br/>any signal ⇉ same signal";
-		strengthLinkLabel[9] =	"<br><br>Relationship mode : <br/>any signal ↗ signal more";
+		strengthLinkLabel[-8] =	"<br><br>Relationship mode : <br/>filter : only allow signal less";
+		strengthLinkLabel[-9] =	"<br><br>Relationship mode : <br/>any signal become signal less";
+		strengthLinkLabel[-1] =	"<br><br>Relationship mode : <br/>convert to opposite signal";
+		strengthLinkLabel[1] =	"<br><br>Relationship mode : <br/>preserve same signal";
+		strengthLinkLabel[9] =	"<br><br>Relationship mode : <br/>any signal become signal more";
+		strengthLinkLabel[8] =	"<br><br>Relationship mode : <br/>filter : only allow signal more";
 		page.addComponent("strength", new ComponentSlider({
 			bg: "strength",
 			label: "<br><br>Relationship:",
 			//label: "Relationship:",
-			options: [-9, -1, 1, 9],
+			options: [-8, -9, -1, 1, 9, 8],
 			oninput: function(value){
 				Edge.defaultStrength = value;
 			}

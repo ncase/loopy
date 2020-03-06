@@ -17,9 +17,12 @@ Check out these [user-made LOOPY's!](http://ncase.me/loopy/v1.1/pages/examples)
 
 ---
 
-Version 1.1:    
+Version 1.1.1:
+- custom signal transmission behavior ( allways transmit || transmit if outbound || transmit if overflow, die if empty )
+- edge now have 6 transmission behavior (filter allow less || convert to less || invert || preserve || convert to more || filter allow more)
+
+Version 1.1:
 - node amounts are now "uncapped"    
 - better distribution of "signals"
-- custom signal transmission behavior ( allways transmit || transmit if outbound || transmit if overflow, die if empty )
 
 Version 1.0: the whole everything.

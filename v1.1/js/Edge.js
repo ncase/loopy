@@ -37,6 +37,10 @@ function Edge(model, config){
 	self.signalSpeed = 0;
 	self.addSignal = function(signal){
 
+		// Filter edge
+		if(self.strength===-8 && signal.delta>0) return;
+		if(self.strength===8 && signal.delta<0) return;
+
 		// IF ALREADY TOO MANY, FORGET IT
 		if(Edge.allSignals.length>Edge.MAX_SIGNALS){
 			return;
@@ -112,7 +116,7 @@ function Edge(model, config){
 			switch (self.strength) {
 				case -9: lastSignal.delta = -Math.abs(lastSignal.delta); break; // any signal -> negative signal
 				case -1: lastSignal.delta = -lastSignal.delta; break; // inverter mode
-				case 1: break; // transmit signal as is
+				case 1: case -8: case 8: break; // transmit signal as is
 				case 9:  lastSignal.delta = Math.abs(lastSignal.delta); break; // any signal -> positive signal
 				default: lastSignal.delta *= self.strength;
 			}
@@ -168,7 +172,7 @@ function Edge(model, config){
 			if(
 				(self.strength===9 && signal.delta<0)
 				|| (self.strength===-9 && signal.delta>0)
-				|| (self.strength<0 && self.strength!==-9)
+				|| (self.strength<0 && self.strength!==-8 && self.strength!==-9)
 			){
 				// sin/cos-animate it for niceness.
 				var flip = Math.cos(blend*Math.PI); // (0,1) -> (1,-1)
@@ -287,6 +291,8 @@ function Edge(model, config){
 		var l;
 		if(s===9) l="|+|";
 		else if(s===-9) l="|–|";
+		else if(s===-8) l="F–";
+		else if(s===8) l="F+";
 		else if(s>=3) l="+++";
 		else if(s>=2) l="++";
 		else if(s>=1) l="+";
@@ -378,7 +384,7 @@ function Edge(model, config){
 
 		// Width & Color
 		switch (self.strength) {
-			case -9: case -1: case 1: case 9: ctx.lineWidth = 2; break;
+			case -9: case -8: case -1: case 1: case 8: case 9: ctx.lineWidth = 2; break;
 			default: ctx.lineWidth = 4*Math.abs(self.strength)-2;
 		}
 		ctx.strokeStyle = "#666";
