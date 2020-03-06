@@ -118,9 +118,9 @@ function Node(model, config){
 		if(self.died) return;
 		self.value += signal.delta;
 		// Only propagate beyond threshold
-		if(!self.transmissionBehavior) return self.sendSignal(signal);
-		if (self.value < 0 && self.transmissionBehavior===2) return self.die();
-		if(self.value<0 || self.value>1) self.sendSignal(signal);
+		if(!self.transmissionBehavior) self.sendSignal(signal);
+		else if (self.value < 0 && self.transmissionBehavior===2) self.die();
+		else if(self.value<0 || self.value>1) self.sendSignal(signal);
 		if(self.value<0) self.value = 0;
 		if(self.value>1) self.value = 1;
 
@@ -128,7 +128,7 @@ function Node(model, config){
 
 		// Animation
 		// _offsetVel += 0.08 * (signal.delta/Math.abs(signal.delta));
-		//??????_offsetVel -= 6 * (signal.delta/Math.abs(signal.delta));
+		_offsetVel -= 6 * (signal.delta/Math.abs(signal.delta));
 
 	};
 
