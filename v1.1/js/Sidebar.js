@@ -70,17 +70,28 @@ function Sidebar(loopy){
 				Node.defaultTransmissionBehavior = value;
 			}
 		}));
+		page.addComponent("aggregationLatency", new ComponentSlider({
+			bg: "aggregationLatency",
+			label: "Aggregation latency :",
+			options: [ 0, 0.1, 0.2, 0.4, 0.8, 1.6, 3.2, 6.4],
+			oninput: function(value){
+				Node.defaultAggregationLatency = value;
+			}
+		}));
+
 		page.onedit = function(){
 
 			// Set color of Slider
 			var node = page.target;
 			var color = Node.COLORS[node.hue];
 			page.getComponent("init").setBGColor(color);
+			page.getComponent("aggregationLatency").setBGColor(color);
 
 			// Focus on the name field IF IT'S "" or "?"
 			var name = node.label;
 			if(name=="" || name=="?") page.getComponent("label").select();
 			page.getComponent("transmissionBehavior").dom.querySelector('.component_label').innerHTML = transmissionBehaviorLabel[node.transmissionBehavior];
+			page.getComponent("aggregationLatency").dom.querySelector('.component_label').innerHTML = "Aggregation latency : "+node.aggregationLatency+"s";
 		};
 		page.addComponent(new ComponentButton({
 			label: "delete node",

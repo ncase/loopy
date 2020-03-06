@@ -265,6 +265,7 @@ function Model(loopy){
 			// 4 - label
 			// 5 - hue
 			// 6 - transmissionBehavior
+			// 7 - aggregationLatency
 			nodes.push([
 				node.id,
 				Math.round(node.x),
@@ -272,7 +273,8 @@ function Model(loopy){
 				node.init,
 				encodeURIComponent(encodeURIComponent(node.label)),
 				node.hue,
-				node.transmissionBehavior
+				node.transmissionBehavior,
+				node.aggregationLatency
 			]);
 		}
 		data.push(nodes);
@@ -347,7 +349,8 @@ function Model(loopy){
 				init: node[3],
 				label: decodeURIComponent(node[4]),
 				hue: node[5],
-				transmissionBehavior: node[6]
+				transmissionBehavior: node[6],
+				aggregationLatency: node[7]
 			});
 		}
 

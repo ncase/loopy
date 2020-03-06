@@ -17,6 +17,7 @@ Node.COLORS = {
 Node.defaultValue = 0.5;
 Node.defaultHue = 0;
 Node.defaultTransmissionBehavior = 0;
+Node.defaultAggregationLatency = 0;
 
 Node.DEFAULT_RADIUS = 60;
 
@@ -39,6 +40,7 @@ function Node(model, config){
 		label: "?",
 		hue: Node.defaultHue,
 		transmissionBehavior: Node.defaultTransmissionBehavior,
+		aggregationLatency: Node.defaultAggregationLatency,
 		radius: Node.DEFAULT_RADIUS
 	});
 
@@ -97,6 +99,7 @@ function Node(model, config){
 	});
 	var _listenerReset = subscribe("model/reset", function(){
 		self.value = self.init;
+		self.reseted=true;
 		self.live();
 	});
 
@@ -117,18 +120,34 @@ function Node(model, config){
 	self.takeSignal = function(signal){
 		if(self.died) return;
 		self.value += signal.delta;
-		// Only propagate beyond threshold
-		if(!self.transmissionBehavior) self.sendSignal(signal);
-		else if (self.value < 0 && self.transmissionBehavior===2) self.die();
-		else if(self.value<0 || self.value>1) self.sendSignal(signal);
-		if(self.value<0) self.value = 0;
-		if(self.value>1) self.value = 1;
+		if(!self.deltaPool) self.deltaPool=0;
+		self.deltaPool += signal.delta;
+		self.lastSignalAge = signal.age;
+		self.reseted = false;
 
 		// self.sendSignal(signal.delta*0.9); // PROPAGATE SLIGHTLY WEAKER
 
 		// Animation
 		// _offsetVel += 0.08 * (signal.delta/Math.abs(signal.delta));
-		_offsetVel -= 6 * (signal.delta/Math.abs(signal.delta));
+		if(signal.delta>0) _offsetVel -= 6 ;
+		if(signal.delta<0) _offsetVel += 6 ;
+
+		if(self.aggregate) return;
+		self.valueBeforeAggregationPool = self.value - signal.delta;
+		const signalSpeedRatio = 8 / Math.pow(2,self.loopy.signalSpeed);
+		self.aggregate = setTimeout(function () {
+			if(self.loopy.mode===Loopy.MODE_PLAY && !self.reseted){
+				const signal = {delta:self.deltaPool,age:self.lastSignalAge};
+				// Only propagate beyond threshold
+				if(!self.transmissionBehavior) self.sendSignal(signal);
+				else if (self.value < 0 && self.transmissionBehavior===2) self.die();
+				else if(self.value<0 || self.value>1) self.sendSignal(signal);
+				if(self.value<0) self.value = 0;
+				if(self.value>1) self.value = 1;
+			}
+			self.aggregate=false;
+			self.deltaPool=0;
+		} ,1000 * self.aggregationLatency * signalSpeedRatio)
 
 	};
 
