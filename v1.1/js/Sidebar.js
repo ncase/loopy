@@ -103,6 +103,11 @@ function Sidebar(loopy){
 				self.showPage("Edit");
 			}
 		}));
+		const strengthLinkLabel = [];
+		strengthLinkLabel[-9] =	"<br><br>Relationship mode : <br/>any signal ↘ signal less";
+		strengthLinkLabel[-1] =	"<br><br>Relationship mode : <br/>any signal ⤨ opposite signal";
+		strengthLinkLabel[1] =	"<br><br>Relationship mode : <br/>any signal ⇉ same signal";
+		strengthLinkLabel[9] =	"<br><br>Relationship mode : <br/>any signal ↗ signal more";
 		page.addComponent("strength", new ComponentSlider({
 			bg: "strength",
 			label: "<br><br>Relationship:",
@@ -125,6 +130,10 @@ function Sidebar(loopy){
 				self.showPage("Edit");
 			}
 		}));
+		page.onedit = function(){
+			var edge = page.target;
+			page.getComponent("strength").dom.querySelector('.component_label').innerHTML = strengthLinkLabel[edge.strength];
+		};
 		self.addPage("Edge", page);
 	})();
 
