@@ -66,6 +66,8 @@ function Sidebar(loopy){
 			bg: "transmissionBehavior",
 			label: "On signal :",
 			options: [0,1,2], //["allwaysTransmit", "accumulate to limit then transmit", "accumulate to limit then transmit, if empty, die"],
+			advanced: true,
+			defaultValue: 0,
 			oninput: function(value){
 				Node.defaultTransmissionBehavior = value;
 			}
@@ -74,6 +76,8 @@ function Sidebar(loopy){
 			bg: "aggregationLatency",
 			label: "Aggregation latency :",
 			options: [ 0, 0.1, 0.2, 0.4, 0.8, 1.6, 3.2, 6.4],
+			advanced: true,
+			defaultValue: 0,
 			oninput: function(value){
 				Node.defaultAggregationLatency = value;
 			}
@@ -115,17 +119,30 @@ function Sidebar(loopy){
 			}
 		}));
 		const strengthLinkLabel = [];
-		strengthLinkLabel[-8] =	"<br><br>Relationship mode : <br/>filter : only allow signal less";
-		strengthLinkLabel[-9] =	"<br><br>Relationship mode : <br/>any signal become signal less";
-		strengthLinkLabel[-1] =	"<br><br>Relationship mode : <br/>convert to opposite signal";
-		strengthLinkLabel[1] =	"<br><br>Relationship mode : <br/>preserve same signal";
-		strengthLinkLabel[9] =	"<br><br>Relationship mode : <br/>any signal become signal more";
-		strengthLinkLabel[8] =	"<br><br>Relationship mode : <br/>filter : only allow signal more";
+		strengthLinkLabel[-1] =	"<br><br>Relationship : invert effect";
+		strengthLinkLabel[1] =	"<br><br>Relationship : same effect";
 		page.addComponent("strength", new ComponentSlider({
 			bg: "strength",
 			label: "<br><br>Relationship:",
 			//label: "Relationship:",
-			options: [-8, -9, -1, 1, 9, 8],
+			options: [1, -1],
+			//advanced: true,
+			defaultValue: 1,
+			oninput: function(value){
+				Edge.defaultStrength = value;
+			}
+		}));
+		const signBehaviorLabel = [];
+		signBehaviorLabel[0] =	"Sign Behavior : <br/>apply relationship effect";
+		signBehaviorLabel[1] =	"Sign Behavior : <br/>apply arrow sign";
+		signBehaviorLabel[2] =	"Sign Behavior : <br/>filter by arrow sign";
+		page.addComponent("signBehavior", new ComponentSlider({
+			bg: "signBehavior",
+			label: "Sign Behavior:",
+			//label: "Relationship:",
+			options: [0, 1, 2],
+			advanced: true,
+			defaultValue: 0,
 			oninput: function(value){
 				Edge.defaultStrength = value;
 			}
@@ -146,6 +163,7 @@ function Sidebar(loopy){
 		page.onedit = function(){
 			var edge = page.target;
 			page.getComponent("strength").dom.querySelector('.component_label').innerHTML = strengthLinkLabel[edge.strength];
+			page.getComponent("signBehavior").dom.querySelector('.component_label').innerHTML = signBehaviorLabel[edge.signBehavior];
 		};
 		self.addPage("Edge", page);
 	})();
@@ -199,23 +217,52 @@ function Sidebar(loopy){
 		var page = new SidebarPage();
 		page.addComponent(new ComponentHTML({
 			html: ""+
-			
-			"<b style='font-size:1.4em'>LOOPY</b> (v1.1)<br>a tool for thinking in systems<br><br>"+
 
-			"<span class='mini_button' onclick='publish(\"modal\",[\"examples\"])'>see examples</span> "+
-			"<span class='mini_button' onclick='publish(\"modal\",[\"howto\"])'>how to</span> "+
-			"<span class='mini_button' onclick='publish(\"modal\",[\"credits\"])'>credits</span><br><br>"+
+				"<b style='font-size:1.4em'>LOOPY</b> (v1.2)<br>a tool for thinking in systems<br><br>"+
 
+				"<span class='mini_button' onclick='publish(\"modal\",[\"examples\"])'>see examples</span> "+
+				"<span class='mini_button' onclick='publish(\"modal\",[\"howto\"])'>how to</span> "+
+				"<span class='mini_button' onclick='publish(\"modal\",[\"credits\"])'>credits</span><br><br>"+
+
+				"<hr/><br>"+
+
+				"<span class='mini_button' onclick='publish(\"modal\",[\"save_link\"])'>save as link</span> <br><br>"+
+				"<span class='mini_button' onclick='publish(\"export/file\")'>save as file</span> "+
+				"<span class='mini_button' onclick='publish(\"import/file\")'>load from file</span> <br><br>"+
+				"<span class='mini_button' onclick='publish(\"modal\",[\"embed\"])'>embed in your website</span> <br><br>"+
+				"<span class='mini_button' onclick='publish(\"modal\",[\"save_gif\"])'>make a GIF using LICEcap</span> <br><br>"+
+				'<hr class="not_in_play_mode"/>'
+		}));
+		page.addComponent("loopyMode", new ComponentSlider({
+			bg: "loopyMode",
+			label: "Loopy mode : ",
+			options: [0,1], // Simple || Advanced
+			oninput: function(value){
+				//self.sidebar.pages.forEach(function(page){page.dom.classList.add(loopy.globalState.loopyMode?"advanced":"simple");});
+				var apply;
+				if(value) apply = function(page){
+					page.dom.classList.add("advanced");
+					page.dom.classList.remove("simple");
+				};
+				else apply = function(page){
+					page.dom.classList.add("simple");
+					page.dom.classList.remove("advanced");
+				};
+				loopy.sidebar.pages.forEach(apply);
+			}
+		}));
+		/*
+		page.addComponent("colorMode", new ComponentSlider({
+			bg: "colorMode",
+			label: "Color mode : ",
+			options: [0,1], // Aesthetic || Type logic
+			advanced: true,
+			defaultValue:0 // not advanced behavior when default
+		}));*/
+		page.addComponent(new ComponentHTML({
+			html: ""+
 			"<hr/><br>"+
 
-			"<span class='mini_button' onclick='publish(\"modal\",[\"save_link\"])'>save as link</span> <br><br>"+
-			"<span class='mini_button' onclick='publish(\"export/file\")'>save as file</span> "+
-			"<span class='mini_button' onclick='publish(\"import/file\")'>load from file</span> <br><br>"+
-			"<span class='mini_button' onclick='publish(\"modal\",[\"embed\"])'>embed in your website</span> <br><br>"+
-			"<span class='mini_button' onclick='publish(\"modal\",[\"save_gif\"])'>make a GIF using LICEcap</span> <br><br>"+
-
-			"<hr/><br>"+
-				
 			"<a target='_blank' href='../'>LOOPY</a> is "+
 			"made by <a target='_blank' href='http://ncase.me'>nicky case</a> "+
 			"with your support <a target='_blank' href='https://www.patreon.com/ncase'>on patreon</a> &lt;3<br><br>"+
@@ -314,7 +361,8 @@ function Component(){
 		// TO IMPLEMENT
 	};
 	self.getValue = function(){
-		return self.page.target[self.propName];
+		if(self.page.target) return self.page.target[self.propName];
+		else return loopy.globalState[self.propName];
 	};
 	self.setValue = function(value){
 		
@@ -322,7 +370,8 @@ function Component(){
 		publish("model/changed");
 
 		// Edit the value!
-		self.page.target[self.propName] = value;
+		if(self.page.target) self.page.target[self.propName] = value;
+		else loopy.globalState[self.propName] = value;
 		self.page.onedit(); // callback!
 		
 	};
@@ -367,6 +416,14 @@ function ComponentSlider(config){
 
 	// DOM: label + slider
 	self.dom = document.createElement("div");
+	self.dom.classList.add('not_in_play_mode');
+	if(config.advanced){
+		self.dom.classList.add('adv');
+		var adv = document.createElement("div");
+		adv.innerHTML = "Advanced feature in use : ";
+		adv.setAttribute("class","adv_disclaimer");
+		self.dom.appendChild(adv);
+	}
 	var label = _createLabel(config.label);
 	self.dom.appendChild(label);
 	var sliderDOM = document.createElement("div");
@@ -403,6 +460,10 @@ function ComponentSlider(config){
 	var onmousemove = function(event){
 		if(isDragging) sliderInput(event);
 	};
+	var updateClassActiveDefault = function () {
+		if(self.getValue() === config.defaultValue) self.dom.classList.remove("active");
+		else self.dom.classList.add("active");
+	};
 	var sliderInput = function(event){
 
 		// What's the option?
@@ -411,6 +472,8 @@ function ComponentSlider(config){
 		var option = config.options[optionIndex];
 		if(option===undefined) return;
 		self.setValue(option);
+
+		updateClassActiveDefault();
 
 		// Callback! (if any)
 		if(config.oninput){
@@ -425,6 +488,7 @@ function ComponentSlider(config){
 
 	// Show
 	self.show = function(){
+		updateClassActiveDefault();
 		movePointer();
 	};
 

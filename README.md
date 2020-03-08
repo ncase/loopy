@@ -17,10 +17,12 @@ Check out these [user-made LOOPY's!](http://ncase.me/loopy/v1.1/pages/examples)
 
 ---
 
-Version 1.1.1:
-- node custom signal transmission behavior ( allways transmit || transmit if outbound || transmit if overflow, die if empty )
-- edge now have 6 transmission behavior (filter allow less || convert to less || invert || preserve || convert to more || filter allow more)
-- node aggregation latency setting (from none to 6.4s by x2 step)
+Version 1.2:
+- ADD : simple mode and advanced mode (to keep it simple but really powerful when need)
+- ADD : node custom signal transmission behavior ( allways transmit || transmit if outbound || transmit if overflow, die if empty )
+- ADD : node signal aggregation latency setting (from none to 6.4s by x2 step)
+- ADD : edge sign behavior (classic relationship behavior || convert to arrow sign || filter by arrow sign)
+- REMOVED : edge.rotation dead code in serialisation model 
 
 Version 1.1:
 - node amounts are now "uncapped"    

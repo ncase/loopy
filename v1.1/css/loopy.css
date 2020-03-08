@@ -181,6 +181,9 @@ div[big=yes] .play_button_label{
 #sidebar[mode=play] .mini_button:hover{
 	background: #666;
 }
+#sidebar[mode=play] .not_in_play_mode{
+	display: none;
+}
 #sidebar a{ color: #777; }
 #sidebar a:hover{ color: #999; }
 #sidebar hr{
@@ -264,8 +267,26 @@ div[big=yes] .play_button_label{
 .component_button[header=yes]:hover{
 	background: #333;
 }
-
-
+.adv{
+	display: none;
+}
+.advanced .adv{
+	display: block;
+}
+.simple .adv.active{
+	display: block;
+	border: 1px dashed #b84;
+	background-image: linear-gradient(to bottom,#fed 0,#fed 20px,#ddd 20px);
+	margin: -9px;
+	padding: 8px;
+	padding-top: 2px;
+}
+.adv_disclaimer {
+	display: none;
+	color: #b84;
+	font-size: 80%;
+}
+.simple .adv.active>.adv_disclaimer{display: block;}
 
 /**********
 

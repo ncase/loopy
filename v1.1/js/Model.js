@@ -252,7 +252,7 @@ function Model(loopy){
 		// 0 - nodes
 		// 1 - edges
 		// 2 - labels
-		// 3 - UID
+		// 3 - globalState (including UID)
 
 		// Nodes
 		var nodes = [];
@@ -287,16 +287,16 @@ function Model(loopy){
 			// 1 - to
 			// 2 - arc
 			// 3 - strength
-			// 4 - rotation (optional)
+			// 4 - rotation
+			// 5 - signBehavior
 			var dataEdge = [
 				edge.from.id,
 				edge.to.id,
 				Math.round(edge.arc),
-				edge.strength
+				edge.strength,
+				Math.round(edge.rotation),
+				edge.signBehavior
 			];
-			if(dataEdge.f==dataEdge.t){
-				dataEdge.push(Math.round(edge.rotation));
-			}
 			edges.push(dataEdge);
 		}
 		data.push(edges);
@@ -317,7 +317,11 @@ function Model(loopy){
 		data.push(labels);
 
 		// META.
-		data.push(Node._UID);
+		data.push([
+			Node._UID,
+			loopy.globalState.loopyMode,
+			loopy.globalState.colorMode
+		]);
 
 		// Return as string!
 		var dataString = JSON.stringify(data);
@@ -337,7 +341,7 @@ function Model(loopy){
 		var nodes = data[0];
 		var edges = data[1];
 		var labels = data[2];
-		var UID = data[3];
+		var globalState = data[3];
 
 		// Nodes
 		for(var i=0;i<nodes.length;i++){
@@ -361,9 +365,28 @@ function Model(loopy){
 				from: edge[0],
 				to: edge[1],
 				arc: edge[2],
-				strength: edge[3]
+				strength: edge[3],
+				rotation: edge[4],
+				signBehavior: edge[5]
 			};
-			if(edge[4]) edgeConfig.rotation=edge[4];
+			switch (edgeConfig.strength) {
+				case -9:
+					edgeConfig.strength = -1;
+					edgeConfig.signBehavior = 1;
+					break;
+				case -8:
+					edgeConfig.strength = -1;
+					edgeConfig.signBehavior = 2;
+					break;
+				case 8:
+					edgeConfig.strength = 1;
+					edgeConfig.signBehavior = 2;
+					break;
+				case 9:
+					edgeConfig.strength = 1;
+					edgeConfig.signBehavior = 1;
+					break;
+			}
 			self.addEdge(edgeConfig);
 		}
 
@@ -378,8 +401,13 @@ function Model(loopy){
 		}
 
 		// META.
-		Node._UID = UID;
-
+		if(typeof globalState === "object"){
+			Node._UID = globalState[0];
+			loopy.globalState.loopyMode = globalState[1];
+			loopy.globalState.colorMode = globalState[2];
+		} else{ // legacy compatibility
+			Node._UID = globalState;
+		}
 	};
 
 	self.clear = function(){

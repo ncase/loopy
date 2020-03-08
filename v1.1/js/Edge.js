@@ -8,6 +8,7 @@ Edge.allSignals = [];
 Edge.MAX_SIGNALS = 100;
 Edge.MAX_SIGNALS_PER_EDGE = 10;
 Edge.defaultStrength = 1;
+Edge.defaultSignBehavior=0;
 
 function Edge(model, config){
 
@@ -25,7 +26,8 @@ function Edge(model, config){
 		to: _makeErrorFunc("CAN'T LEAVE 'TO' BLANK"),
 		arc: 100,
 		rotation: 0,
-		strength: Edge.defaultStrength
+		strength: Edge.defaultStrength,
+		signBehavior: Edge.defaultSignBehavior
 	});
 
 	// Get my NODES
@@ -38,8 +40,8 @@ function Edge(model, config){
 	self.addSignal = function(signal){
 
 		// Filter edge
-		if(self.strength===-8 && signal.delta>0) return;
-		if(self.strength===8 && signal.delta<0) return;
+		if(self.signBehavior===2 && self.strength<0 && signal.delta>0) return;
+		if(self.signBehavior===2 && self.strength>0 && signal.delta<0) return;
 
 		// IF ALREADY TOO MANY, FORGET IT
 		if(Edge.allSignals.length>Edge.MAX_SIGNALS){
@@ -113,13 +115,11 @@ function Edge(model, config){
 		while(lastSignal && lastSignal.position>=1){
 
 			// Actually pass it along
-			switch (self.strength) {
-				case -9: lastSignal.delta = -Math.abs(lastSignal.delta); break; // any signal -> negative signal
-				case -1: lastSignal.delta = -lastSignal.delta; break; // inverter mode
-				case 1: case -8: case 8: break; // transmit signal as is
-				case 9:  lastSignal.delta = Math.abs(lastSignal.delta); break; // any signal -> positive signal
-				default: lastSignal.delta *= self.strength;
+			if(self.signBehavior===1){
+				if(self.strength<0) lastSignal.delta = -Math.abs(lastSignal.delta);
+				else lastSignal.delta = Math.abs(lastSignal.delta);
 			}
+			else lastSignal.delta *= self.strength;
 			self.to.takeSignal(lastSignal);
 			
 			// Pop it, move on down
@@ -170,9 +170,9 @@ function Edge(model, config){
 
 			// Also, tween the scaleY, flipping, IF delta change
 			if(
-				(self.strength===9 && signal.delta<0)
-				|| (self.strength===-9 && signal.delta>0)
-				|| (self.strength<0 && self.strength!==-8 && self.strength!==-9)
+				(self.signBehavior===1 && self.strength>0 && signal.delta<0)
+				|| (self.signBehavior===1 && self.strength<0 && signal.delta>0)
+				|| (self.strength<0 && self.signBehavior===0)
 			){
 				// sin/cos-animate it for niceness.
 				var flip = Math.cos(blend*Math.PI); // (0,1) -> (1,-1)
@@ -289,17 +289,15 @@ function Edge(model, config){
 		// My label is...
 		var s = self.strength;
 		var l;
-		if(s===9) l="|+|";
-		else if(s===-9) l="|–|";
-		else if(s===-8) l="F–";
-		else if(s===8) l="F+";
-		else if(s>=3) l="+++";
+		if(s>=3) l="+++";
 		else if(s>=2) l="++";
 		else if(s>=1) l="+";
 		else if(s==0) l="?";
 		else if(s>=-1) l="–"; // EM dash, not hyphen.
 		else if(s>=-2) l="– –";
 		else l="– – –";
+		if(self.signBehavior===1) l='|'+l+'|';
+		if(self.signBehavior===2) l='F'+l;
 		self.label = l;
 
 		// Label position
@@ -383,10 +381,7 @@ function Edge(model, config){
 	self.draw = function(ctx){
 
 		// Width & Color
-		switch (self.strength) {
-			case -9: case -8: case -1: case 1: case 8: case 9: ctx.lineWidth = 2; break;
-			default: ctx.lineWidth = 4*Math.abs(self.strength)-2;
-		}
+		ctx.lineWidth = 4*Math.abs(self.strength)-2;
 		ctx.strokeStyle = "#666";
 
 		// Translate & Rotate!
