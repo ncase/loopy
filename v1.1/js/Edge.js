@@ -118,8 +118,9 @@ function Edge(model, config){
 			if(self.signBehavior===1){
 				if(self.strength<0) lastSignal.delta = -Math.abs(lastSignal.delta);
 				else lastSignal.delta = Math.abs(lastSignal.delta);
+			} else if(self.signBehavior===0){
+				lastSignal.delta *= self.strength;
 			}
-			else lastSignal.delta *= self.strength;
 			self.to.takeSignal(lastSignal);
 			
 			// Pop it, move on down
@@ -232,14 +233,14 @@ function Edge(model, config){
 		////////////////////////////////////////////////
 
 		// Edge case: if arc is EXACTLY zero, whatever, add 0.1 to it.
-		if(self.arc==0) self.arc=0.1;
+		if(self.arc===0) self.arc=0.1;
 
 		// Mathy calculations: (all retina, btw)
 		fx=self.from.x*2;
 		fy=self.from.y*2;
 		tx=self.to.x*2;
 		ty=self.to.y*2;	
-		if(self.from==self.to){
+		if(self.from===self.to){
 			var rotation = self.rotation;
 			rotation *= Math.TAU/360;
 			tx += Math.cos(rotation);
