@@ -6,15 +6,15 @@ MODEL!
 
 function Model(loopy){
 
-	var self = this;
+	const self = this;
 	self.loopy = loopy;
 
 	// Properties
 	self.speed = 0.05;
 
 	// Create canvas & context
-	var canvas = _createCanvas();
-	var ctx = canvas.getContext("2d");
+	const canvas = _createCanvas();
+	const ctx = canvas.getContext("2d");
 	self.canvas = canvas;
 	self.context = ctx;
 
@@ -38,7 +38,7 @@ function Model(loopy){
 		publish("model/changed");
 
 		// Add Node
-		var node = new Node(self,config);
+		const node = new Node(self,config);
 		self.nodeByID[node.id] = node;
 		self.nodes.push(node);
 		self.update();
@@ -59,9 +59,9 @@ function Model(loopy){
 		delete self.nodeByID[node.id];
 
 		// Remove all associated TO and FROM edges
-		for(var i=0; i<self.edges.length; i++){
-			var edge = self.edges[i];
-			if(edge.to==node || edge.from==node){
+		for(let i=0; i<self.edges.length; i++){
+			const edge = self.edges[i];
+			if(edge.to===node || edge.from===node){
 				edge.kill();
 				i--; // move index back, coz it's been killed
 			}
@@ -84,7 +84,7 @@ function Model(loopy){
 		publish("model/changed");
 
 		// Add Edge
-		var edge = new Edge(self,config);
+		const edge = new Edge(self,config);
 		self.edges.push(edge);
 		self.update();
 		return edge;
@@ -104,7 +104,7 @@ function Model(loopy){
 	// Get all edges with start node
 	self.getEdgesByStartNode = function(startNode){
 		return self.edges.filter(function(edge){
-			return(edge.from==startNode);
+			return(edge.from===startNode);
 		});
 	};
 
@@ -125,7 +125,7 @@ function Model(loopy){
 		publish("model/changed");
 
 		// Add label
-		var label = new Label(self,config);
+		const label = new Label(self,config);
 		self.labels.push(label);
 		self.update();
 		return label;
@@ -148,13 +148,13 @@ function Model(loopy){
 	// UPDATE & DRAW //
 	///////////////////
 
-	var _canvasDirty = false;
+	let _canvasDirty = false;
 
 	self.update = function(){
 
 		// Update edges THEN nodes
-		for(var i=0;i<self.edges.length;i++) self.edges[i].update(self.speed);
-		for(var i=0;i<self.nodes.length;i++) self.nodes[i].update(self.speed);
+		for(let i=0;i<self.edges.length;i++) self.edges[i].update(self.speed);
+		for(let i=0;i<self.nodes.length;i++) self.nodes[i].update(self.speed);
 
 		// Dirty!
 		_canvasDirty = true;
@@ -162,8 +162,8 @@ function Model(loopy){
 	};
 
 	// SHOULD WE DRAW?
-	var drawCountdownFull = 60; // two-second buffer!
-	var drawCountdown = drawCountdownFull; 
+	const drawCountdownFull = 60; // two-second buffer!
+	let drawCountdown = drawCountdownFull;
 	
 	// ONLY IF MOUSE MOVE / CLICK
 	subscribe("mousemove", function(){ drawCountdown=drawCountdownFull; });
@@ -171,14 +171,14 @@ function Model(loopy){
 
 	// OR INFO CHANGED
 	subscribe("model/changed", function(){
-		if(self.loopy.mode==Loopy.MODE_EDIT) drawCountdown=drawCountdownFull;
+		if(self.loopy.mode===Loopy.MODE_EDIT) drawCountdown=drawCountdownFull;
 	});
 
 	// OR RESIZE or RESET
 	subscribe("resize",function(){ drawCountdown=drawCountdownFull; });
 	subscribe("model/reset",function(){ drawCountdown=drawCountdownFull; });
 	subscribe("loopy/mode",function(){
-		if(loopy.mode==Loopy.MODE_PLAY){
+		if(loopy.mode===Loopy.MODE_PLAY){
 			drawCountdown=drawCountdownFull*2;
 		}else{
 			drawCountdown=drawCountdownFull;
@@ -189,7 +189,7 @@ function Model(loopy){
 
 		// SHOULD WE DRAW?
 		// ONLY IF ARROW-SIGNALS ARE MOVING
-		for(var i=0;i<self.edges.length;i++){
+		for(let i=0;i<self.edges.length;i++){
 			if(self.edges[i].signals.length>0){
 				drawCountdown = drawCountdownFull;
 				break;
@@ -211,14 +211,14 @@ function Model(loopy){
 		ctx.save();
 
 		// Translate to center, (translate, scale, translate) to expand to size
-		var canvasses = document.getElementById("canvasses");
-		var CW = canvasses.clientWidth - _PADDING - _PADDING;
-		var CH = canvasses.clientHeight - _PADDING_BOTTOM - _PADDING;
-		var tx = loopy.offsetX*2;
-		var ty = loopy.offsetY*2;
+		const canvasses = document.getElementById("canvasses");
+		const CW = canvasses.clientWidth - _PADDING - _PADDING;
+		const CH = canvasses.clientHeight - _PADDING_BOTTOM - _PADDING;
+		let tx = loopy.offsetX*2;
+		let ty = loopy.offsetY*2;
 		tx -= CW+_PADDING;
 		ty -= CH+_PADDING;
-		var s = loopy.offsetScale;
+		const s = loopy.offsetScale;
 		tx = s*tx;
 		ty = s*ty;
 		tx += CW+_PADDING;
@@ -230,9 +230,9 @@ function Model(loopy){
 		ctx.setTransform(s, 0, 0, s, tx, ty);
 
 		// Draw labels THEN edges THEN nodes
-		for(var i=0;i<self.labels.length;i++) self.labels[i].draw(ctx);
-		for(var i=0;i<self.edges.length;i++) self.edges[i].draw(ctx);
-		for(var i=0;i<self.nodes.length;i++) self.nodes[i].draw(ctx);
+		for(let i=0;i<self.labels.length;i++) self.labels[i].draw(ctx);
+		for(let i=0;i<self.edges.length;i++) self.edges[i].draw(ctx);
+		for(let i=0;i<self.nodes.length;i++) self.nodes[i].draw(ctx);
 
 		// Restore
 		ctx.restore();
@@ -248,16 +248,16 @@ function Model(loopy){
 
 	self.serialize = function(){
 
-		var data = [];
+		const data = [];
 		// 0 - nodes
 		// 1 - edges
 		// 2 - labels
 		// 3 - globalState (including UID)
 
 		// Nodes
-		var nodes = [];
-		for(var i=0;i<self.nodes.length;i++){
-			var node = self.nodes[i];
+		const nodes = [];
+		for(let i=0;i<self.nodes.length;i++){
+			const node = self.nodes[i];
 			// 0 - id
 			// 1 - x
 			// 2 - y
@@ -280,9 +280,9 @@ function Model(loopy){
 		data.push(nodes);
 
 		// Edges
-		var edges = [];
-		for(var i=0;i<self.edges.length;i++){
-			var edge = self.edges[i];
+		const edges = [];
+		for(let i=0;i<self.edges.length;i++){
+			const edge = self.edges[i];
 			// 0 - from
 			// 1 - to
 			// 2 - arc
@@ -302,9 +302,9 @@ function Model(loopy){
 		data.push(edges);
 
 		// Labels
-		var labels = [];
-		for(var i=0;i<self.labels.length;i++){
-			var label = self.labels[i];
+		const labels = [];
+		for(let i=0;i<self.labels.length;i++){
+			const label = self.labels[i];
 			// 0 - x
 			// 1 - y
 			// 2 - text
@@ -324,7 +324,7 @@ function Model(loopy){
 		]);
 
 		// Return as string!
-		var dataString = JSON.stringify(data);
+		let dataString = JSON.stringify(data);
 		dataString = dataString.replace(/"/gi, "%22"); // and ONLY URIENCODE THE QUOTES
 		dataString = dataString.substr(0, dataString.length-1) + "%5D";// also replace THE LAST CHARACTER
 		return dataString;
@@ -335,17 +335,17 @@ function Model(loopy){
 
 		self.clear();
 
-		var data = JSON.parse(dataString);
+		const data = JSON.parse(dataString);
 
 		// Get from array!
-		var nodes = data[0];
-		var edges = data[1];
-		var labels = data[2];
-		var globalState = data[3];
+		const nodes = data[0];
+		const edges = data[1];
+		const labels = data[2];
+		const globalState = data[3];
 
 		// Nodes
-		for(var i=0;i<nodes.length;i++){
-			var node = nodes[i];
+		for(let i=0;i<nodes.length;i++){
+			const node = nodes[i];
 			self.addNode({
 				id: node[0],
 				x: node[1],
@@ -359,9 +359,9 @@ function Model(loopy){
 		}
 
 		// Edges
-		for(var i=0;i<edges.length;i++){
-			var edge = edges[i];
-			var edgeConfig = {
+		for(let i=0;i<edges.length;i++){
+			const edge = edges[i];
+			const edgeConfig = {
 				from: edge[0],
 				to: edge[1],
 				arc: edge[2],
@@ -391,8 +391,8 @@ function Model(loopy){
 		}
 
 		// Labels
-		for(var i=0;i<labels.length;i++){
-			var label = labels[i];
+		for(let i=0;i<labels.length;i++){
+			const label = labels[i];
 			self.addLabel({
 				x: label[0],
 				y: label[1],
@@ -430,28 +430,29 @@ function Model(loopy){
 	////////////////////
 
 	self.getNodeByPoint = function(x,y,buffer){
-		var result;
-		for(var i=self.nodes.length-1; i>=0; i--){ // top-down
-			var node = self.nodes[i];
+		//var result;
+		for(let i=self.nodes.length-1; i>=0; i--){ // top-down
+			const node = self.nodes[i];
 			if(node.isPointInNode(x,y,buffer)) return node;
 		}
 		return null;
 	};
 
-	self.getEdgeByPoint = function(x, y, wholeArrow){
+	//self.getEdgeByPoint = function(x, y, wholeArrow){
+	self.getEdgeByPoint = function(x, y){
 		// TODO: wholeArrow option?
-		var result;
-		for(var i=self.edges.length-1; i>=0; i--){ // top-down
-			var edge = self.edges[i];
+		//var result;
+		for(let i=self.edges.length-1; i>=0; i--){ // top-down
+			const edge = self.edges[i];
 			if(edge.isPointOnLabel(x,y)) return edge;
 		}
 		return null;
 	};
 
 	self.getLabelByPoint = function(x, y){
-		var result;
-		for(var i=self.labels.length-1; i>=0; i--){ // top-down
-			var label = self.labels[i];
+		//var result;
+		for(let i=self.labels.length-1; i>=0; i--){ // top-down
+			const label = self.labels[i];
 			if(label.isPointInLabel(x,y)) return label;
 		}
 		return null;
@@ -461,32 +462,32 @@ function Model(loopy){
 	subscribe("mouseclick",function(){
 
 		// ONLY WHEN EDITING (and NOT erase)
-		if(self.loopy.mode!=Loopy.MODE_EDIT) return;
-		if(self.loopy.tool==Loopy.TOOL_ERASE) return;
+		if(self.loopy.mode!==Loopy.MODE_EDIT) return;
+		if(self.loopy.tool===Loopy.TOOL_ERASE) return;
 
 		// Did you click on a node? If so, edit THAT node.
-		var clickedNode = self.getNodeByPoint(Mouse.x, Mouse.y);
+		const clickedNode = self.getNodeByPoint(Mouse.x, Mouse.y);
 		if(clickedNode){
 			loopy.sidebar.edit(clickedNode);
 			return;
 		}
 
 		// Did you click on a label? If so, edit THAT label.
-		var clickedLabel = self.getLabelByPoint(Mouse.x, Mouse.y);
+		const clickedLabel = self.getLabelByPoint(Mouse.x, Mouse.y);
 		if(clickedLabel){
 			loopy.sidebar.edit(clickedLabel);
 			return;
 		}
 
 		// Did you click on an edge label? If so, edit THAT edge.
-		var clickedEdge = self.getEdgeByPoint(Mouse.x, Mouse.y);
+		const clickedEdge = self.getEdgeByPoint(Mouse.x, Mouse.y);
 		if(clickedEdge){
 			loopy.sidebar.edit(clickedEdge);
 			return;
 		}
 
 		// If the tool LABEL? If so, TRY TO CREATE LABEL.
-		if(self.loopy.tool==Loopy.TOOL_LABEL){
+		if(self.loopy.tool===Loopy.TOOL_LABEL){
 			loopy.label.tryMakingLabel();
 			return;
 		}
@@ -500,17 +501,17 @@ function Model(loopy){
 	self.getBounds = function(){
 
 		// If no nodes & no labels, forget it.
-		if(self.nodes.length==0 && self.labels.length==0) return;
+		if(self.nodes.length===0 && self.labels.length===0) return;
 
 		// Get bounds of ALL objects...
-		var left = Infinity;
-		var top = Infinity;
-		var right = -Infinity;
-		var bottom = -Infinity;
-		var _testObjects = function(objects){
-			for(var i=0; i<objects.length; i++){
-				var obj = objects[i];
-				var bounds = obj.getBoundingBox();
+		let left = Infinity;
+		let top = Infinity;
+		let right = -Infinity;
+		let bottom = -Infinity;
+		const _testObjects = function(objects){
+			for(let i=0; i<objects.length; i++){
+				const obj = objects[i];
+				const bounds = obj.getBoundingBox();
 				if(left>bounds.left) left=bounds.left;
 				if(top>bounds.top) top=bounds.top;
 				if(right<bounds.right) right=bounds.right;
@@ -533,34 +534,34 @@ function Model(loopy){
 	self.center = function(andScale){
 
 		// If no nodes & no labels, forget it.
-		if(self.nodes.length==0 && self.labels.length==0) return;
+		if(self.nodes.length===0 && self.labels.length===0) return;
 
 		// Get bounds of ALL objects...
-		var bounds = self.getBounds();
-		var left = bounds.left;
-		var top = bounds.top;
-		var right = bounds.right;
-		var bottom = bounds.bottom;
+		const bounds = self.getBounds();
+		const left = bounds.left;
+		const top = bounds.top;
+		const right = bounds.right;
+		const bottom = bounds.bottom;
 
 		// Re-center!
-		var canvasses = document.getElementById("canvasses");
-		var fitWidth = canvasses.clientWidth - _PADDING - _PADDING;
-		var fitHeight = canvasses.clientHeight - _PADDING_BOTTOM - _PADDING;
-		var cx = (left+right)/2;
-		var cy = (top+bottom)/2;
+		const canvasses = document.getElementById("canvasses");
+		const fitWidth = canvasses.clientWidth - _PADDING - _PADDING;
+		const fitHeight = canvasses.clientHeight - _PADDING_BOTTOM - _PADDING;
+		const cx = (left+right)/2;
+		const cy = (top+bottom)/2;
 		loopy.offsetX = (_PADDING+fitWidth)/2 - cx;
 		loopy.offsetY = (_PADDING+fitHeight)/2 - cy;
 
 		// SCALE.
 		if(andScale){
 
-			var w = right-left;
-			var h = bottom-top;
+			const w = right-left;
+			const h = bottom-top;
 
 			// Wider or taller than screen?
-			var modelRatio = w/h;
-			var screenRatio = fitWidth/fitHeight;
-			var scaleRatio;
+			const modelRatio = w/h;
+			const screenRatio = fitWidth/fitHeight;
+			let scaleRatio;
 			if(modelRatio > screenRatio){
 				// wider...
 				scaleRatio = fitWidth/w;
