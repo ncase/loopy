@@ -12,7 +12,7 @@ Edge.defaultSignBehavior=0;
 
 function Edge(model, config){
 
-	var self = this;
+	const self = this;
 	self._CLASS_ = "Edge";
 
 	// Mah Parents!
@@ -54,15 +54,15 @@ function Edge(model, config){
 		}
 
 		// Re-create signal
-		var delta = signal.delta;
-		var age;
+		const delta = signal.delta;
+		let age;
 		if(signal.age===undefined){
 			// age = 13; // cos divisible by 1,2,3,4 + 1
 			age = 1000000; // actually just make signals last "forever".
 		}else{
 			age = signal.age-1;
 		}
-		var newSignal = {
+		const newSignal = {
 			delta: delta,
 			position: 0,
 			scaleX: Math.abs(delta),
@@ -82,14 +82,14 @@ function Edge(model, config){
 	self.updateSignals = function(){
 
 		// Speed?
-		var speed = Math.pow(2,self.loopy.signalSpeed);
+		const speed = Math.pow(2,self.loopy.signalSpeed);
 		self.signalSpeed = speed/self.getArrowLength();
 
 		// Move all signals along
-		for(var i=0; i<self.signals.length; i++){
+		for(let i=0; i<self.signals.length; i++){
 			
-			var signal = self.signals[i];
-			var lastPosition = signal.position;
+			const signal = self.signals[i];
+			//var lastPosition = signal.position;
 			signal.position += self.signalSpeed;
 
 			// If crossed the 0.5 mark...
@@ -111,7 +111,7 @@ function Edge(model, config){
 		}
 
 		// If any signals reach >=1, pass 'em along
-		var lastSignal = self.signals[self.signals.length-1];
+		let lastSignal = self.signals[self.signals.length-1];
 		while(lastSignal && lastSignal.position>=1){
 
 			// Actually pass it along
@@ -137,13 +137,13 @@ function Edge(model, config){
 	self.drawSignals = function(ctx){
 	
 		// Draw each one
-		for(var i=0; i<self.signals.length; i++){
+		for(let i=0; i<self.signals.length; i++){
 
 			// Get position to draw at
-			var signal = self.signals[i];
-			var signalPosition = self.getPositionAlongArrow(signal.position);
-			var signalX = signalPosition.x;
-			var signalY = signalPosition.y;
+			const signal = self.signals[i];
+			const signalPosition = self.getPositionAlongArrow(signal.position);
+			const signalX = signalPosition.x;
+			const signalY = signalPosition.y;
 
 			// Transform
 			ctx.save();
@@ -151,15 +151,15 @@ function Edge(model, config){
 			ctx.rotate(-a);
 
 			// Signal's direction & size
-			var size = 40; // HARD-CODED
+			const size = 40; // HARD-CODED
 			ctx.scale(signal.scaleX, signal.scaleY);
 			ctx.scale(size, size);
 
 			// Signal's COLOR, BLENDING
-			var fromColor = Node.COLORS[self.from.hue];
-			var toColor = Node.COLORS[self.to.hue];
-			var blend;
-			var bStart=0.4, bEnd=0.6;
+			const fromColor = Node.COLORS[self.from.hue];
+			const toColor = Node.COLORS[self.to.hue];
+			let blend;
+			const bStart=0.4, bEnd=0.6;
 			if(signal.position<bStart){
 				blend = 0;
 			}else if(signal.position<bEnd){
@@ -167,7 +167,7 @@ function Edge(model, config){
 			}else{
 				blend = 1;
 			}
-			var signalColor = _blendColors(fromColor, toColor, blend);
+			const signalColor = _blendColors(fromColor, toColor, blend);
 
 			// Also, tween the scaleY, flipping, IF delta change
 			if(
@@ -176,7 +176,7 @@ function Edge(model, config){
 				|| (self.strength<0 && self.signBehavior===0)
 			){
 				// sin/cos-animate it for niceness.
-				var flip = Math.cos(blend*Math.PI); // (0,1) -> (1,-1)
+				const flip = Math.cos(blend*Math.PI); // (0,1) -> (1,-1)
 				ctx.scale(1, flip);
 			}
 
@@ -205,7 +205,7 @@ function Edge(model, config){
 		}
 
 	};
-	var _listenerReset = subscribe("model/reset", function(){
+	const _listenerReset = subscribe("model/reset", function(){
 		self.signals = [];
 		Edge.allSignals = [];
 	});
@@ -218,15 +218,17 @@ function Edge(model, config){
 	// Update!
 	self.labelX = 0;
 	self.labelY = 0;
-	var fx, fy, tx, ty,
+	let fx, fy, tx, ty,
 		r, dx, dy, w, a, h,
 		y, a2,
 		arrowBuffer, arrowDistance, arrowAngle, beginDistance, beginAngle,
 		startAngle, endAngle,
 		y2, begin, end,
 		arrowLength, ax, ay, aa,
-		labelAngle, lx, ly, labelBuffer; // BECAUSE I'VE LOST CONTROL OF MY LIFE.
-	self.update = function(speed){
+		//labelAngle,
+		lx, ly, labelBuffer; // BECAUSE I'VE LOST CONTROL OF MY LIFE.
+	//self.update = function(speed){
+	self.update = function(){
 
 		////////////////////////////////////////////////
 		// PRE-CALCULATE THE MATH (for retina canvas) //
@@ -241,7 +243,7 @@ function Edge(model, config){
 		tx=self.to.x*2;
 		ty=self.to.y*2;	
 		if(self.from===self.to){
-			var rotation = self.rotation;
+			let rotation = self.rotation;
 			rotation *= Math.TAU/360;
 			tx += Math.cos(rotation);
 			ty += Math.sin(rotation);
@@ -288,12 +290,12 @@ function Edge(model, config){
 		aa = end + Math.TAU/4;
 
 		// My label is...
-		var s = self.strength;
-		var l;
+		const s = self.strength;
+		let l;
 		if(s>=3) l="+++";
 		else if(s>=2) l="++";
 		else if(s>=1) l="+";
-		else if(s==0) l="?";
+		else if(s===0) l="?";
 		else if(s>=-1) l="–"; // EM dash, not hyphen.
 		else if(s>=-2) l="– –";
 		else l="– – –";
@@ -302,7 +304,7 @@ function Edge(model, config){
 		self.label = l;
 
 		// Label position
-		var labelPosition = self.getPositionAlongArrow(0.5);
+		const labelPosition = self.getPositionAlongArrow(0.5);
 		lx = labelPosition.x;
 		ly = labelPosition.y;
 
@@ -332,8 +334,8 @@ function Edge(model, config){
 
 	// Get position along arrow, on what parameter?
 	self.getArrowLength = function(){
-		var angle;
-		if(self.from==self.to){
+		let angle;
+		if(self.from===self.to){
 			// angle = Math.TAU;
 			return r*Math.TAU - 2*self.from.radius;
 		}else{
@@ -357,7 +359,7 @@ function Edge(model, config){
 		param = -0.05 + param*1.1; // (0,1) --> (-0.05, 1.05)
 
 		// If the arc's circle is actually BELOW the line...
-		var begin2 = begin;
+		let begin2 = begin;
 		if(y<0){
 			// DON'T KNOW WHY THIS WORKS, BUT IT DOES.
 			if(begin2>0){
@@ -368,7 +370,7 @@ function Edge(model, config){
 		}
 
 		// Get angle!
-		var angle = begin2 + (end-begin2)*param;
+		const angle = begin2 + (end-begin2)*param;
 		
 		// return x & y
 		return{
@@ -391,7 +393,7 @@ function Edge(model, config){
 		ctx.rotate(a);
 
 		// Highlight!
-		if(self.loopy.sidebar.currentPage.target == self){
+		if(self.loopy.sidebar.currentPage.target === self){
 			ctx.save();
 			ctx.translate(lx, ly);
 			ctx.rotate(-a);
@@ -465,9 +467,9 @@ function Edge(model, config){
 
 	self.isPointOnLabel = function(x, y){
 		// TOTAL HACK: radius based on TOOL BEING USED.
-		var radius;
-		if(self.loopy.tool==Loopy.TOOL_DRAG || self.loopy.tool==Loopy.TOOL_INK) radius=40; // selecting, wide radius!
-		else if(self.loopy.tool==Loopy.TOOL_ERASE) radius=25; // no accidental erase
+		let radius;
+		if(self.loopy.tool===Loopy.TOOL_DRAG || self.loopy.tool===Loopy.TOOL_INK) radius=40; // selecting, wide radius!
+		else if(self.loopy.tool===Loopy.TOOL_ERASE) radius=25; // no accidental erase
 		else radius = 15; // you wanna label close to edges
 		return _isPointInCircle(x, y, self.labelX, self.labelY, radius);
 	};
@@ -475,15 +477,15 @@ function Edge(model, config){
 	self.getBoundingBox = function(){
 
 		// SPECIAL CASE: SELF-ARC
-		if(self.from==self.to){
+		if(self.from===self.to){
 
-			var perpendicular = a-Math.TAU/4;
-			var cx = fx + Math.cos(perpendicular)*-y2;
-			var cy = fy + Math.sin(perpendicular)*-y2;
+			const perpendicular = a-Math.TAU/4;
+			let cx = fx + Math.cos(perpendicular)*-y2;
+			let cy = fy + Math.sin(perpendicular)*-y2;
 			cx = cx/2; // un-retina
 			cy = cy/2; // un-retina
 
-			var _radius = r/2; // un-retina
+			const _radius = r/2; // un-retina
 
 			return {
 				left: cx - _radius,
@@ -495,28 +497,28 @@ function Edge(model, config){
 		}
 
 		// THREE POINTS: start, end, and perpendicular with r
-		var from = {x:self.from.x, y:self.from.y};
-		var to = {x:self.to.x, y:self.to.y};
-		var mid = {
+		const from = {x:self.from.x, y:self.from.y};
+		const to = {x:self.to.x, y:self.to.y};
+		const mid = {
 			x:(from.x+to.x)/2,
 			y:(from.y+to.y)/2
 		};
 
-		var perpendicular = a-Math.TAU/4;
+		const perpendicular = a-Math.TAU/4;
 		mid.x += Math.cos(perpendicular)*self.arc;
 		mid.y += Math.sin(perpendicular)*self.arc;
 
 		// TEST ALL POINTS
 
-		var left = Infinity;
-		var top = Infinity;
-		var right = -Infinity;
-		var bottom = -Infinity;
-		var points = [from, to, mid];
-		for(var i=0; i<points.length; i++){
-			var point = points[i];
-			var x = point.x;
-			var y = point.y;
+		let left = Infinity;
+		let top = Infinity;
+		let right = -Infinity;
+		let bottom = -Infinity;
+		const points = [from, to, mid];
+		for(let i=0; i<points.length; i++){
+			const point = points[i];
+			const x = point.x;
+			const y = point.y;
 			if(left>x) left=x;
 			if(top>y) top=y;
 			if(right<x) right=x;
