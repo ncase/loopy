@@ -171,8 +171,12 @@ function Edge(model, config){
 			ctx.scale(size, size);
 
 			// Signal's COLOR, BLENDING
-			const fromColor = Node.COLORS[self.from.hue];
-			const toColor = Node.COLORS[self.to.hue];
+			let fromColor = Node.COLORS[self.from.hue];
+			let toColor = Node.COLORS[self.to.hue];
+			if(loopy.globalState.colorMode===1){
+				fromColor = Node.COLORS[signal.color];
+				toColor = Node.COLORS[signal.color];
+			}
 			let blend;
 			const bStart=0.4, bEnd=0.6;
 			if(signal.position<bStart){

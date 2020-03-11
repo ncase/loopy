@@ -121,8 +121,9 @@ function Node(model, config){
 	self.takeSignal = function(signal){
 		if(self.died) return;
 		if(!self.deltaPool) self.deltaPool={"-1":0,0:0,1:0,2:0,3:0,4:0,5:0,6:0};
-		if(loopy.globalState.colorMode===1 && self.hue === signal.color){
-			self.value += signal.delta;
+		if(loopy.globalState.colorMode===1 && !self.aggregate) self.aggregate = [];
+		if(loopy.globalState.colorMode===1){
+			if(self.hue === signal.color) self.value += signal.delta;
 		}else self.value += signal.delta;
 		if(loopy.globalState.colorMode===1)	self.deltaPool[signal.color] += signal.delta;
 		else self.deltaPool[self.hue] += signal.delta;
@@ -136,7 +137,9 @@ function Node(model, config){
 		if(signal.delta>0) _offsetVel -= 6 ;
 		if(signal.delta<0) _offsetVel += 6 ;
 
-		if(loopy.globalState.colorMode===1) if(self.aggregate[signal.color]) return;
+		if(loopy.globalState.colorMode===1) {
+			if(self.aggregate[signal.color]) return;
+		}
 		else if(self.aggregate) return;
 		if(loopy.globalState.colorMode===1 && self.hue === signal.color){
 			self.valueBeforeAggregationPool = self.value - signal.delta;
@@ -149,14 +152,14 @@ function Node(model, config){
 				let deltaPool;
 				if(loopy.globalState.colorMode===1)	deltaPool = self.deltaPool[signal.color];
 				else deltaPool = self.deltaPool[self.hue];
-				const signal = {delta:deltaPool,age:self.lastSignalAge,color:signal.color};
+				const newSignal = {delta:deltaPool,age:self.lastSignalAge,color:signal.color};
 				// Only propagate beyond threshold
-				if(!self.transmissionBehavior) self.sendSignal(signal);
+				if(!self.transmissionBehavior) self.sendSignal(newSignal);
 				else if (self.value < 0 && self.transmissionBehavior===2) self.die();
 				else if(loopy.globalState.colorMode===1){
-					if(self.value<0 || self.value>1) self.sendSignal(signal);
-					else if(self.hue !== signal.color) self.sendSignal(signal);
-				} else if(self.value<0 || self.value>1) self.sendSignal(signal);
+					if(self.value<0 || self.value>1) self.sendSignal(newSignal);
+					else if(self.hue !== newSignal.color) self.sendSignal(newSignal);
+				} else if(self.value<0 || self.value>1) self.sendSignal(newSignal);
 				if(self.value<0) self.value = 0;
 				if(self.value>1) self.value = 1;
 			}
@@ -170,7 +173,6 @@ function Node(model, config){
 			}
 		} ,1000 * self.aggregationLatency * signalSpeedRatio);
 
-		if(loopy.globalState.colorMode===1 && !self.aggregate) self.aggregate = [];
 		if(loopy.globalState.colorMode===1) self.aggregate[signal.color]=aggregate;
 		else self.aggregate = aggregate;
 	};
