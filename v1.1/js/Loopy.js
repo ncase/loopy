@@ -204,7 +204,7 @@ function Loopy(config){
 		self.model.deserialize(data);
 		self.sidebar.pages.forEach(function(page){page.dom.classList.add(loopy.globalState.loopyMode?"advanced":"simple");});
 		self.sidebar.pages[3].getComponent("loopyMode").show(); //FIXME: less dirty syntaxe for .pages[3] = page Edit
-		//self.sidebar.pages[3].getComponent("colorMode").show();
+		self.sidebar.pages[3].getComponent("colorMode").show();
 	}; 
 
 

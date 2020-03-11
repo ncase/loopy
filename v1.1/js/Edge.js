@@ -3,12 +3,24 @@
 EDGE!
 
 **********************************/
+Edge.COLORS = {
+	"-1":"#666666", // grey
+	0: "#EA3E3E", // red
+	1: "#EA9D51", // orange
+	2: "#FEEE43", // yellow
+	3: "#BFEE3F", // green
+	4: "#7FD4FF", // blue
+	5: "#A97FFF", // purple
+	6: "#DDDDDD"  // light grey -> died
+};
 
 Edge.allSignals = [];
 Edge.MAX_SIGNALS = 100;
 Edge.MAX_SIGNALS_PER_EDGE = 10;
 Edge.defaultStrength = 1;
 Edge.defaultSignBehavior=0;
+Edge.defaultEdgeFilterColor=-1;
+Edge.defaultEdgeTargetColor=-1;
 
 function Edge(model, config){
 
@@ -27,7 +39,9 @@ function Edge(model, config){
 		arc: 100,
 		rotation: 0,
 		strength: Edge.defaultStrength,
-		signBehavior: Edge.defaultSignBehavior
+		signBehavior: Edge.defaultSignBehavior,
+		edgeFilterColor: Edge.defaultEdgeFilterColor,
+		edgeTargetColor: Edge.defaultEdgeTargetColor
 	});
 
 	// Get my NODES
@@ -385,7 +399,10 @@ function Edge(model, config){
 
 		// Width & Color
 		ctx.lineWidth = 4*Math.abs(self.strength)-2;
-		ctx.strokeStyle = "#666";
+		const gradient = ctx.createLinearGradient(0,0,ax,ay);
+		gradient.addColorStop(0.4,Edge.COLORS[self.edgeFilterColor]);
+		gradient.addColorStop(1,Edge.COLORS[self.edgeTargetColor]);
+		ctx.strokeStyle = gradient;
 
 		// Translate & Rotate!
 		ctx.save();

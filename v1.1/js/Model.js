@@ -289,13 +289,17 @@ function Model(loopy){
 			// 3 - strength
 			// 4 - rotation
 			// 5 - signBehavior
-			var dataEdge = [
+			// 6 - edgeFilterColor
+			// 7 - edgeTargetColor
+			const dataEdge = [
 				edge.from.id,
 				edge.to.id,
 				Math.round(edge.arc),
 				edge.strength,
 				Math.round(edge.rotation),
-				edge.signBehavior
+				edge.signBehavior,
+				edge.edgeFilterColor,
+				edge.edgeTargetColor
 			];
 			edges.push(dataEdge);
 		}
@@ -367,7 +371,9 @@ function Model(loopy){
 				arc: edge[2],
 				strength: edge[3],
 				rotation: edge[4],
-				signBehavior: edge[5]
+				signBehavior: edge[5],
+				edgeFilterColor: edge[6],
+				edgeTargetColor: edge[7]
 			};
 			switch (edgeConfig.strength) {
 				case -9:

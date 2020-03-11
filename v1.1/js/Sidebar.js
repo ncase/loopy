@@ -147,6 +147,27 @@ function Sidebar(loopy){
 				Edge.defaultStrength = value;
 			}
 		}));
+		page.addComponent("edgeFilterColor", new ComponentSlider({
+			bg: "edgeFilterColor",
+			label: "Start color : ",
+			options: [-1,0,1,2,3,4,5],
+			advanced: true,
+			defaultValue: -1,
+			oninput: function(value){
+				Node.defaultEdgeFilterColor = value;
+			}
+		}));
+		page.addComponent("edgeTargetColor", new ComponentSlider({
+			bg: "edgeTargetColor",
+			label: "End color : ",
+			options: [-1,0,1,2,3,4,5],
+			advanced: true,
+			defaultValue: -1,
+			oninput: function(value){
+				Node.defaultEdgeTargetColor = value;
+			}
+		}));
+
 		page.addComponent(new ComponentHTML({
 			html: "(to make a stronger relationship, draw multiple arrows!)<br><br>"+
 			"(to make a delayed relationship, draw longer arrows)"
@@ -251,14 +272,13 @@ function Sidebar(loopy){
 				loopy.sidebar.pages.forEach(apply);
 			}
 		}));
-		/*
 		page.addComponent("colorMode", new ComponentSlider({
 			bg: "colorMode",
 			label: "Color mode : ",
 			options: [0,1], // Aesthetic || Type logic
 			advanced: true,
 			defaultValue:0 // not advanced behavior when default
-		}));*/
+		}));
 		page.addComponent(new ComponentHTML({
 			html: ""+
 			"<hr/><br>"+
