@@ -401,7 +401,7 @@ function Edge(model, config){
 		ctx.lineWidth = 4*Math.abs(self.strength)-2;
 		const gradient = ctx.createLinearGradient(0,0,ax,ay);
 		gradient.addColorStop(0.4,Edge.COLORS[self.edgeFilterColor]);
-		gradient.addColorStop(1,Edge.COLORS[self.edgeTargetColor]);
+		gradient.addColorStop(1,Edge.COLORS[self.edgeTargetColor===-1?self.edgeFilterColor:self.edgeTargetColor]);
 		ctx.strokeStyle = gradient;
 
 		// Translate & Rotate!

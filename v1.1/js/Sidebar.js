@@ -147,6 +147,14 @@ function Sidebar(loopy){
 				Edge.defaultStrength = value;
 			}
 		}));
+		const filterByColorLabel = [];
+		filterByColorLabel[-1] ="Color filter : all signal pass";
+		filterByColorLabel[0] =	"Color filter : red signal only";
+		filterByColorLabel[1] =	"Color filter : orange signal only";
+		filterByColorLabel[2] =	"Color filter : yellow signal only";
+		filterByColorLabel[3] =	"Color filter : green signal only";
+		filterByColorLabel[4] =	"Color filter : blue signal only";
+		filterByColorLabel[5] =	"Color filter : purple signal only";
 		page.addComponent("edgeFilterColor", new ComponentSlider({
 			bg: "edgeFilterColor",
 			label: "Start color : ",
@@ -157,6 +165,22 @@ function Sidebar(loopy){
 				Node.defaultEdgeFilterColor = value;
 			}
 		}));
+		const convertToColorLabel = [];
+		convertToColorLabel[-1] ="Color converter : as is";
+		convertToColorLabel[0] = "Color converter : to red";
+		convertToColorLabel[1] = "Color converter : to orange";
+		convertToColorLabel[2] = "Color converter : to yellow";
+		convertToColorLabel[3] = "Color converter : to green";
+		convertToColorLabel[4] = "Color converter : to blue";
+		convertToColorLabel[5] = "Color converter : to purple";
+		const endColorLabel = [];
+		endColorLabel[-1] ="End color : auto from start color";
+		endColorLabel[0] = "End color : red";
+		endColorLabel[1] = "End color : orange";
+		endColorLabel[2] = "End color : yellow";
+		endColorLabel[3] = "End color : green";
+		endColorLabel[4] = "End color : blue";
+		endColorLabel[5] = "End color : purple";
 		page.addComponent("edgeTargetColor", new ComponentSlider({
 			bg: "edgeTargetColor",
 			label: "End color : ",
@@ -185,6 +209,13 @@ function Sidebar(loopy){
 			var edge = page.target;
 			page.getComponent("strength").dom.querySelector('.component_label').innerHTML = strengthLinkLabel[edge.strength];
 			page.getComponent("signBehavior").dom.querySelector('.component_label').innerHTML = signBehaviorLabel[edge.signBehavior];
+			if(loopy.globalState.colorMode===1){
+				page.getComponent("edgeFilterColor").dom.querySelector('.component_label').innerHTML = filterByColorLabel[edge.edgeFilterColor];
+				page.getComponent("edgeTargetColor").dom.querySelector('.component_label').innerHTML = convertToColorLabel[edge.edgeTargetColor];
+			} else {
+				page.getComponent("edgeFilterColor").dom.querySelector('.component_label').innerHTML = "Start color : ";
+				page.getComponent("edgeTargetColor").dom.querySelector('.component_label').innerHTML = endColorLabel[edge.edgeTargetColor];
+			}
 		};
 		self.addPage("Edge", page);
 	})();
