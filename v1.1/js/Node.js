@@ -58,7 +58,7 @@ function Node(model, config){
 	var _controlsAlpha = 0;
 	var _controlsDirection = 0;
 	var _controlsSelected = false;
-	var _controlsPressed = false;	
+	var _controlsPressed = false;
 	var _listenerMouseMove = subscribe("mousemove", function(){
 
 		// ONLY WHEN PLAYING
@@ -88,13 +88,14 @@ function Node(model, config){
 			var delta = _controlsDirection*0.33; // HACK: hard-coded 0.33
 			self.live();
 			self.takeSignal({
-				delta: delta
+				delta: delta,
+				color: self.hue
 			});
 		}
 
 	});
 	var _listenerMouseUp = subscribe("mouseup",function(){
-		if(self.loopy.mode!=Loopy.MODE_PLAY) return; // ONLY WHEN PLAYING
+		if(self.loopy.mode!==Loopy.MODE_PLAY) return; // ONLY WHEN PLAYING
 		_controlsPressed = false;
 	});
 	var _listenerReset = subscribe("model/reset", function(){
@@ -119,9 +120,12 @@ function Node(model, config){
 
 	self.takeSignal = function(signal){
 		if(self.died) return;
-		self.value += signal.delta;
-		if(!self.deltaPool) self.deltaPool=0;
-		self.deltaPool += signal.delta;
+		if(!self.deltaPool) self.deltaPool={"-1":0,0:0,1:0,2:0,3:0,4:0,5:0,6:0};
+		if(loopy.globalState.colorMode===1 && self.hue === signal.color){
+			self.value += signal.delta;
+		}else self.value += signal.delta;
+		if(loopy.globalState.colorMode===1)	self.deltaPool[signal.color] += signal.delta;
+		else self.deltaPool[self.hue] += signal.delta;
 		self.lastSignalAge = signal.age;
 		self.reseted = false;
 
@@ -132,23 +136,43 @@ function Node(model, config){
 		if(signal.delta>0) _offsetVel -= 6 ;
 		if(signal.delta<0) _offsetVel += 6 ;
 
-		if(self.aggregate) return;
-		self.valueBeforeAggregationPool = self.value - signal.delta;
+		if(loopy.globalState.colorMode===1) if(self.aggregate[signal.color]) return;
+		else if(self.aggregate) return;
+		if(loopy.globalState.colorMode===1 && self.hue === signal.color){
+			self.valueBeforeAggregationPool = self.value - signal.delta;
+		}else self.valueBeforeAggregationPool = self.value - signal.delta;
+
 		const signalSpeedRatio = 8 / Math.pow(2,self.loopy.signalSpeed);
-		self.aggregate = setTimeout(function () {
+
+		const aggregate = setTimeout(function () {
 			if(self.loopy.mode===Loopy.MODE_PLAY && !self.reseted){
-				const signal = {delta:self.deltaPool,age:self.lastSignalAge};
+				let deltaPool;
+				if(loopy.globalState.colorMode===1)	deltaPool = self.deltaPool[signal.color];
+				else deltaPool = self.deltaPool[self.hue];
+				const signal = {delta:deltaPool,age:self.lastSignalAge,color:signal.color};
 				// Only propagate beyond threshold
 				if(!self.transmissionBehavior) self.sendSignal(signal);
 				else if (self.value < 0 && self.transmissionBehavior===2) self.die();
-				else if(self.value<0 || self.value>1) self.sendSignal(signal);
+				else if(loopy.globalState.colorMode===1){
+					if(self.value<0 || self.value>1) self.sendSignal(signal);
+					else if(self.hue !== signal.color) self.sendSignal(signal);
+				} else if(self.value<0 || self.value>1) self.sendSignal(signal);
 				if(self.value<0) self.value = 0;
 				if(self.value>1) self.value = 1;
 			}
-			self.aggregate=false;
-			self.deltaPool=0;
-		} ,1000 * self.aggregationLatency * signalSpeedRatio)
+			if(loopy.globalState.colorMode===1){
+				self.deltaPool[signal.color]=0;
+				self.aggregate[signal.color]=false;
+			}
+			else {
+				self.aggregate=false;
+				self.deltaPool[self.hue]=0;
+			}
+		} ,1000 * self.aggregationLatency * signalSpeedRatio);
 
+		if(loopy.globalState.colorMode===1 && !self.aggregate) self.aggregate = [];
+		if(loopy.globalState.colorMode===1) self.aggregate[signal.color]=aggregate;
+		else self.aggregate = aggregate;
 	};
 
 
@@ -166,10 +190,10 @@ function Node(model, config){
 	self.update = function(speed){
 
 		// When actually playing the simulation...
-		var _isPlaying = (self.loopy.mode==Loopy.MODE_PLAY);
+		var _isPlaying = (self.loopy.mode===Loopy.MODE_PLAY);
 
 		// Otherwise, value = initValue exactly
-		if(self.loopy.mode==Loopy.MODE_EDIT){
+		if(self.loopy.mode===Loopy.MODE_EDIT){
 			self.value = self.init;
 		}
 
@@ -189,7 +213,7 @@ function Node(model, config){
 			_offsetGoto = 0;
 		}
 		_offset += _offsetVel;
-		if(_offset>40) _offset=40
+		if(_offset>40) _offset=40;
 		if(_offset<-40) _offset=-40;
 		_offsetVel += _offsetAcc;
 		_offsetVel *= _offsetDamp;
@@ -210,7 +234,7 @@ function Node(model, config){
 		// Translate!
 		ctx.save();
 		ctx.translate(x,y+_offset);
-		
+
 		// DRAW HIGHLIGHT???
 		if(self.loopy.sidebar.currentPage.target == self){
 			ctx.beginPath();
@@ -218,7 +242,7 @@ function Node(model, config){
 			ctx.fillStyle = HIGHLIGHT_COLOR;
 			ctx.fill();
 		}
-		
+
 		// White-gray bubble with colored border
 		ctx.beginPath();
 		ctx.arc(0, 0, r-2, 0, Math.TAU, false);
@@ -227,7 +251,7 @@ function Node(model, config){
 		ctx.lineWidth = 6;
 		ctx.strokeStyle = color;
 		ctx.stroke();
-		
+
 		// Circle radius
 		// var _circleRadiusGoto = r*(self.value+1);
 		// _circleRadius = _circleRadius*0.75 + _circleRadiusGoto*0.25;

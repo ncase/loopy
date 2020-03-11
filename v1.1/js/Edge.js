@@ -81,6 +81,7 @@ function Edge(model, config){
 			position: 0,
 			scaleX: Math.abs(delta),
 			scaleY: delta,
+			color: signal.color,
 			age: age
 		};
 
@@ -101,7 +102,7 @@ function Edge(model, config){
 
 		// Move all signals along
 		for(let i=0; i<self.signals.length; i++){
-			
+
 			const signal = self.signals[i];
 			//var lastPosition = signal.position;
 			signal.position += self.signalSpeed;
@@ -136,7 +137,7 @@ function Edge(model, config){
 				lastSignal.delta *= self.strength;
 			}
 			self.to.takeSignal(lastSignal);
-			
+
 			// Pop it, move on down
 			self.removeSignal(lastSignal);
 			lastSignal = self.signals[self.signals.length-1];
@@ -149,7 +150,7 @@ function Edge(model, config){
 		Edge.allSignals.splice( Edge.allSignals.indexOf(signal), 1 );
 	};
 	self.drawSignals = function(ctx){
-	
+
 		// Draw each one
 		for(let i=0; i<self.signals.length; i++){
 
@@ -255,7 +256,7 @@ function Edge(model, config){
 		fx=self.from.x*2;
 		fy=self.from.y*2;
 		tx=self.to.x*2;
-		ty=self.to.y*2;	
+		ty=self.to.y*2;
 		if(self.from===self.to){
 			let rotation = self.rotation;
 			rotation *= Math.TAU/360;
@@ -385,7 +386,7 @@ function Edge(model, config){
 
 		// Get angle!
 		const angle = begin2 + (end-begin2)*param;
-		
+
 		// return x & y
 		return{
 			x: w/2 + Math.cos(angle)*r,
