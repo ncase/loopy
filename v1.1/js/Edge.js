@@ -56,6 +56,7 @@ function Edge(model, config){
 		// Filter edge
 		if(self.signBehavior===2 && self.strength<0 && signal.delta>0) return;
 		if(self.signBehavior===2 && self.strength>0 && signal.delta<0) return;
+		if(self.edgeFilterColor!== -1 && self.edgeFilterColor !== signal.color) return;
 
 		// IF ALREADY TOO MANY, FORGET IT
 		if(Edge.allSignals.length>Edge.MAX_SIGNALS){
@@ -136,6 +137,7 @@ function Edge(model, config){
 			} else if(self.signBehavior===0){
 				lastSignal.delta *= self.strength;
 			}
+			if(loopy.globalState.colorMode===1 && self.edgeTargetColor!== -1) lastSignal.color = self.edgeTargetColor;
 			self.to.takeSignal(lastSignal);
 
 			// Pop it, move on down
@@ -175,7 +177,8 @@ function Edge(model, config){
 			let toColor = Node.COLORS[self.to.hue];
 			if(loopy.globalState.colorMode===1){
 				fromColor = Node.COLORS[signal.color];
-				toColor = Node.COLORS[signal.color];
+				if(self.edgeTargetColor=== -1) toColor = Node.COLORS[signal.color];
+				else toColor = Node.COLORS[self.edgeTargetColor];
 			}
 			let blend;
 			const bStart=0.4, bEnd=0.6;
