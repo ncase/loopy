@@ -38,6 +38,7 @@ function Model(loopy){
 		publish("model/changed");
 
 		// Add Node
+		//noinspection all
 		const node = new Node(self,config);
 		self.nodeByID[node.id] = node;
 		self.nodes.push(node);

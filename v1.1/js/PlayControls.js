@@ -8,7 +8,7 @@ PLAY CONTROLS CODE:
 
 function PlayControls(loopy){
 
-	var self = this;
+	const self = this;
 	PageUI.call(self, document.getElementById("playbar"));
 
 	self.loopy = loopy;
@@ -25,10 +25,10 @@ function PlayControls(loopy){
 
 	// During the Editor
 	(function(){
-		var page = new Page();
+		const page = new Page();
 
 		// PLAY BUTTON
-		var buttonDOM = page.addComponent(new PlayButton({
+		const buttonDOM = page.addComponent(new PlayButton({
 			icon: 0,
 			label: "Play",
 			tooltip: isMacLike ? "⌘-Enter" : "control-enter",
@@ -46,14 +46,15 @@ function PlayControls(loopy){
 
 	// During the Player
 	(function(){
-		var page = new Page();
+		const page = new Page();
 
 		if(loopy.embedded){
 
 			// Reset | Remix
 
+			//FIXME: refacto buttonDOM
 			// RESET
-			var buttonDOM = page.addComponent(new PlayButton({
+			let buttonDOM = page.addComponent(new PlayButton({
 				icon: 2,
 				label: "Reset",
 				onclick: function(){
@@ -65,11 +66,11 @@ function PlayControls(loopy){
 			buttonDOM.style.top = "0px";
 
 			// REMIX BUTTON
-			var buttonDOM = page.addComponent(new PlayButton({
+			buttonDOM = page.addComponent(new PlayButton({
 				icon: 3,
 				label: "Remix",
 				onclick: function(){
-					var url = loopy.saveToURL();
+					const url = loopy.saveToURL();
 					window.open(url,'_blank');
 				}
 			})).dom;
@@ -82,7 +83,7 @@ function PlayControls(loopy){
 			// Stop | Reset
 
 			// STOP BUTTON
-			var buttonDOM = page.addComponent(new PlayButton({
+			let buttonDOM = page.addComponent(new PlayButton({
 				icon: 1,
 				label: "Stop",
 				onclick: function(){
@@ -94,7 +95,7 @@ function PlayControls(loopy){
 			buttonDOM.style.top = "0px";
 
 			// RESET BUTTON
-			var buttonDOM = page.addComponent(new PlayButton({
+			buttonDOM = page.addComponent(new PlayButton({
 				icon: 2,
 				label: "Reset",
 				onclick: function(){
@@ -108,7 +109,7 @@ function PlayControls(loopy){
 		}
 
 		// SPEED SLIDER
-		var speedSlider = page.addComponent(new PlaySlider({
+		const speedSlider = page.addComponent(new PlaySlider({
 			value: loopy.signalSpeed,
 			min:0, max:6, step:0.2,
 			oninput: function(value){
@@ -125,9 +126,9 @@ function PlayControls(loopy){
 
 function PlayButton(config){
 
-	var self = this;
+	const self = this;
 
-	var label = "<div class='play_button_icon' icon='"+config.icon+"'></div> "
+	const label = "<div class='play_button_icon' icon='"+config.icon+"'></div> "
 				+ "<div class='play_button_label'>"+config.label+"</div>";
 
 	self.dom = _createButton(label, function(){
@@ -143,7 +144,7 @@ function PlayButton(config){
 }
 function PlaySlider(config){
 
-	var self = this;
+	const self = this;
 	self.dom = document.createElement("div");
 	self.dom.style.bottom = "0px";
     self.dom.style.position = "absolute";
@@ -151,12 +152,13 @@ function PlaySlider(config){
     self.dom.style.height = "20px";
 
 	// Input
-	var input = document.createElement("input");
+	const input = document.createElement("input");
 	input.setAttribute("class","play_slider");
 	self.dom.appendChild(input);
 
+	//FIXME: dedup
 	// Slow & Fast Icons
-	var img = new Image();
+	let img = new Image();
 	img.src = "css/icons/speed_slow.png";
 	img.width = 20;
 	img.height = 15;
@@ -164,7 +166,8 @@ function PlaySlider(config){
 	img.style.left = "5px";
 	img.style.top = "-2px";
 	self.dom.appendChild(img);
-	var img = new Image();
+
+	img = new Image();
 	img.src = "css/icons/speed_fast.png";
 	img.width = 20;
 	img.height = 15;
@@ -179,7 +182,7 @@ function PlaySlider(config){
 	input.step = config.step;
 	input.min = config.min;
 	input.max = config.max;
-	input.oninput = function(event){
+	input.oninput = function(){ // (event)
 		config.oninput(input.value);
 	};
 

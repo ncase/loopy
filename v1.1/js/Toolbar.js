@@ -6,20 +6,20 @@ TOOLBAR CODE
 
 function Toolbar(loopy){
 
-	var self = this;
+	const self = this;
 
 	// Tools & Buttons
-	var buttons = [];
-	var buttonsByID = {};
+	const buttons = [];
+	const buttonsByID = {};
 	self.dom = document.getElementById("toolbar");
 	self.addButton = function(options){
 
-		var id = options.id;
-		var tooltip = options.tooltip;
-		var callback = options.callback;
+		const id = options.id;
+		const tooltip = options.tooltip;
+		const callback = options.callback;
 
 		// Add the button
-		var button = new ToolbarButton(self,{
+		const button = new ToolbarButton(self,{
 			id: id,
 			icon: "css/icons/"+id+".png",
 			tooltip: tooltip,
@@ -41,7 +41,7 @@ function Toolbar(loopy){
 
 	// Select button
 	self.selectButton = function(button){
-		for(var i=0;i<buttons.length;i++){
+		for(let i=0;i<buttons.length;i++){
 			buttons[i].deselect();
 		}
 		button.select();
@@ -51,7 +51,7 @@ function Toolbar(loopy){
 	self.currentTool = "ink";
 	self.setTool = function(tool){
 		self.currentTool = tool;
-		var name = "TOOL_"+tool.toUpperCase();
+		const name = "TOOL_"+tool.toUpperCase();
 		loopy.tool = Loopy[name];
 		document.getElementById("canvasses").setAttribute("cursor",tool);
 	};
@@ -95,7 +95,7 @@ function Toolbar(loopy){
 
 function ToolbarButton(toolbar, config){
 
-	var self = this;
+	const self = this;
 	self.id = config.id;
 
 	// Icon

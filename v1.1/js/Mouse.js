@@ -2,21 +2,21 @@ window.Mouse = {};
 Mouse.init = function(target){
 
 	// Events!
-	var _onmousedown = function(event){
+	const _onmousedown = function(){
 		Mouse.moved = false;
 		Mouse.pressed = true;
 		Mouse.startedOnTarget = true;
 		publish("mousedown");
 	};
-	var _onmousemove = function(event){
+	const _onmousemove = function(event){
 
 		// DO THE INVERSE
-		var canvasses = document.getElementById("canvasses");
-		var tx = 0;
-		var ty = 0;
-		var s = 1/loopy.offsetScale;
-		var CW = canvasses.clientWidth - _PADDING - _PADDING;
-		var CH = canvasses.clientHeight - _PADDING_BOTTOM - _PADDING;
+		const canvasses = document.getElementById("canvasses");
+		let tx = 0;
+		let ty = 0;
+		const s = 1/loopy.offsetScale;
+		const CW = canvasses.clientWidth - _PADDING - _PADDING;
+		const CH = canvasses.clientHeight - _PADDING_BOTTOM - _PADDING;
 
 		if(loopy.embedded){
 			tx -= _PADDING/2; // dunno why but this is needed
@@ -36,8 +36,8 @@ Mouse.init = function(target){
 		ty -= loopy.offsetY;
 
 		// Mutliply by Mouse vector
-		var mx = event.x*s + tx;
-		var my = event.y*s + ty;
+		const mx = event.x*s + tx;
+		const my = event.y*s + ty;
 
 		// Mouse!
 		Mouse.x = mx;
@@ -47,7 +47,7 @@ Mouse.init = function(target){
 		publish("mousemove");
 
 	};
-	var _onmouseup = function(){
+	const _onmouseup = function(){
 		Mouse.pressed = false;
 		if(Mouse.startedOnTarget){
 			publish("mouseup");

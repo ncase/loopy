@@ -6,7 +6,7 @@ Use the same PAGE UI thing
 
 function Modal(loopy){
 
-	var self = this;
+	const self = this;
 	self.loopy = loopy;
 	PageUI.call(self, document.getElementById("modal_page"));
 
@@ -32,13 +32,13 @@ function Modal(loopy){
 	subscribe("modal", function(pageName){
 
 		self.show();
-		var page = self.showPage(pageName);
+		const page = self.showPage(pageName);
 
 		// Do something
 		if(page.onshow) page.onshow();
 
 		// Dimensions
-		var dom = document.getElementById("modal");
+		const dom = document.getElementById("modal");
 		dom.style.width = self.currentPage.width+"px";
 		dom.style.height = self.currentPage.height+"px";
 
@@ -50,10 +50,10 @@ function Modal(loopy){
 
 	// Examples
 	(function(){
-		var page = new Page();
+		const page = new Page();
 		page.width = 670;
 		page.height = 570;
-		var iframe = page.addComponent(new ModalIframe({
+		const iframe = page.addComponent(new ModalIframe({
 			page: page,
 			src: "pages/examples/",
 			width: 640,
@@ -65,7 +65,7 @@ function Modal(loopy){
 
 	// How To
 	(function(){
-		var page = new Page();
+		const page = new Page();
 		page.width = 530;
 		page.height = 430;
 		page.addComponent(new ModalIframe({
@@ -75,7 +75,7 @@ function Modal(loopy){
 			height: 350
 		}));
 
-		var label = document.createElement("div");
+		const label = document.createElement("div");
 		label.style.fontSize = "18px";
 		label.style.marginTop = "6px";
 		label.style.color = "#777";
@@ -88,7 +88,7 @@ function Modal(loopy){
 
 	// Credits
 	(function(){
-		var page = new Page();
+		const page = new Page();
 		page.width = 690;
 		page.height = 550;
 		page.addComponent(new ModalIframe({
@@ -96,21 +96,21 @@ function Modal(loopy){
 			src: "pages/credits/",
 			width: 660,
 			height: 500
-		}))
+		}));
 		self.addPage("credits", page);
 	})();
 
 	// Save as link
 	(function(){
-		var page = new Page();
+		const page = new Page();
 		page.width = 500;
 		page.height = 155;
 		page.addComponent(new ComponentHTML({
 			html: "copy your link:"
 		}));
-		var output = page.addComponent(new ComponentOutput({}));
+		const output = page.addComponent(new ComponentOutput({}));
 
-		var label = document.createElement("div");
+		const label = document.createElement("div");
 		label.style.textAlign = "right";
 		label.style.fontSize = "15px";
 		label.style.marginTop = "6px";
@@ -119,7 +119,7 @@ function Modal(loopy){
 		page.dom.appendChild(label);
 
 		// chars left...
-		var chars = document.createElement("div");
+		const chars = document.createElement("div");
 		chars.style.textAlign = "right";
 		chars.style.fontSize = "15px";
 		chars.style.marginTop = "3px";
@@ -130,12 +130,12 @@ function Modal(loopy){
 		page.onshow = function(){
 
 			// Copy-able link
-			var link = loopy.saveToURL();
+			const link = loopy.saveToURL();
 			output.output(link);
 			output.dom.select();
 
 			// Chars left
-			var html = link.length+" / 2048 characters";
+			let html = link.length+" / 2048 characters";
 			if(link.length>2048){
 				html += " - MAY BE TOO LONG FOR MOST BROWSERS";
 			}
@@ -151,66 +151,71 @@ function Modal(loopy){
 
 	// Embed
 	(function(){
-		var page = new Page();
+		const page = new Page();
 		page.width = 700;
 		page.height = 500;
 
 		// ON UPDATE DIMENSIONS
-		var iframeSRC;
-		var _onUpdate = function(){
-			var embedCode = '<iframe width="'+width.getValue()+'" height="'+height.getValue()+'" frameborder="0" src="'+iframeSRC+'"></iframe>';
+		let iframeSRC;
+		const _onUpdate = function(){
+			const embedCode = '<iframe width="'+width.getValue()+'" height="'+height.getValue()+'" style="border: 0;" src="'+iframeSRC+'"></iframe>';
 			output.output(embedCode);
 		};
 
 		// THE SHTUFF
-		var sidebar = document.createElement("div");
+		const sidebar = document.createElement("div");
 		sidebar.style.width = "150px";
 		sidebar.style.height = "440px";
 		sidebar.style.float = "left";
 		page.dom.appendChild(sidebar);
 
+		//FIXME: dedup
 		// Label
-		var label = document.createElement("div");
+		let label = document.createElement("div");
 		label.innerHTML = "<br>PREVIEW &rarr;<br><br>";
 		sidebar.appendChild(label);
 
+		//FIXME: dedup
 		// Label 2
-		var label = document.createElement("div");
+		label = document.createElement("div");
 		label.style.fontSize = "15px";
 		label.innerHTML = "what size do you want your embed to be?";
 		sidebar.appendChild(label);
 
 		// Size!
-		var width = _createNumberInput(_onUpdate);
+		const width = _createNumberInput(_onUpdate);
 		sidebar.appendChild(width.dom);
-		var label = document.createElement("div");
+		//FIXME: dedup
+		label = document.createElement("div");
 		label.style.display = "inline-block";
 		label.style.fontSize = "15px";
 		label.innerHTML = "&nbsp;×&nbsp;";
 		sidebar.appendChild(label);
-		var height = _createNumberInput(_onUpdate);
+		const height = _createNumberInput(_onUpdate);
 		sidebar.appendChild(height.dom);
 
+		//FIXME: dedup
 		// Label 3
-		var label = document.createElement("div");
+		label = document.createElement("div");
 		label.style.fontSize = "15px";
 		label.innerHTML = "<br><br>copy this code into your website's html:";
 		sidebar.appendChild(label);
 
 		// Output!
-		var output = new ComponentOutput({});
+		const output = new ComponentOutput({});
 		output.dom.style.fontSize = "12px";
 		sidebar.appendChild(output.dom);
 
+		//FIXME: dedup
 		// Label 3
-		var label = document.createElement("div");
+		label = document.createElement("div");
 		label.style.fontSize = "15px";
 		label.style.textAlign = "right";
 		label.innerHTML = "<br><br>(note: the REMIX button lets someone else, well, remix your model! don't worry, it'll just be a copy, it won't affect the original.)";
 		sidebar.appendChild(label);
 
 		// IFRAME
-		var iframe = page.addComponent(new ModalIframe({
+		const iframe = page.addComponent(new ModalIframe({
 			page: page,
 			manual: true,
 			src: "",
@@ -243,7 +248,7 @@ function Modal(loopy){
 
 	// GIF
 	(function(){
-		var page = new Page();
+		const page = new Page();
 		page.width = 530;
 		page.height = 400;
 		page.addComponent(new ModalIframe({
@@ -251,7 +256,7 @@ function Modal(loopy){
 			src: "pages/gif.html",
 			width: 500,
 			height: 350
-		}))
+		}));
 		self.addPage("save_gif", page);
 	})();
 
@@ -259,10 +264,10 @@ function Modal(loopy){
 
 function ModalIframe(config){
 
-	var self = this;
+	const self = this;
 
 	// IFRAME
-	var iframe = document.createElement("iframe");
+	const iframe = document.createElement("iframe");
 	self.dom = iframe;
 	iframe.width = config.width;
 	iframe.height = config.height;

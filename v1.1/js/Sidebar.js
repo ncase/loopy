@@ -6,7 +6,7 @@ SIDEBAR CODE
 
 function Sidebar(loopy){
 
-	var self = this;
+	const self = this;
 	PageUI.call(self, document.getElementById("sidebar"));
 
 	// Edit
@@ -17,7 +17,7 @@ function Sidebar(loopy){
 
 	// Go back to main when the thing you're editing is killed
 	subscribe("kill",function(object){
-		if(self.currentPage.target==object){
+		if(self.currentPage.target===object){
 			self.showPage("Edit");
 		}
 	});
@@ -28,7 +28,7 @@ function Sidebar(loopy){
 
 	// Node!
 	(function(){
-		var page = new SidebarPage();
+		const page = new SidebarPage();
 		page.addComponent(new ComponentButton({
 			header: true,
 			label: "back to top",
@@ -86,14 +86,14 @@ function Sidebar(loopy){
 		page.onedit = function(){
 
 			// Set color of Slider
-			var node = page.target;
-			var color = Node.COLORS[node.hue];
+			const node = page.target;
+			const color = Node.COLORS[node.hue];
 			page.getComponent("init").setBGColor(color);
 			page.getComponent("aggregationLatency").setBGColor(color);
 
 			// Focus on the name field IF IT'S "" or "?"
-			var name = node.label;
-			if(name=="" || name=="?") page.getComponent("label").select();
+			const name = node.label;
+			if(name==="" || name==="?") page.getComponent("label").select();
 			page.getComponent("transmissionBehavior").dom.querySelector('.component_label').innerHTML = transmissionBehaviorLabel[node.transmissionBehavior];
 			page.getComponent("aggregationLatency").dom.querySelector('.component_label').innerHTML = "Aggregation latency : "+node.aggregationLatency+"s";
 		};
@@ -110,7 +110,7 @@ function Sidebar(loopy){
 
 	// Edge!
 	(function(){
-		var page = new SidebarPage();
+		const page = new SidebarPage();
 		page.addComponent(new ComponentButton({
 			header: true,
 			label: "back to top",
@@ -206,7 +206,7 @@ function Sidebar(loopy){
 			}
 		}));
 		page.onedit = function(){
-			var edge = page.target;
+			const edge = page.target;
 			page.getComponent("strength").dom.querySelector('.component_label').innerHTML = strengthLinkLabel[edge.strength];
 			page.getComponent("signBehavior").dom.querySelector('.component_label').innerHTML = signBehaviorLabel[edge.signBehavior];
 			if(loopy.globalState.colorMode===1){
@@ -222,7 +222,7 @@ function Sidebar(loopy){
 
 	// Label!
 	(function(){
-		var page = new SidebarPage();
+		const page = new SidebarPage();
 		page.addComponent(new ComponentButton({
 			header: true,
 			label: "back to top",
@@ -242,11 +242,11 @@ function Sidebar(loopy){
 		page.onhide = function(){
 			
 			// If you'd just edited it...
-			var label = page.target;
+			const label = page.target;
 			if(!page.target) return;
 
 			// If text is "" or all spaces, DELETE.
-			var text = label.text;
+			const text = label.text;
 			if(/^\s*$/.test(text)){
 				// that was all whitespace, KILL.
 				page.target = null;
@@ -266,7 +266,7 @@ function Sidebar(loopy){
 
 	// Edit
 	(function(){
-		var page = new SidebarPage();
+		const page = new SidebarPage();
 		page.addComponent(new ComponentHTML({
 			html: ""+
 
@@ -291,7 +291,7 @@ function Sidebar(loopy){
 			options: [0,1], // Simple || Advanced
 			oninput: function(value){
 				//self.sidebar.pages.forEach(function(page){page.dom.classList.add(loopy.globalState.loopyMode?"advanced":"simple");});
-				var apply;
+				let apply;
 				if(value) apply = function(page){
 					page.dom.classList.add("advanced");
 					page.dom.classList.remove("simple");
@@ -336,7 +336,7 @@ function SidebarPage(){
 
 	// TODO: be able to focus on next component with an "Enter".
 
-	var self = this;
+	const self = this;
 	self.target = null;
 
 	// DOM
@@ -378,7 +378,7 @@ function SidebarPage(){
 		self.target = object;
 
 		// Show each property with its component
-		for(var i=0;i<self.components.length;i++){
+		for(let i=0;i<self.components.length;i++){
 			self.components[i].show();
 		}
 
@@ -404,7 +404,7 @@ function SidebarPage(){
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 function Component(){
-	var self = this;
+	const self = this;
 	self.dom = null;
 	self.page = null;
 	self.propName = null;
@@ -431,15 +431,15 @@ function Component(){
 function ComponentInput(config){
 
 	// Inherit
-	var self = this;
+	const self = this;
 	Component.apply(self);
 
 	// DOM: label + text input
 	self.dom = document.createElement("div");
-	var label = _createLabel(config.label);
-	var className = config.textarea ? "component_textarea" : "component_input";
-	var input = _createInput(className, config.textarea);
-	input.oninput = function(event){
+	const label = _createLabel(config.label);
+	const className = config.textarea ? "component_textarea" : "component_input";
+	const input = _createInput(className, config.textarea);
+	input.oninput = function(){
 		self.setValue(input.value);
 	};
 	self.dom.appendChild(label);
@@ -460,7 +460,7 @@ function ComponentInput(config){
 function ComponentSlider(config){
 
 	// Inherit
-	var self = this;
+	const self = this;
 	Component.apply(self);
 
 	// TODO: control with + / -, alt keys??
@@ -470,57 +470,57 @@ function ComponentSlider(config){
 	self.dom.classList.add('not_in_play_mode');
 	if(config.advanced){
 		self.dom.classList.add('adv');
-		var adv = document.createElement("div");
+		const adv = document.createElement("div");
 		adv.innerHTML = "Advanced feature in use : ";
 		adv.setAttribute("class","adv_disclaimer");
 		self.dom.appendChild(adv);
 	}
-	var label = _createLabel(config.label);
+	const label = _createLabel(config.label);
 	self.dom.appendChild(label);
-	var sliderDOM = document.createElement("div");
+	const sliderDOM = document.createElement("div");
 	sliderDOM.setAttribute("class","component_slider");
 	self.dom.appendChild(sliderDOM);
 
 	// Slider DOM: graphic + pointer
-	var slider = new Image();
+	const slider = new Image();
 	slider.draggable = false;
 	slider.src = "css/sliders/"+config.bg+".png";
 	slider.setAttribute("class","component_slider_graphic");
-	var pointer = new Image();
+	const pointer = new Image();
 	pointer.draggable = false;
 	pointer.src = "css/sliders/slider_pointer.png";
 	pointer.setAttribute("class","component_slider_pointer");
 	sliderDOM.appendChild(slider);
 	sliderDOM.appendChild(pointer);
-	var movePointer = function(){
-		var value = self.getValue();
-		var optionIndex = config.options.indexOf(value);
-		var x = (optionIndex+0.5) * (250/config.options.length);
+	const movePointer = function(){
+		const value = self.getValue();
+		const optionIndex = config.options.indexOf(value);
+		const x = (optionIndex+0.5) * (250/config.options.length);
 		pointer.style.left = (x-7.5)+"px";
 	};
 
 	// On click... (or on drag)
-	var isDragging = false;
-	var onmousedown = function(event){
+	let isDragging = false;
+	const onmousedown = function(event){
 		isDragging = true;
 		sliderInput(event);
 	};
-	var onmouseup = function(){
+	const onmouseup = function(){
 		isDragging = false;
 	};
-	var onmousemove = function(event){
+	const onmousemove = function(event){
 		if(isDragging) sliderInput(event);
 	};
-	var updateClassActiveDefault = function () {
+	const updateClassActiveDefault = function () {
 		if(self.getValue() === config.defaultValue) self.dom.classList.remove("active");
 		else self.dom.classList.add("active");
 	};
-	var sliderInput = function(event){
+	const sliderInput = function(event){
 
 		// What's the option?
-		var index = event.x/250;
-		var optionIndex = Math.floor(index*config.options.length);
-		var option = config.options[optionIndex];
+		const index = event.x/250;
+		const optionIndex = Math.floor(index*config.options.length);
+		const option = config.options[optionIndex];
 		if(option===undefined) return;
 		self.setValue(option);
 
@@ -553,12 +553,12 @@ function ComponentSlider(config){
 function ComponentButton(config){
 
 	// Inherit
-	var self = this;
+	const self = this;
 	Component.apply(self);
 
 	// DOM: just a button
 	self.dom = document.createElement("div");
-	var button = _createButton(config.label, function(){
+	const button = _createButton(config.label, function(){
 		config.onclick(self.page.target);
 	});
 	self.dom.appendChild(button);
@@ -573,7 +573,7 @@ function ComponentButton(config){
 function ComponentHTML(config){
 
 	// Inherit
-	var self = this;
+	const self = this;
 	Component.apply(self);
 
 	// just a div
@@ -582,10 +582,10 @@ function ComponentHTML(config){
 
 }
 
-function ComponentOutput(config){
+function ComponentOutput(){ //(config)
 
 	// Inherit
-	var self = this;
+	const self = this;
 	Component.apply(self);
 
 	// DOM: just a readonly input that selects all when clicked

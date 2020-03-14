@@ -6,7 +6,7 @@ PAGE UI: to extend to Sidebar, Play Controls, Modal.
 
 function PageUI(dom){
 
-	var self = this;
+	const self = this;
 	self.dom = dom;
 
 	self.pages = [];
@@ -17,10 +17,10 @@ function PageUI(dom){
 	};
 	self.currentPage = null;
 	self.showPage = function(id){
-		var shownPage = null;
-		for(var i=0; i<self.pages.length; i++){
-			var page = self.pages[i];
-			if(page.id==id){
+		let shownPage = null;
+		for(let i=0; i<self.pages.length; i++){
+			let page = self.pages[i];
+			if(page.id===id){
 				page.show();
 				shownPage = page;
 			}else{
@@ -35,7 +35,7 @@ function PageUI(dom){
 
 function Page(){
 
-	var self = this;
+	const self = this;
 
 	// DOM
 	self.dom = document.createElement("div");
