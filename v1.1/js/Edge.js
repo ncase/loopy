@@ -56,6 +56,7 @@ function Edge(model, config){
 		// Filter edge
 		if(self.signBehavior===2 && self.strength<0 && signal.delta>0) return;
 		if(self.signBehavior===2 && self.strength>0 && signal.delta<0) return;
+		if(self.edgeFilterColor!== -1 && self.edgeFilterColor !== signal.color) return;
 
 		// IF ALREADY TOO MANY, FORGET IT
 		if(Edge.allSignals.length>Edge.MAX_SIGNALS){
@@ -81,6 +82,7 @@ function Edge(model, config){
 			position: 0,
 			scaleX: Math.abs(delta),
 			scaleY: delta,
+			color: signal.color,
 			age: age
 		};
 
@@ -101,7 +103,7 @@ function Edge(model, config){
 
 		// Move all signals along
 		for(let i=0; i<self.signals.length; i++){
-			
+
 			const signal = self.signals[i];
 			//var lastPosition = signal.position;
 			signal.position += self.signalSpeed;
@@ -135,8 +137,9 @@ function Edge(model, config){
 			} else if(self.signBehavior===0){
 				lastSignal.delta *= self.strength;
 			}
+			if(loopy.globalState.colorMode===1 && self.edgeTargetColor!== -1) lastSignal.color = self.edgeTargetColor;
 			self.to.takeSignal(lastSignal);
-			
+
 			// Pop it, move on down
 			self.removeSignal(lastSignal);
 			lastSignal = self.signals[self.signals.length-1];
@@ -149,7 +152,7 @@ function Edge(model, config){
 		Edge.allSignals.splice( Edge.allSignals.indexOf(signal), 1 );
 	};
 	self.drawSignals = function(ctx){
-	
+
 		// Draw each one
 		for(let i=0; i<self.signals.length; i++){
 
@@ -170,8 +173,13 @@ function Edge(model, config){
 			ctx.scale(size, size);
 
 			// Signal's COLOR, BLENDING
-			const fromColor = Node.COLORS[self.from.hue];
-			const toColor = Node.COLORS[self.to.hue];
+			let fromColor = Node.COLORS[self.from.hue];
+			let toColor = Node.COLORS[self.to.hue];
+			if(loopy.globalState.colorMode===1){
+				fromColor = Node.COLORS[signal.color];
+				if(self.edgeTargetColor=== -1) toColor = Node.COLORS[signal.color];
+				else toColor = Node.COLORS[self.edgeTargetColor];
+			}
 			let blend;
 			const bStart=0.4, bEnd=0.6;
 			if(signal.position<bStart){
@@ -255,7 +263,7 @@ function Edge(model, config){
 		fx=self.from.x*2;
 		fy=self.from.y*2;
 		tx=self.to.x*2;
-		ty=self.to.y*2;	
+		ty=self.to.y*2;
 		if(self.from===self.to){
 			let rotation = self.rotation;
 			rotation *= Math.TAU/360;
@@ -385,7 +393,7 @@ function Edge(model, config){
 
 		// Get angle!
 		const angle = begin2 + (end-begin2)*param;
-		
+
 		// return x & y
 		return{
 			x: w/2 + Math.cos(angle)*r,
