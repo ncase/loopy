@@ -17,7 +17,6 @@ Node.COLORS = {
 Node.defaultValue = 0.5;
 Node.defaultHue = 0;
 Node.defaultTransmissionBehavior = 0;
-Node.defaultAggregationLatency = 0;
 
 Node.DEFAULT_RADIUS = 60;
 
@@ -32,18 +31,18 @@ function Node(model, config){
 	self.config = config;
 
 	// Default values...
-	_configureProperties(self, config, {
+	const defaultProperties = {
 		id: Node._getUID,
 		x: 0,
 		y: 0,
 		init: Node.defaultValue, // initial value!
 		label: "?",
 		hue: Node.defaultHue,
+		radius: Node.DEFAULT_RADIUS,
 		transmissionBehavior: Node.defaultTransmissionBehavior,
-		aggregationLatency: Node.defaultAggregationLatency,
-		radius: Node.DEFAULT_RADIUS
-	});
-
+	};
+	injectedDefaultProps(defaultProperties,objTypeToTypeIndex("node"));
+	_configureProperties(self, config, defaultProperties);
 	// Value: from 0 to 1
 	self.value = self.init;
 	// TODO: ACTUALLY VISUALIZE AN INFINITE RANGE

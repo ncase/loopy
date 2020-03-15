@@ -72,16 +72,8 @@ function Sidebar(loopy){
 				Node.defaultTransmissionBehavior = value;
 			}
 		}));
-		page.addComponent("aggregationLatency", new ComponentSlider({
-			bg: "aggregationLatency",
-			label: "Aggregation latency :",
-			options: [ 0, 0.1, 0.2, 0.4, 0.8, 1.6, 3.2, 6.4],
-			advanced: true,
-			defaultValue: 0,
-			oninput: function(value){
-				Node.defaultAggregationLatency = value;
-			}
-		}));
+
+		injectPropsInSideBar(page,objTypeToTypeIndex("node"));
 
 		page.onedit = function(){
 
@@ -89,13 +81,12 @@ function Sidebar(loopy){
 			const node = page.target;
 			const color = Node.COLORS[node.hue];
 			page.getComponent("init").setBGColor(color);
-			page.getComponent("aggregationLatency").setBGColor(color);
 
 			// Focus on the name field IF IT'S "" or "?"
 			const name = node.label;
 			if(name==="" || name==="?") page.getComponent("label").select();
 			page.getComponent("transmissionBehavior").dom.querySelector('.component_label').innerHTML = transmissionBehaviorLabel[node.transmissionBehavior];
-			page.getComponent("aggregationLatency").dom.querySelector('.component_label').innerHTML = "Aggregation latency : "+node.aggregationLatency+"s";
+			injectPropsLabelInSideBar(page,objTypeToTypeIndex("node"));
 		};
 		page.addComponent(new ComponentButton({
 			label: "delete node",
@@ -527,6 +518,7 @@ function ComponentSlider(config){
 		updateClassActiveDefault();
 
 		// Callback! (if any)
+		injectPropsUpdateDefault(self,option);
 		if(config.oninput){
 			config.oninput(option);
 		}

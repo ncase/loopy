@@ -266,8 +266,7 @@ function Model(loopy){
 			// 4 - label
 			// 5 - hue
 			// 6 - transmissionBehavior
-			// 7 - aggregationLatency
-			nodes.push([
+			const persist = [
 				node.id,
 				Math.round(node.x),
 				Math.round(node.y),
@@ -275,8 +274,9 @@ function Model(loopy){
 				encodeURIComponent(encodeURIComponent(node.label)),
 				node.hue,
 				node.transmissionBehavior,
-				node.aggregationLatency
-			]);
+			];
+			injectedPersistProps(persist, node, objTypeToTypeIndex("node"));
+			nodes.push(persist);
 		}
 		data.push(nodes);
 
@@ -302,6 +302,7 @@ function Model(loopy){
 				edge.edgeFilterColor,
 				edge.edgeTargetColor
 			];
+			injectedPersistProps(dataEdge, edge, objTypeToTypeIndex("edge"));
 			edges.push(dataEdge);
 		}
 		data.push(edges);
@@ -313,20 +314,24 @@ function Model(loopy){
 			// 0 - x
 			// 1 - y
 			// 2 - text
-			labels.push([
+			const persist = [
 				Math.round(label.x),
 				Math.round(label.y),
 				encodeURIComponent(encodeURIComponent(label.text))
-			]);
+			];
+			injectedPersistProps(persist, label, objTypeToTypeIndex("label"));
+			labels.push(persist);
 		}
 		data.push(labels);
 
 		// META.
-		data.push([
+		const persist = [
 			Node._UID,
 			loopy.globalState.loopyMode,
 			loopy.globalState.colorMode
-		]);
+		];
+		injectedPersistProps(persist, loopy, objTypeToTypeIndex("loopy"));
+		data.push(persist);
 
 		// Return as string!
 		let dataString = JSON.stringify(data);
@@ -351,7 +356,7 @@ function Model(loopy){
 		// Nodes
 		for(let i=0;i<nodes.length;i++){
 			const node = nodes[i];
-			self.addNode({
+			const config = {
 				id: node[0],
 				x: node[1],
 				y: node[2],
@@ -359,8 +364,9 @@ function Model(loopy){
 				label: decodeURIComponent(node[4]),
 				hue: node[5],
 				transmissionBehavior: node[6],
-				aggregationLatency: node[7]
-			});
+			};
+			injectedRestoreProps(node,config,objTypeToTypeIndex("node"));
+			self.addNode(config);
 		}
 
 		// Edges
@@ -394,17 +400,20 @@ function Model(loopy){
 					edgeConfig.signBehavior = 1;
 					break;
 			}
+			injectedRestoreProps(edge,edgeConfig,objTypeToTypeIndex("edge"));
 			self.addEdge(edgeConfig);
 		}
 
 		// Labels
 		for(let i=0;i<labels.length;i++){
 			const label = labels[i];
-			self.addLabel({
+			const config = {
 				x: label[0],
 				y: label[1],
 				text: decodeURIComponent(label[2])
-			});
+			};
+			injectedRestoreProps(label,config,objTypeToTypeIndex("label"));
+			self.addLabel(config);
 		}
 
 		// META.
@@ -412,6 +421,7 @@ function Model(loopy){
 			Node._UID = globalState[0];
 			loopy.globalState.loopyMode = globalState[1];
 			loopy.globalState.colorMode = globalState[2];
+			injectedRestoreProps(globalState,loopy,objTypeToTypeIndex("loopy"));
 		} else{ // legacy compatibility
 			Node._UID = globalState;
 		}
