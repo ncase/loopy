@@ -8,7 +8,7 @@ Label.FONTSIZE = 40;
 
 function Label(model, config){
 
-	var self = this;
+	const self = this;
 	self._CLASS_ = "Label";
 
 	// Mah Parents!
@@ -24,16 +24,15 @@ function Label(model, config){
 	});
 
 	// Draw
-	var _circleRadius = 0;
 	self.draw = function(ctx){
 
 		// Retina
-		var x = self.x*2;
-		var y = self.y*2;
+		const x = self.x*2;
+		const y = self.y*2;
 
 		// DRAW HIGHLIGHT???
-		if(self.loopy.sidebar.currentPage.target == self){
-			var bounds = self.getBounds();
+		if(self.loopy.sidebar.currentPage.target === self){
+			const bounds = self.getBounds();
 			ctx.save();
 			ctx.scale(2,2); // RETINA
 			ctx.beginPath();
@@ -54,10 +53,10 @@ function Label(model, config){
 		ctx.fillStyle = "#000";
 
 		// ugh new lines are a PAIN.
-		var lines = self.breakText();
+		const lines = self.breakText();
 		ctx.translate(0, -(Label.FONTSIZE*lines.length)/2);
-		for(var i=0; i<lines.length; i++){
-			var line = lines[i];
+		for(let i=0; i<lines.length; i++){
+			const line = lines[i];
 			ctx.fillText(line, 0, 0);
 			ctx.translate(0, Label.FONTSIZE);
 		}
@@ -91,20 +90,20 @@ function Label(model, config){
 
 	self.getBounds = function(){
 
-		var ctx = self.model.context;
+		const ctx = self.model.context;
 
 		// Get MAX width...
-		var lines = self.breakText();
-		var maxWidth = 0;
-		for(var i=0; i<lines.length; i++){
-			var line = lines[i];
-			var w = (ctx.measureText(line).width + 10)*2;
+		const lines = self.breakText();
+		let maxWidth = 0;
+		for(let i=0; i<lines.length; i++){
+			const line = lines[i];
+			const w = (ctx.measureText(line).width + 10)*2;
 			if(maxWidth<w) maxWidth=w;
 		}
 
 		// Dimensions, then:
-		var w = maxWidth;
-		var h = (Label.FONTSIZE*lines.length)/2;
+		const w = maxWidth;
+		const h = (Label.FONTSIZE*lines.length)/2;
 
 		// Bounds, then:
 		return {
@@ -121,7 +120,7 @@ function Label(model, config){
 	};
 
 	self.getBoundingBox = function(){
-		var bounds = self.getBounds();
+		const bounds = self.getBounds();
 		return {
 			left: bounds.x,
 			top: bounds.y,

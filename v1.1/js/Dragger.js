@@ -6,7 +6,7 @@ DRAGGER
 
 function Dragger(loopy){
 
-	var self = this;
+	const self = this;
 	self.loopy = loopy;
 
 	// Dragging anything?
@@ -17,11 +17,11 @@ function Dragger(loopy){
 	subscribe("mousedown",function(){
 
 		// ONLY WHEN EDITING w DRAG
-		if(self.loopy.mode!=Loopy.MODE_EDIT) return;
-		if(self.loopy.tool!=Loopy.TOOL_DRAG) return;
+		if(self.loopy.mode!==Loopy.MODE_EDIT) return;
+		if(self.loopy.tool!==Loopy.TOOL_DRAG) return;
 
 		// Any node under here? If so, start dragging!
-		var dragNode = loopy.model.getNodeByPoint(Mouse.x, Mouse.y);
+		const dragNode = loopy.model.getNodeByPoint(Mouse.x, Mouse.y);
 		if(dragNode){
 			self.dragging = dragNode;
 			self.offsetX = Mouse.x - dragNode.x;
@@ -31,7 +31,7 @@ function Dragger(loopy){
 		}
 
 		// Any label under here? If so, start dragging!
-		var dragLabel = loopy.model.getLabelByPoint(Mouse.x, Mouse.y);
+		const dragLabel = loopy.model.getLabelByPoint(Mouse.x, Mouse.y);
 		if(dragLabel){
 			self.dragging = dragLabel;
 			self.offsetX = Mouse.x - dragLabel.x;
@@ -41,29 +41,29 @@ function Dragger(loopy){
 		}
 
 		// Any edge under here? If so, start dragging!
-		var dragEdge = loopy.model.getEdgeByPoint(Mouse.x, Mouse.y);
+		const dragEdge = loopy.model.getEdgeByPoint(Mouse.x, Mouse.y);
 		if(dragEdge){
 			self.dragging = dragEdge;
 			self.offsetX = Mouse.x - dragEdge.labelX;
 			self.offsetY = Mouse.y - dragEdge.labelY;
 			loopy.sidebar.edit(dragEdge); // and edit!
-			return;
+			//return; // already final
 		}
 
 	});
 	subscribe("mousemove",function(){
 
 		// ONLY WHEN EDITING w DRAG
-		if(self.loopy.mode!=Loopy.MODE_EDIT) return;
-		if(self.loopy.tool!=Loopy.TOOL_DRAG) return;
+		if(self.loopy.mode!==Loopy.MODE_EDIT) return;
+		if(self.loopy.tool!==Loopy.TOOL_DRAG) return;
 
 		// If you're dragging a NODE, move it around!
-		if(self.dragging && self.dragging._CLASS_=="Node"){
+		if(self.dragging && self.dragging._CLASS_==="Node"){
 
 			// Model's been changed!
 			publish("model/changed");
 			
-			var node = self.dragging;
+			const node = self.dragging;
 			node.x = Mouse.x - self.offsetX;
 			node.y = Mouse.y - self.offsetY;
 
@@ -73,27 +73,27 @@ function Dragger(loopy){
 		}
 
 		// If you're dragging an EDGE, move it around!
-		if(self.dragging && self.dragging._CLASS_=="Edge"){
+		if(self.dragging && self.dragging._CLASS_==="Edge"){
 
 			// Model's been changed!
 			publish("model/changed");
 
-			var edge = self.dragging;
-			var labelX = Mouse.x - self.offsetX;
-			var labelY = Mouse.y - self.offsetY;
+			const edge = self.dragging;
+			const labelX = Mouse.x - self.offsetX;
+			const labelY = Mouse.y - self.offsetY;
 
-			if(edge.from!=edge.to){
+			if(edge.from!==edge.to){
 
 				// The Arc: whatever label *Y* is, relative to angle & first node's pos
-				var fx=edge.from.x, fy=edge.from.y, tx=edge.to.x, ty=edge.to.y;
-				var dx=tx-fx, dy=ty-fy;
-				var a = Math.atan2(dy,dx);
+				const fx=edge.from.x, fy=edge.from.y, tx=edge.to.x, ty=edge.to.y;
+				const dx=tx-fx, dy=ty-fy;
+				const a = Math.atan2(dy,dx);
 
 				// Calculate arc
-				var points = [[labelX,labelY]];
-				var translated = _translatePoints(points, -fx, -fy);
-				var rotated = _rotatePoints(translated, -a);
-				var newLabelPoint = rotated[0];
+				const points = [[labelX,labelY]];
+				const translated = _translatePoints(points, -fx, -fy);
+				const rotated = _rotatePoints(translated, -a);
+				const newLabelPoint = rotated[0];
 
 				// ooookay.
 				edge.arc = -newLabelPoint[1]; // WHY NEGATIVE? I DON'T KNOW.
@@ -101,13 +101,13 @@ function Dragger(loopy){
 			}else{
 
 				// For SELF-ARROWS: just get angle & mag for label.
-				var dx = labelX - edge.from.x,
+				const dx = labelX - edge.from.x,
 					dy = labelY - edge.from.y;
-				var a = Math.atan2(dy,dx);
-				var mag = Math.sqrt(dx*dx + dy*dy);
+				const a = Math.atan2(dy,dx);
+				let mag = Math.sqrt(dx*dx + dy*dy);
 
 				// Minimum mag
-				var minimum = edge.from.radius+25;
+				const minimum = edge.from.radius+25;
 				if(mag<minimum) mag=minimum;
 
 				// Update edge
@@ -122,12 +122,12 @@ function Dragger(loopy){
 		}
 
 		// If you're dragging a LABEL, move it around!
-		if(self.dragging && self.dragging._CLASS_=="Label"){
+		if(self.dragging && self.dragging._CLASS_==="Label"){
 
 			// Model's been changed!
 			publish("model/changed");
 			
-			var label = self.dragging;
+			const label = self.dragging;
 			label.x = Mouse.x - self.offsetX;
 			label.y = Mouse.y - self.offsetY;
 
@@ -140,8 +140,8 @@ function Dragger(loopy){
 	subscribe("mouseup",function(){
 
 		// ONLY WHEN EDITING w DRAG
-		if(self.loopy.mode!=Loopy.MODE_EDIT) return;
-		if(self.loopy.tool!=Loopy.TOOL_DRAG) return;
+		if(self.loopy.mode!==Loopy.MODE_EDIT) return;
+		if(self.loopy.tool!==Loopy.TOOL_DRAG) return;
 
 		// Let go!
 		self.dragging = null;

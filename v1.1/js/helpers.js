@@ -9,10 +9,10 @@ Math.TAU = Math.PI*2;
 
 window.HIGHLIGHT_COLOR = "rgba(193, 220, 255, 0.6)";
 
-var isMacLike = navigator.platform.match(/(Mac|iPhone|iPod|iPad)/i)?true:false;
+const isMacLike = !!navigator.platform.match(/(Mac|iPhone|iPod|iPad)/i);
 
-var _PADDING = 25;
-var _PADDING_BOTTOM = 110;
+const _PADDING = 25;
+const _PADDING_BOTTOM = 110;
 
 window.onresize = function(){
 	publish("resize");
@@ -20,7 +20,7 @@ window.onresize = function(){
 
 window.onbeforeunload = function(e) {
 	if(loopy.dirty){
-		var dialogText = "Are you sure you want to leave without saving your changes?";
+		const dialogText = "Are you sure you want to leave without saving your changes?";
 		e.returnValue = dialogText;
 		return dialogText;
 	}
@@ -28,13 +28,13 @@ window.onbeforeunload = function(e) {
 
 function _createCanvas(){
 
-	var canvasses = document.getElementById("canvasses");
-	var canvas = document.createElement("canvas");
+	const canvasses = document.getElementById("canvasses");
+	const canvas = document.createElement("canvas");
 
 	// Dimensions
-	var _onResize = function(){
-		var width = canvasses.clientWidth;
-		var height = canvasses.clientHeight;
+	const _onResize = function(){
+		const width = canvasses.clientWidth;
+		const height = canvasses.clientHeight;
 		canvas.width = width*2; // retina
 		canvas.style.width = width+"px";
 		canvas.height = height*2; // retina
@@ -56,14 +56,14 @@ function _createCanvas(){
 }
 
 function _createLabel(message){
-	var label = document.createElement("div");
+	const label = document.createElement("div");
 	label.innerHTML = message;
 	label.setAttribute("class","component_label");
 	return label;
 }
 
 function _createButton(label, onclick){
-	var button = document.createElement("div");
+	const button = document.createElement("div");
 	button.innerHTML = label;
 	button.onclick = onclick;
 	button.setAttribute("class","component_button");
@@ -71,7 +71,7 @@ function _createButton(label, onclick){
 }
 
 function _createInput(className, textarea){
-	var input = textarea ? document.createElement("textarea") : document.createElement("input");
+	const input = textarea ? document.createElement("textarea") : document.createElement("input");
 	input.setAttribute("class",className);
 	input.addEventListener("keydown",function(event){
 		event.stopPropagation ? event.stopPropagation() : (event.cancelBubble=true);
@@ -81,7 +81,7 @@ function _createInput(className, textarea){
 
 function _createNumberInput(onUpdate){
 
-	var self = {};
+	const self = {};
 
 	// dom!
 	self.dom = document.createElement("input");
@@ -95,7 +95,7 @@ function _createNumberInput(onUpdate){
 
 	// on update
 	self.dom.onchange = function(){
-		var value = parseInt(self.getValue());
+		let value = parseInt(self.getValue());
 		if(isNaN(value)) value=0;
 		self.setValue(value);
 		onUpdate(value);
@@ -124,7 +124,7 @@ function _blank(){
 }
 
 function _getTotalOffset(target){
-	var bounds = target.getBoundingClientRect();
+	const bounds = target.getBoundingClientRect();
 	return {
 		left: bounds.left,
 		top: bounds.top
@@ -134,17 +134,17 @@ function _getTotalOffset(target){
 function _addMouseEvents(target, onmousedown, onmousemove, onmouseup){
 
 	// WRAP THEM CALLBACKS
-	var _onmousedown = function(event){
-		var _fakeEvent = _onmousemove(event);
+	const _onmousedown = function(event){
+		const _fakeEvent = _onmousemove(event);
 		onmousedown(_fakeEvent);
 	};
-	var _onmousemove = function(event){
+	const _onmousemove = function(event){
 		
 		// Mouse position
-		var _fakeEvent = {};
+		const _fakeEvent = {};
 		if(event.changedTouches){
 			// Touch
-			var offset = _getTotalOffset(target);
+			const offset = _getTotalOffset(target);
 			_fakeEvent.x = event.changedTouches[0].clientX - offset.left;
 			_fakeEvent.y = event.changedTouches[0].clientY - offset.top;
 			event.preventDefault();
@@ -159,8 +159,8 @@ function _addMouseEvents(target, onmousedown, onmousemove, onmouseup){
 		return _fakeEvent;
 
 	};
-	var _onmouseup = function(event){
-		var _fakeEvent = {};
+	const _onmouseup = function(){
+		const _fakeEvent = {};
 		onmouseup(_fakeEvent);
 	};
 
@@ -179,9 +179,9 @@ function _addMouseEvents(target, onmousedown, onmousemove, onmouseup){
 function _getBounds(points){
 
 	// Bounds
-	var left=Infinity, top=Infinity, right=-Infinity, bottom=-Infinity;
-	for(var i=0;i<points.length;i++){
-		var point = points[i];
+	let left=Infinity, top=Infinity, right=-Infinity, bottom=-Infinity;
+	for(let i=0;i<points.length;i++){
+		const point = points[i];
 		if(point[0]<left) left=point[0];
 		if(right<point[0]) right=point[0];
 		if(point[1]<top) top=point[1];
@@ -189,8 +189,8 @@ function _getBounds(points){
 	}
 
 	// Dimensions
-	var width = (right-left);
-	var height = (bottom-top);
+	const width = (right-left);
+	const height = (bottom-top);
 
 	// Gimme
 	return {
@@ -202,8 +202,8 @@ function _getBounds(points){
 
 function _translatePoints(points, dx, dy){
 	points = JSON.parse(JSON.stringify(points));
-	for(var i=0;i<points.length;i++){
-		var p = points[i];
+	for(let i=0;i<points.length;i++){
+		const p = points[i];
 		p[0] += dx;
 		p[1] += dy;
 	}
@@ -212,10 +212,10 @@ function _translatePoints(points, dx, dy){
 
 function _rotatePoints(points, angle){
 	points = JSON.parse(JSON.stringify(points));
-	for(var i=0;i<points.length;i++){
-		var p = points[i];
-		var x = p[0];
-		var y = p[1];
+	for(let i=0;i<points.length;i++){
+		const p = points[i];
+		const x = p[0];
+		const y = p[1];
 		p[0] = x*Math.cos(angle) - y*Math.sin(angle);
 		p[1] = y*Math.cos(angle) + x*Math.sin(angle);
 	}
@@ -224,11 +224,11 @@ function _rotatePoints(points, angle){
 
 function _configureProperties(self, config, properties){
 
-	for(var propName in properties){
+	for(let propName in properties) if(properties.hasOwnProperty(propName)){
 
 		// Default values!
 		if(config[propName]===undefined){
-			var value = properties[propName];
+			let value = properties[propName];
 			if(typeof value=="function") value=value();
 			config[propName] = value;
 		}
@@ -243,12 +243,12 @@ function _configureProperties(self, config, properties){
 function _isPointInCircle(x, y, cx, cy, radius){
 	
 	// Point distance
-	var dx = cx-x;
-	var dy = cy-y;
-	var dist2 = dx*dx + dy*dy;
+	const dx = cx-x;
+	const dy = cy-y;
+	const dist2 = dx*dx + dy*dy;
 
 	// My radius
-	var r2 = radius*radius;
+	const r2 = radius*radius;
 
 	// Inside?
 	return dist2<=r2;
@@ -256,14 +256,10 @@ function _isPointInCircle(x, y, cx, cy, radius){
 }
 
 function _isPointInBox(x, y, box){
-
-	if(x<box.x) return false;
-	if(x>box.x+box.width) return false;
-	if(y<box.y) return false;
-	if(y>box.y+box.height) return false;
-
-	return true;
-
+	return !(x < box.x
+		|| x > box.x + box.width
+		|| y < box.y
+		|| y > box.y + box.height);
 }
 
 // TODO: Make more use of this???
@@ -274,31 +270,31 @@ function _makeErrorFunc(msg){
 }
 
 function _getParameterByName(name){
-	var url = window.location.href;
+	const url = window.location.href;
 	name = name.replace(/[\[\]]/g, "\\$&");
-	var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+	const regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
 	results = regex.exec(url);
 	if (!results) return null;
 	if (!results[2]) return '';
 	return decodeURIComponent(results[2].replace(/\+/g, " "));
-};
+}
 
 
 function _blendColors(hex1, hex2, blend){
 	
-	var color = "#";
-	for(var i=0; i<3; i++) {
+	let color = "#";
+	for(let i=0; i<3; i++) {
 		
 		// Into numbers...
-		var sub1 = hex1.substring(1+2*i, 3+2*i);
-		var sub2 = hex2.substring(1+2*i, 3+2*i);
-		var num1 = parseInt(sub1, 16);
-		var num2 = parseInt(sub2, 16);
+		const sub1 = hex1.substring(1+2*i, 3+2*i);
+		const sub2 = hex2.substring(1+2*i, 3+2*i);
+		const num1 = parseInt(sub1, 16);
+		const num2 = parseInt(sub2, 16);
 
 		// Blended number & sub
-		var num = Math.floor( num1*(1-blend) + num2*blend );
-		var sub = num.toString(16).toUpperCase();
-		var paddedSub = ('0'+sub).slice(-2); // in case it's only one digit long
+		const num = Math.floor( num1*(1-blend) + num2*blend );
+		const sub = num.toString(16).toUpperCase();
+		const paddedSub = ('0'+sub).slice(-2); // in case it's only one digit long
 
 		// Add that babe
 		color += paddedSub;
@@ -310,8 +306,9 @@ function _blendColors(hex1, hex2, blend){
 }
 
 function _shiftArray(array, shiftIndex){
-	var moveThisAround = array.splice(-shiftIndex);
-	var shifted = moveThisAround.concat(array);
+	const moveThisAround = array.splice(-shiftIndex);
+	// noinspection UnnecessaryLocalVariableJS
+	const shifted = moveThisAround.concat(array);
 	return shifted;
 }
 
