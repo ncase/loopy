@@ -4,10 +4,11 @@
  * MIT Licensed
  */
 (function (context) {
-  var MinPubSub = {};
+  const MinPubSub = {};
 
   // the topic/subscription hash
-  var cache = context.c_ || {}; //check for 'c_' cache for unit testing
+  // noinspection JSUnresolvedVariable
+  const cache = context.c_ || {}; //check for 'c_' cache for unit testing
 
   MinPubSub.publish = function ( /* String */ topic, /* Array? */ args) {
     // summary: 
@@ -24,7 +25,7 @@
     //
     //    publish('/some/topic', ['a','b','c']);
 
-    var subs = cache[topic],
+    let subs = cache[topic],
       len = subs ? subs.length : 0;
 
     //can change loop or reverse array if the order matters
@@ -65,9 +66,9 @@
     //    var handle = subscribe('/some/topic', function(){});
     //    unsubscribe(handle);
 
-    var subs = cache[callback ? handle : handle[0]],
-      callback = callback || handle[1],
+    let subs = cache[callback ? handle : handle[0]],
       len = subs ? subs.length : 0;
+    callback = callback || handle[1];
 
     while (len--) {
       if (subs[len] === callback) {
@@ -77,19 +78,24 @@
   };
 
   // UMD definition to allow for CommonJS, AMD and legacy window
+  // noinspection JSUnresolvedVariable
   if (typeof module === 'object' && module.exports) {
     // CommonJS, just export
+    // noinspection JSUnresolvedVariable,JSUndeclaredVariable
     module.exports = exports = MinPubSub;
-  } else if (typeof define === 'function' && define.amd) {
-    // AMD support
-    define(function () {
-      return MinPubSub;
-    });
-  } else if (typeof context === 'object') {
-    // If no AMD and we are in the browser, attach to window
-    context.publish = MinPubSub.publish;
-    context.subscribe = MinPubSub.subscribe;
-    context.unsubscribe = MinPubSub.unsubscribe;
+  } else { // noinspection JSUnresolvedVariable
+    if (typeof define === 'function' && define.amd) {
+        // AMD support
+        // noinspection JSUnresolvedFunction
+        define(function () {
+          return MinPubSub;
+        });
+      } else if (typeof context === 'object') {
+        // If no AMD and we are in the browser, attach to window
+        context.publish = MinPubSub.publish;
+        context.subscribe = MinPubSub.subscribe;
+        context.unsubscribe = MinPubSub.unsubscribe;
+      }
   }
 
 })(this.window);

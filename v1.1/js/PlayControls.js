@@ -44,68 +44,25 @@ function PlayControls(loopy){
 		self.addPage("Editor", page);
 	})();
 
+
 	// During the Player
 	(function(){
 		const page = new Page();
+		const _addButton = function (side, config) {
+			let buttonDOM = page.addComponent(new PlayButton(config)).dom;
+			buttonDOM.style.width = "100px";
+			buttonDOM.style[side] = "0px";
+			buttonDOM.style.top = "0px";
+		};
 
 		if(loopy.embedded){
-
 			// Reset | Remix
-
-			//FIXME: refacto buttonDOM
-			// RESET
-			let buttonDOM = page.addComponent(new PlayButton({
-				icon: 2,
-				label: "Reset",
-				onclick: function(){
-					publish("model/reset");
-				}
-			})).dom;
-			buttonDOM.style.width = "100px";
-			buttonDOM.style.left = "0px";
-			buttonDOM.style.top = "0px";
-
-			// REMIX BUTTON
-			buttonDOM = page.addComponent(new PlayButton({
-				icon: 3,
-				label: "Remix",
-				onclick: function(){
-					const url = loopy.saveToURL();
-					window.open(url,'_blank');
-				}
-			})).dom;
-			buttonDOM.style.width = "100px";
-			buttonDOM.style.right = "0px";
-			buttonDOM.style.top = "0px";
-
+			_addButton("left", {label: "Reset", icon: 2, onclick: ()=>publish("model/reset") });
+			_addButton("right", {label: "Remix", icon: 3, onclick: ()=>window.open(loopy.saveToURL(),'_blank') });
 		}else{
-
 			// Stop | Reset
-
-			// STOP BUTTON
-			let buttonDOM = page.addComponent(new PlayButton({
-				icon: 1,
-				label: "Stop",
-				onclick: function(){
-					loopy.setMode(Loopy.MODE_EDIT);
-				}
-			})).dom;
-			buttonDOM.style.width = "100px";
-			buttonDOM.style.left = "0px";
-			buttonDOM.style.top = "0px";
-
-			// RESET BUTTON
-			buttonDOM = page.addComponent(new PlayButton({
-				icon: 2,
-				label: "Reset",
-				onclick: function(){
-					publish("model/reset");
-				}
-			})).dom;
-			buttonDOM.style.width = "100px";
-			buttonDOM.style.right = "0px";
-			buttonDOM.style.top = "0px";
-
+			_addButton("left", {label: "Stop", icon: 1, onclick: ()=>loopy.setMode(Loopy.MODE_EDIT) });
+			_addButton("right", {label: "Reset", icon: 2, onclick: ()=>publish("model/reset") });
 		}
 
 		// SPEED SLIDER
@@ -156,25 +113,9 @@ function PlaySlider(config){
 	input.setAttribute("class","play_slider");
 	self.dom.appendChild(input);
 
-	//FIXME: dedup
 	// Slow & Fast Icons
-	let img = new Image();
-	img.src = "css/icons/speed_slow.png";
-	img.width = 20;
-	img.height = 15;
-	img.style.position = "absolute";
-	img.style.left = "5px";
-	img.style.top = "-2px";
-	self.dom.appendChild(img);
-
-	img = new Image();
-	img.src = "css/icons/speed_fast.png";
-	img.width = 20;
-	img.height = 15;
-	img.style.position = "absolute";
-	img.style.right = "5px";
-	img.style.top = "-2px";
-	self.dom.appendChild(img);
+	self.dom.appendChild(domSpeedImg("css/icons/speed_slow.png","left"));
+	self.dom.appendChild(domSpeedImg("css/icons/speed_fast.png","right"));
 
 	// Properties
 	input.type = "range";
@@ -185,5 +126,16 @@ function PlaySlider(config){
 	input.oninput = function(){ // (event)
 		config.oninput(input.value);
 	};
+
+}
+function domSpeedImg(src,side) {
+	const img = new Image();
+	img.src = src;
+	img.width = 20;
+	img.height = 15;
+	img.style.position = "absolute";
+	img.style[side] = "5px";
+	img.style.top = "-2px";
+	return img;
 
 }

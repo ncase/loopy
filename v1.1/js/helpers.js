@@ -12,7 +12,7 @@ window.HIGHLIGHT_COLOR = "rgba(193, 220, 255, 0.6)";
 const isMacLike = !!navigator.platform.match(/(Mac|iPhone|iPod|iPad)/i);
 
 const _PADDING = 25;
-const _PADDING_BOTTOM = 110;
+let _PADDING_BOTTOM = 110;
 
 window.onresize = function(){
 	publish("resize");
