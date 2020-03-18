@@ -1,4 +1,4 @@
-injectProperty("node", "transmissionBehavior",{
+/*injectProperty("node", "transmissionBehavior",{
         defaultValue:0,
         persist:6,
         sideBar:{
@@ -12,12 +12,56 @@ injectProperty("node", "transmissionBehavior",{
             advanced: true
         }
     }
+);*/
+injectProperty("node", "overflow",{
+        defaultValue:0,
+        persist:6,
+        sideBar:{
+            index: 4,
+            options: [ 0, 0.1, 0.2, 0.4, 0.8, 1.6, 3.2, 6.4],
+            label: "Positive overflow threshold :",
+            advanced: true
+        }
+    }
+);
+injectProperty("node", "explodeCap",{
+        defaultValue:0,
+        persist:8,
+        sideBar:{
+            index: 5,
+            options: [ 0, 0.1, 0.2, 0.4, 0.8, 1.6, 3.2, 6.4],
+            label: "Explode threshold :",
+            advanced: true
+        }
+    }
+);
+injectProperty("node", "underflow",{
+        defaultValue:0,
+        persist:9,
+        sideBar:{
+            index: 6,
+            options: [ 0, 0.1, 0.2, 0.4, 0.8, 1.6, 3.2, 6.4],
+            label: "Negative overflow threshold :",
+            advanced: true
+        }
+    }
+);
+injectProperty("node", "implodeCap",{
+        defaultValue:0,
+        persist:10,
+        sideBar:{
+            index: 7,
+            options: [ 0, 0.1, 0.2, 0.4, 0.8, 1.6, 3.2, 6.4],
+            label: "Implode threshold :",
+            advanced: true
+        }
+    }
 );
 injectProperty("node", "aggregationLatency",{
         defaultValue:0,
         persist:7,
         sideBar:{
-            index: 5,
+            index: 8,
             options: [ 0, 0.1, 0.2, 0.4, 0.8, 1.6, 3.2, 6.4],
             labelFunc: (v)=>"Aggregation latency : "+v+"s",
             advanced: true
@@ -46,8 +90,8 @@ injectProperty("edge", "quantitative",{
             index: 3,
             options: [0, 1],
             labelFunc: (v)=>[
-                "Signal type : illustrative",
-                "Signal type : quantitative",
+                "Signal type : tendency",
+                "Signal type : quantity",
             ][v],
             advanced: true
         }
@@ -98,7 +142,7 @@ injectProperty("edge", "customLabel",{
         },
         sideBar:{
             index: 99,
-            label: "Custom Label :",
+            label: "Custom name :",
             advanced: true
         }
     }

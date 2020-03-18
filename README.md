@@ -16,6 +16,7 @@ Other Peeps' Open Source Code I Used:
 Check out these [user-made LOOPY's!](http://ncase.me/loopy/v1.1/pages/examples)
 
 ---
+## Changelog
 
 Version 2.0 (by [1000i100](https://github.com/1000i100)) : 
 - ADD : simple mode and advanced mode (to keep it simple but really powerful when need)
@@ -23,6 +24,7 @@ Version 2.0 (by [1000i100](https://github.com/1000i100)) :
 - ADD : node signal aggregation latency setting (from none to 6.4s by x2 step)
 - ADD : edge sign behavior (classic relationship behavior || convert to arrow sign || filter by arrow sign)
 - ADD : edge custom color and gradient
+- ADD : autoplay option for embed export
 
 Version 1.1 (by [Nicky Case](https://github.com/ncase)) :
 - node amounts are now "uncapped"    

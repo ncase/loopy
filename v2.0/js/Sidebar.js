@@ -183,7 +183,7 @@ function Sidebar(loopy){
 		page.addComponent(new ComponentHTML({
 			html: ""+
 
-				"<b style='font-size:1.4em'>LOOPY</b> (v1.2)<br>a tool for thinking in systems<br><br>"+
+				"<b style='font-size:1.4em'>LOOPY</b> (v2.0)<br>a tool for thinking in systems<br><br>"+
 
 				"<span class='mini_button' onclick='publish(\"modal\",[\"examples\"])'>see examples</span> "+
 				"<span class='mini_button' onclick='publish(\"modal\",[\"howto\"])'>how to</span> "+
@@ -224,13 +224,21 @@ function Sidebar(loopy){
 			defaultValue:0 // not advanced behavior when default
 		}));
 		page.addComponent(new ComponentHTML({
-			html: ""+
-			"<hr/><br>"+
-
-			"<a target='_blank' href='../'>LOOPY</a> is "+
-			"made by <a target='_blank' href='http://ncase.me'>nicky case</a> "+
-			"with your support <a target='_blank' href='https://www.patreon.com/ncase'>on patreon</a> &lt;3<br><br>"+
-			"<span style='font-size:0.85em'>P.S: go read <a target='_blank' href='https://www.amazon.com/Thinking-Systems-Donella-H-Meadows/dp/1603580557'>Thinking In Systems</a>, thx</span>"
+			html: `<hr/>
+<br><a target='_blank' href='../'>LOOPY</a> is made by <a target='_blank' href='http://ncase.me'>nicky case</a>
+with your support <a target='_blank' href='https://www.patreon.com/ncase'>on patreon</a> &lt;3
+<br>
+<br><span style='font-size:0.85em'>P.S: go read <a target='_blank' href='https://www.amazon.com/Thinking-Systems-Donella-H-Meadows/dp/1603580557'>Thinking In Systems</a>, thx</span>
+<br>
+<br>LOOPY v2 reworked by <a target='_blank' style='font-size:0.90em' href='https://github.com/1000i100'>1000i100</a>
+<br>
+<br>Discover all the new features :
+<br>- by exploring advanced mode,
+<br>- or take a look in the <a target='_blank' href='https://github.com/1000i100/loopy#changelog'>changelog</a>.
+<br>
+<br>Unleash your creativity !
+<br>
+<br>Had fun ? <span class='mini_button' onclick='publish(\"modal\",[\"save_link\"])'>Share it !</span><br>`
 
 		}));
 		self.addPage("Edit", page);
@@ -383,11 +391,9 @@ function simpleOnlyConditionalDisplay(self) {
 	self.dom.classList.add('simpleOnly');
 }
 function updateClassActiveDefault(self, defaultValue) {
-	if(self.getValue() === defaultValue){
-		self.dom.classList.remove("active");
-	}
+	if(self.getValue() === defaultValue)self.dom.classList.remove("active");
 	else self.dom.classList.add("active");
-	console.log(self);
+
 	if(self.page.dom.querySelector('.adv.active')){
 		const simpleOnly = self.page.dom.querySelectorAll('.simpleOnly');
 		for(let so of simpleOnly) so.classList.add("inactive");

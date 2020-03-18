@@ -173,18 +173,16 @@ function Loopy(config){
 		input.click();
 	});
 
-	self.saveToURL = function(embed){
+	self.saveToURL = function(embed,autoPlaySignal){
 
 		// Create link
 		const uri = self.model.serialize();
 		const base = window.location.origin + window.location.pathname;
 		const historyLink = base+"?data="+uri;
 		let link;
-		if(embed){
-			link = base+"?embed=1&data="+uri;
-		}else{
-			link = historyLink;
-		}
+		if(embed && autoPlaySignal && autoPlaySignal>0) link = `${base}?embed=1&signal=[${autoPlaySignal},1]&data=${uri}`;
+		else if(embed) link = base+"?embed=1&data="+uri;
+		else link = historyLink;
 
 		// NO LONGER DIRTY!
 		self.dirty = false;

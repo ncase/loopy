@@ -51,8 +51,10 @@ function injectProperty(objType,propertyName,config={}) {
         if(!PERSIST_MODEL[typeIndex]) PERSIST_MODEL[typeIndex] = [];
         if(PERSIST_MODEL[typeIndex][config.persist.index]) throw `config.persist.index collision : ${JSON.stringify(PERSIST_MODEL[typeIndex][config.persist.index])}`;
         const persist = {name:propertyName};
+
         persist.serializeFunc = config.persist.serializeFunc?config.persist.serializeFunc:(v)=>v;
         persist.deserializeFunc = config.persist.deserializeFunc?config.persist.deserializeFunc:(v)=>v;
+        persist.defaultValue = config.defaultValue;
         PERSIST_MODEL[typeIndex][config.persist.index] = persist;
     }
 
@@ -94,13 +96,14 @@ function injectedDefaultProps(targetConfig,typeIndex) {
 function injectedPersistProps(persistArray,objToPersist,typeIndex) {
     for(let i in PERSIST_MODEL[typeIndex]) if(PERSIST_MODEL[typeIndex].hasOwnProperty(i)){
         if(typeof persistArray[i] !== "undefined") throw "collision";
-        persistArray[i] = PERSIST_MODEL[typeIndex][i].serializeFunc( objToPersist[PERSIST_MODEL[typeIndex][i]])
+        persistArray[i] = PERSIST_MODEL[typeIndex][i].serializeFunc( objToPersist[PERSIST_MODEL[typeIndex][i].name])
     }
 }
 function injectedRestoreProps(srcArray,targetConfig,typeIndex) {
     for(let i in PERSIST_MODEL[typeIndex]) if(PERSIST_MODEL[typeIndex].hasOwnProperty(i)){
         if(typeof targetConfig[PERSIST_MODEL[typeIndex][i].name] !== "undefined") throw "collision";
-        if(typeof srcArray[i] !== "undefined") targetConfig[PERSIST_MODEL[typeIndex][i].name] = PERSIST_MODEL[typeIndex][i].deserializeFunc( srcArray[i] );
+        if(typeof srcArray[i] !== "undefined" && srcArray[i] !== null && srcArray[i] !== PERSIST_MODEL[typeIndex][i].defaultValue)
+            targetConfig[PERSIST_MODEL[typeIndex][i].name] = PERSIST_MODEL[typeIndex][i].deserializeFunc( srcArray[i] );
     }
 }
 const PERSIST_MODEL = [];

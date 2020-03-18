@@ -158,8 +158,13 @@ function Modal(loopy){
 		// ON UPDATE DIMENSIONS
 		let iframeSRC;
 		const _onUpdate = function(){
+			let auto = parseInt(autoplay.getValue());
+			if(isNaN(auto)) auto = 0;
+			autoplay.setValue(auto);
+			iframeSRC = loopy.saveToURL(true, auto);
 			const embedCode = '<iframe width="'+width.getValue()+'" height="'+height.getValue()+'" style="border: 0;" src="'+iframeSRC+'"></iframe>';
 			output.output(embedCode);
+			iframe.src = iframeSRC;
 		};
 
 		// THE SHTUFF
@@ -172,7 +177,9 @@ function Modal(loopy){
 		//FIXME: dedup
 		// Label
 		let label = document.createElement("div");
-		label.innerHTML = "<br>PREVIEW &rarr;<br><br>";
+		label.style.marginTop = "10px";
+		label.style.marginBottom = "20px";
+		label.innerHTML = "PREVIEW &rarr;";
 		sidebar.appendChild(label);
 
 		//FIXME: dedup
@@ -193,6 +200,17 @@ function Modal(loopy){
 		sidebar.appendChild(label);
 		const height = _createNumberInput(_onUpdate);
 		sidebar.appendChild(height.dom);
+
+		// Label X
+		label = document.createElement("div");
+		label.style.fontSize = "15px";
+		label.innerHTML = "Autoplay ?";
+		sidebar.appendChild(label);
+
+		// Size!
+		const autoplay = _createNumberInput(_onUpdate);
+		autoplay.dom.onkeyup = ()=>autoplay.dom.onchange();
+		sidebar.appendChild(autoplay.dom);
 
 		//FIXME: dedup
 		// Label 3
@@ -228,6 +246,7 @@ function Modal(loopy){
 			// Default dimensions
 			width.setValue(500);
 			height.setValue(440);
+			autoplay.setValue(0);
 
 			// The iframe!
 			iframeSRC = loopy.saveToURL(true);
