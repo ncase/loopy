@@ -57,22 +57,6 @@ function Sidebar(loopy){
 				Node.defaultValue = value;
 			}
 		}));
-		const transmissionBehaviorLabel = [
-			"On signal : <br/>allways transmit",
-			"On signal : <br/>transmit if outbound",
-			"On signal : <br/>transmit if overflow, die if empty",
-		];
-		page.addComponent('transmissionBehavior', new ComponentSlider({
-			bg: "transmissionBehavior",
-			label: "On signal :",
-			options: [0,1,2], //["allwaysTransmit", "accumulate to limit then transmit", "accumulate to limit then transmit, if empty, die"],
-			advanced: true,
-			defaultValue: 0,
-			oninput: function(value){
-				Node.defaultTransmissionBehavior = value;
-			}
-		}));
-
 		injectPropsInSideBar(page,objTypeToTypeIndex("node"));
 
 		page.onedit = function(){
@@ -85,7 +69,6 @@ function Sidebar(loopy){
 			// Focus on the name field IF IT'S "" or "?"
 			const name = node.label;
 			if(name==="" || name==="?") page.getComponent("label").select();
-			page.getComponent("transmissionBehavior").dom.querySelector('.component_label').innerHTML = transmissionBehaviorLabel[node.transmissionBehavior];
 			injectPropsLabelInSideBar(page,objTypeToTypeIndex("node"));
 		};
 		page.addComponent(new ComponentButton({
@@ -123,65 +106,7 @@ function Sidebar(loopy){
 				Edge.defaultStrength = value;
 			}
 		}));
-		const signBehaviorLabel = [];
-		signBehaviorLabel[0] =	"Sign Behavior : <br/>apply relationship effect";
-		signBehaviorLabel[1] =	"Sign Behavior : <br/>apply arrow sign";
-		signBehaviorLabel[2] =	"Sign Behavior : <br/>filter by arrow sign";
-		page.addComponent("signBehavior", new ComponentSlider({
-			bg: "signBehavior",
-			label: "Sign Behavior:",
-			//label: "Relationship:",
-			options: [0, 1, 2],
-			advanced: true,
-			defaultValue: 0,
-			oninput: function(value){
-				Edge.defaultStrength = value;
-			}
-		}));
-		const filterByColorLabel = [];
-		filterByColorLabel[-1] ="Color filter : all signal pass";
-		filterByColorLabel[0] =	"Color filter : red signal only";
-		filterByColorLabel[1] =	"Color filter : orange signal only";
-		filterByColorLabel[2] =	"Color filter : yellow signal only";
-		filterByColorLabel[3] =	"Color filter : green signal only";
-		filterByColorLabel[4] =	"Color filter : blue signal only";
-		filterByColorLabel[5] =	"Color filter : purple signal only";
-		page.addComponent("edgeFilterColor", new ComponentSlider({
-			bg: "edgeFilterColor",
-			label: "Start color : ",
-			options: [-1,0,1,2,3,4,5],
-			advanced: true,
-			defaultValue: -1,
-			oninput: function(value){
-				Node.defaultEdgeFilterColor = value;
-			}
-		}));
-		const convertToColorLabel = [];
-		convertToColorLabel[-1] ="Color converter : as is";
-		convertToColorLabel[0] = "Color converter : to red";
-		convertToColorLabel[1] = "Color converter : to orange";
-		convertToColorLabel[2] = "Color converter : to yellow";
-		convertToColorLabel[3] = "Color converter : to green";
-		convertToColorLabel[4] = "Color converter : to blue";
-		convertToColorLabel[5] = "Color converter : to purple";
-		const endColorLabel = [];
-		endColorLabel[-1] ="End color : auto from start color";
-		endColorLabel[0] = "End color : red";
-		endColorLabel[1] = "End color : orange";
-		endColorLabel[2] = "End color : yellow";
-		endColorLabel[3] = "End color : green";
-		endColorLabel[4] = "End color : blue";
-		endColorLabel[5] = "End color : purple";
-		page.addComponent("edgeTargetColor", new ComponentSlider({
-			bg: "edgeTargetColor",
-			label: "End color : ",
-			options: [-1,0,1,2,3,4,5],
-			advanced: true,
-			defaultValue: -1,
-			oninput: function(value){
-				Node.defaultEdgeTargetColor = value;
-			}
-		}));
+		injectPropsInSideBar(page,objTypeToTypeIndex("edge"));
 
 		page.addComponent(new ComponentHTML({
 			html: "(to make a stronger relationship, draw multiple arrows!)<br><br>"+
@@ -199,14 +124,7 @@ function Sidebar(loopy){
 		page.onedit = function(){
 			const edge = page.target;
 			page.getComponent("strength").dom.querySelector('.component_label').innerHTML = strengthLinkLabel[edge.strength];
-			page.getComponent("signBehavior").dom.querySelector('.component_label').innerHTML = signBehaviorLabel[edge.signBehavior];
-			if(loopy.globalState.colorMode===1){
-				page.getComponent("edgeFilterColor").dom.querySelector('.component_label').innerHTML = filterByColorLabel[edge.edgeFilterColor];
-				page.getComponent("edgeTargetColor").dom.querySelector('.component_label').innerHTML = convertToColorLabel[edge.edgeTargetColor];
-			} else {
-				page.getComponent("edgeFilterColor").dom.querySelector('.component_label').innerHTML = "Start color : ";
-				page.getComponent("edgeTargetColor").dom.querySelector('.component_label').innerHTML = endColorLabel[edge.edgeTargetColor];
-			}
+			injectPropsLabelInSideBar(page,objTypeToTypeIndex("edge"));
 		};
 		self.addPage("Edge", page);
 	})();

@@ -1,5 +1,15 @@
 // A loopy implementation of SOLID Open–closed principle
 
+/*
+onNodeInit
+onNodeTakeSignal
+onNodeSendSignal
+onEdgeAddSignal
+onLoopyInit
+onPlayReset
+
+ */
+
 /**
  *
  * @param objType : Object class like Node, Edge or Loopy

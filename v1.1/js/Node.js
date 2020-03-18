@@ -16,7 +16,6 @@ Node.COLORS = {
 
 Node.defaultValue = 0.5;
 Node.defaultHue = 0;
-Node.defaultTransmissionBehavior = 0;
 
 Node.DEFAULT_RADIUS = 60;
 
@@ -39,7 +38,6 @@ function Node(model, config){
 		label: "?",
 		hue: Node.defaultHue,
 		radius: Node.DEFAULT_RADIUS,
-		transmissionBehavior: Node.defaultTransmissionBehavior,
 	};
 	injectedDefaultProps(defaultProperties,objTypeToTypeIndex("node"));
 	_configureProperties(self, config, defaultProperties);
@@ -107,11 +105,11 @@ function Node(model, config){
 	// SIGNALS ///////////////////////////
 	//////////////////////////////////////
 
-	let shiftIndex = 0;
+	//let shiftIndex = 0;
 	self.sendSignal = function(signal){
 		let myEdges = self.model.getEdgesByStartNode(self);
-		myEdges = _shiftArray(myEdges, shiftIndex);
-		shiftIndex = (shiftIndex+1)%myEdges.length;
+		//myEdges = _shiftArray(myEdges, shiftIndex);
+		//shiftIndex = (shiftIndex+1)%myEdges.length;
 		for(let i=0; i<myEdges.length; i++){
 			myEdges[i].addSignal(signal);
 		}
@@ -119,8 +117,10 @@ function Node(model, config){
 
 	self.takeSignal = function(signal){
 		if(self.died) return;
-		if(!self.deltaPool) self.deltaPool={"-1":0,0:0,1:0,2:0,3:0,4:0,5:0,6:0};
+		if(!self.deltaPool) self.deltaPool={"-1":0,0:0,1:0,2:0,3:0,4:0,5:0,6:0}; // Edge.COLORS
+
 		if(loopy.globalState.colorMode===1 && !self.aggregate) self.aggregate = [];
+
 		if(loopy.globalState.colorMode===1){
 			if(self.hue === signal.color) self.value += signal.delta;
 		}else self.value += signal.delta;

@@ -265,7 +265,6 @@ function Model(loopy){
 			// 3 - init value
 			// 4 - label
 			// 5 - hue
-			// 6 - transmissionBehavior
 			const persist = [
 				node.id,
 				Math.round(node.x),
@@ -273,7 +272,6 @@ function Model(loopy){
 				node.init,
 				encodeURIComponent(encodeURIComponent(node.label)),
 				node.hue,
-				node.transmissionBehavior,
 			];
 			injectedPersistProps(persist, node, objTypeToTypeIndex("node"));
 			nodes.push(persist);
@@ -289,18 +287,12 @@ function Model(loopy){
 			// 2 - arc
 			// 3 - strength
 			// 4 - rotation
-			// 5 - signBehavior
-			// 6 - edgeFilterColor
-			// 7 - edgeTargetColor
 			const dataEdge = [
 				edge.from.id,
 				edge.to.id,
 				Math.round(edge.arc),
 				edge.strength,
 				Math.round(edge.rotation),
-				edge.signBehavior,
-				edge.edgeFilterColor,
-				edge.edgeTargetColor
 			];
 			injectedPersistProps(dataEdge, edge, objTypeToTypeIndex("edge"));
 			edges.push(dataEdge);
@@ -363,7 +355,6 @@ function Model(loopy){
 				init: node[3],
 				label: decodeURIComponent(node[4]),
 				hue: node[5],
-				transmissionBehavior: node[6],
 			};
 			injectedRestoreProps(node,config,objTypeToTypeIndex("node"));
 			self.addNode(config);
@@ -378,9 +369,6 @@ function Model(loopy){
 				arc: edge[2],
 				strength: edge[3],
 				rotation: edge[4],
-				signBehavior: edge[5],
-				edgeFilterColor: edge[6],
-				edgeTargetColor: edge[7]
 			};
 			switch (edgeConfig.strength) {
 				case -9:

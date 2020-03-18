@@ -18,9 +18,6 @@ Edge.allSignals = [];
 Edge.MAX_SIGNALS = 100;
 Edge.MAX_SIGNALS_PER_EDGE = 10;
 Edge.defaultStrength = 1;
-Edge.defaultSignBehavior=0;
-Edge.defaultEdgeFilterColor=-1;
-Edge.defaultEdgeTargetColor=-1;
 
 function Edge(model, config){
 
@@ -33,16 +30,15 @@ function Edge(model, config){
 	self.config = config;
 
 	// Default values...
-	_configureProperties(self, config, {
+	const defaultProperties = {
 		from: _makeErrorFunc("CAN'T LEAVE 'FROM' BLANK"),
 		to: _makeErrorFunc("CAN'T LEAVE 'TO' BLANK"),
 		arc: 100,
 		rotation: 0,
 		strength: Edge.defaultStrength,
-		signBehavior: Edge.defaultSignBehavior,
-		edgeFilterColor: Edge.defaultEdgeFilterColor,
-		edgeTargetColor: Edge.defaultEdgeTargetColor
-	});
+	};
+	injectedDefaultProps(defaultProperties,objTypeToTypeIndex("edge"));
+	_configureProperties(self, config, defaultProperties);
 
 	// Get my NODES
 	self.from = model.getNode(self.from);

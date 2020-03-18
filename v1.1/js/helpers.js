@@ -307,9 +307,7 @@ function _blendColors(hex1, hex2, blend){
 
 function _shiftArray(array, shiftIndex){
 	const moveThisAround = array.splice(-shiftIndex);
-	// noinspection UnnecessaryLocalVariableJS
-	const shifted = moveThisAround.concat(array);
-	return shifted;
+	return moveThisAround.concat(array);
 }
 
 
