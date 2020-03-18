@@ -370,24 +370,6 @@ function Model(loopy){
 				strength: edge[3],
 				rotation: edge[4],
 			};
-			switch (edgeConfig.strength) {
-				case -9:
-					edgeConfig.strength = -1;
-					edgeConfig.signBehavior = 1;
-					break;
-				case -8:
-					edgeConfig.strength = -1;
-					edgeConfig.signBehavior = 2;
-					break;
-				case 8:
-					edgeConfig.strength = 1;
-					edgeConfig.signBehavior = 2;
-					break;
-				case 9:
-					edgeConfig.strength = 1;
-					edgeConfig.signBehavior = 1;
-					break;
-			}
 			injectedRestoreProps(edge,edgeConfig,objTypeToTypeIndex("edge"));
 			self.addEdge(edgeConfig);
 		}
