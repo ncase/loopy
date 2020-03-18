@@ -267,6 +267,11 @@ div[big=yes] .play_button_label{
 .component_button[header=yes]:hover{
 	background: #333;
 }
+.advanced .simpleOnly,
+.simpleOnly.inactive
+{
+	display: none;
+}
 .adv{
 	display: none;
 }

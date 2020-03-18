@@ -31,7 +31,7 @@ function injectProperty(objType,propertyName,config={}) {
     objType = get_PERSIST_TYPE_array()[typeIndex];
 
     if(!objType.default) objType.default = {};
-    if(!config.defaultValue) config.defaultValue = 0;
+    if(typeof config.defaultValue === "undefined") config.defaultValue = 0;
     if(typeof objType.default[propertyName] !== "undefined") throw `objType.default[propertyName] collision with ${propertyName}`;
     objType.default[propertyName] = config.defaultValue;
     if(!EDIT_MODEL[typeIndex]) EDIT_MODEL[typeIndex] = [];
@@ -63,6 +63,7 @@ function injectPropsInSideBar(page,typeIndex){
         const componentConfig = feat;
         componentConfig.bg = feat.name;
         if(feat.options) page.addComponent(feat.name, new ComponentSlider(componentConfig));
+        else page.addComponent(feat.name, new ComponentInput(componentConfig));
     }
 }
 function injectPropsUpdateDefault(component, value){

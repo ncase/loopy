@@ -39,12 +39,26 @@ injectProperty("edge", "signBehavior",{
         }
     }
 );
+injectProperty("edge", "quantitative",{
+        defaultValue:0,
+        persist:9,
+        sideBar:{
+            index: 3,
+            options: [0, 1],
+            labelFunc: (v)=>[
+                "Signal type : illustrative",
+                "Signal type : quantitative",
+            ][v],
+            advanced: true
+        }
+    }
+);
 const COLORS_NAME = ["red", "orange", "yellow", "green", "blue", "purple"];
 injectProperty("edge", "edgeFilterColor",{
         defaultValue:-1,
         persist:6,
         sideBar:{
-            index: 3,
+            index: 4,
             options: [-1,0,1,2,3,4,5],
             labelFunc: (v)=>{
                 if(loopy.globalState.colorMode===1){
@@ -60,7 +74,7 @@ injectProperty("edge", "edgeTargetColor",{
         defaultValue:-1,
         persist:7,
         sideBar:{
-            index: 4,
+            index: 5,
             options: [-1,0,1,2,3,4,5],
             labelFunc: (v)=>{
                 if(loopy.globalState.colorMode===1){
@@ -75,3 +89,18 @@ injectProperty("edge", "edgeTargetColor",{
         }
     }
 );
+injectProperty("edge", "customLabel",{
+        defaultValue:"",
+        persist:{
+            index:8,
+            serializeFunc:(v)=>encodeURIComponent(encodeURIComponent(v)),
+            deserializeFunc:decodeURIComponent
+        },
+        sideBar:{
+            index: 99,
+            label: "Custom Label :",
+            advanced: true
+        }
+    }
+);
+

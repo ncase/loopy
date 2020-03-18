@@ -319,6 +319,8 @@ function Edge(model, config){
 		else l="– – –";
 		if(self.signBehavior===1) l='|'+l+'|';
 		if(self.signBehavior===2) l='F'+l;
+		// noinspection JSUnresolvedVariable
+		if(self.customLabel) l=self.customLabel;
 		self.label = l;
 
 		// Label position

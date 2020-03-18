@@ -36,8 +36,9 @@ function Sidebar(loopy){
 				self.showPage("Edit");
 			}
 		}));
+		page.addComponent(new ComponentHTML({html: "<br/>"}));
 		page.addComponent("label", new ComponentInput({
-			label: "<br><br>Name:"
+			label: "Name:"
 			//label: "Name:"
 		}));
 		page.addComponent("hue", new ComponentSlider({
@@ -92,15 +93,17 @@ function Sidebar(loopy){
 				self.showPage("Edit");
 			}
 		}));
+		page.addComponent(new ComponentHTML({html: "<br/>"}));
 		const strengthLinkLabel = [];
-		strengthLinkLabel[-1] =	"<br><br>Relationship : invert effect";
-		strengthLinkLabel[1] =	"<br><br>Relationship : same effect";
+		strengthLinkLabel[-1] =	"Relationship : invert effect";
+		strengthLinkLabel[1] =	"Relationship : same effect";
 		page.addComponent("strength", new ComponentSlider({
 			bg: "strength",
-			label: "<br><br>Relationship:",
+			label: "Relationship:",
 			//label: "Relationship:",
 			options: [1, -1],
 			//advanced: true,
+			simpleOnly: true,
 			defaultValue: 1,
 			oninput: function(value){
 				Edge.defaultStrength = value;
@@ -139,8 +142,9 @@ function Sidebar(loopy){
 				self.showPage("Edit");
 			}
 		}));
+		page.addComponent(new ComponentHTML({html: "<br/>"}));
 		page.addComponent("text", new ComponentInput({
-			label: "<br><br>Label:",
+			label: "Label:",
 			//label: "Label:",
 			textarea: true
 		}));
@@ -345,11 +349,13 @@ function ComponentInput(config){
 
 	// DOM: label + text input
 	self.dom = document.createElement("div");
+	if(config.advanced) advancedConditionalDisplay(self);
 	const label = _createLabel(config.label);
 	const className = config.textarea ? "component_textarea" : "component_input";
 	const input = _createInput(className, config.textarea);
 	input.oninput = function(){
 		self.setValue(input.value);
+		updateClassActiveDefault(self,config.defaultValue);
 	};
 	self.dom.appendChild(label);
 	self.dom.appendChild(input);
@@ -357,6 +363,7 @@ function ComponentInput(config){
 	// Show
 	self.show = function(){
 		input.value = self.getValue();
+		updateClassActiveDefault(self,config.defaultValue);
 	};
 
 	// Select
@@ -365,7 +372,30 @@ function ComponentInput(config){
 	};
 
 }
-
+function advancedConditionalDisplay(self) {
+	self.dom.classList.add('adv');
+	const adv = document.createElement("div");
+	adv.innerHTML = "Advanced feature in use : ";
+	adv.setAttribute("class","adv_disclaimer");
+	self.dom.appendChild(adv);
+}
+function simpleOnlyConditionalDisplay(self) {
+	self.dom.classList.add('simpleOnly');
+}
+function updateClassActiveDefault(self, defaultValue) {
+	if(self.getValue() === defaultValue){
+		self.dom.classList.remove("active");
+	}
+	else self.dom.classList.add("active");
+	console.log(self);
+	if(self.page.dom.querySelector('.adv.active')){
+		const simpleOnly = self.page.dom.querySelectorAll('.simpleOnly');
+		for(let so of simpleOnly) so.classList.add("inactive");
+	} else {
+		const simpleOnly = self.page.dom.querySelectorAll('.simpleOnly');
+		for(let so of simpleOnly) so.classList.remove("inactive");
+	}
+}
 function ComponentSlider(config){
 
 	// Inherit
@@ -377,13 +407,8 @@ function ComponentSlider(config){
 	// DOM: label + slider
 	self.dom = document.createElement("div");
 	self.dom.classList.add('not_in_play_mode');
-	if(config.advanced){
-		self.dom.classList.add('adv');
-		const adv = document.createElement("div");
-		adv.innerHTML = "Advanced feature in use : ";
-		adv.setAttribute("class","adv_disclaimer");
-		self.dom.appendChild(adv);
-	}
+	if(config.advanced) advancedConditionalDisplay(self);
+	if(config.simpleOnly) simpleOnlyConditionalDisplay(self);
 	const label = _createLabel(config.label);
 	self.dom.appendChild(label);
 	const sliderDOM = document.createElement("div");
@@ -420,10 +445,6 @@ function ComponentSlider(config){
 	const onmousemove = function(event){
 		if(isDragging) sliderInput(event);
 	};
-	const updateClassActiveDefault = function () {
-		if(self.getValue() === config.defaultValue) self.dom.classList.remove("active");
-		else self.dom.classList.add("active");
-	};
 	const sliderInput = function(event){
 
 		// What's the option?
@@ -433,7 +454,7 @@ function ComponentSlider(config){
 		if(option===undefined) return;
 		self.setValue(option);
 
-		updateClassActiveDefault();
+		updateClassActiveDefault(self,config.defaultValue);
 
 		// Callback! (if any)
 		injectPropsUpdateDefault(self,option);
@@ -449,7 +470,7 @@ function ComponentSlider(config){
 
 	// Show
 	self.show = function(){
-		updateClassActiveDefault();
+		updateClassActiveDefault(self,config.defaultValue);
 		movePointer();
 	};
 
