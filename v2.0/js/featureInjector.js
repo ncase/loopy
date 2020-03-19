@@ -80,6 +80,11 @@ function injectPropsLabelInSideBar(page,typeIndex){
     for(let i in EDIT_MODEL[typeIndex]) if(EDIT_MODEL[typeIndex].hasOwnProperty(i)){
         const feat = EDIT_MODEL[typeIndex][i];
         const component = page.getComponent(feat.name);
+        if(parseInt(typeIndex)===3){ //if loopy/global, init
+            if(feat.oninput) feat.oninput(page.target[feat.name]);
+            component.show();
+        }
+
         if(parseInt(typeIndex)===0){ //if node, set BG Color
             component.setBGColor(Node.COLORS[page.target.hue]);
         }
@@ -101,7 +106,7 @@ function injectedPersistProps(persistArray,objToPersist,typeIndex) {
 }
 function injectedRestoreProps(srcArray,targetConfig,typeIndex) {
     for(let i in PERSIST_MODEL[typeIndex]) if(PERSIST_MODEL[typeIndex].hasOwnProperty(i)){
-        if(typeof targetConfig[PERSIST_MODEL[typeIndex][i].name] !== "undefined") throw "collision";
+        if(typeof targetConfig[PERSIST_MODEL[typeIndex][i].name] !== "undefined" && parseInt(typeIndex)!==3) throw "collision"; // except for loopy globals
         if(typeof srcArray[i] !== "undefined" && srcArray[i] !== null && srcArray[i] !== PERSIST_MODEL[typeIndex][i].defaultValue)
             targetConfig[PERSIST_MODEL[typeIndex][i].name] = PERSIST_MODEL[typeIndex][i].deserializeFunc( srcArray[i] );
     }

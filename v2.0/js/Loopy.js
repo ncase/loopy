@@ -18,10 +18,9 @@ function Loopy(config){
 	const self = this;
 	window.loopy = self;
 	self.config = config;
-	self.globalState = {
-		loopyMode:0, // default simple mode
-		colorMode:0 // default aesthetic
-	};
+
+	injectedDefaultProps(self,objTypeToTypeIndex("loopy"));
+
 
 	// Loopy: EMBED???
 	self.embedded = _getParameterByName("embed");
@@ -200,9 +199,10 @@ function Loopy(config){
 		let data = _getParameterByName("data");
 		if(!data) data=decodeURIComponent(_blankData);
 		self.model.deserialize(data);
-		self.sidebar.pages.forEach(function(page){page.dom.classList.add(loopy.globalState.loopyMode?"advanced":"simple");});
-		self.sidebar.pages[3].getComponent("loopyMode").show(); //FIXME: less dirty syntaxe for .pages[3] = page Edit
-		self.sidebar.pages[3].getComponent("colorMode").show();
+
+		const globalEditPage = self.sidebar.pages[3]
+		injectPropsLabelInSideBar(globalEditPage,objTypeToTypeIndex("loopy"));
+
 	}; 
 
 

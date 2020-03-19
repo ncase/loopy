@@ -180,6 +180,7 @@ function Sidebar(loopy){
 	// Edit
 	(function(){
 		const page = new SidebarPage();
+		page.target = loopy;
 		page.addComponent(new ComponentHTML({
 			html: ""+
 
@@ -198,31 +199,7 @@ function Sidebar(loopy){
 				"<span class='mini_button' onclick='publish(\"modal\",[\"save_gif\"])'>make a GIF using LICEcap</span> <br><br>"+
 				'<hr class="not_in_play_mode"/>'
 		}));
-		page.addComponent("loopyMode", new ComponentSlider({
-			bg: "loopyMode",
-			label: "Loopy mode : ",
-			options: [0,1], // Simple || Advanced
-			oninput: function(value){
-				//self.sidebar.pages.forEach(function(page){page.dom.classList.add(loopy.globalState.loopyMode?"advanced":"simple");});
-				let apply;
-				if(value) apply = function(page){
-					page.dom.classList.add("advanced");
-					page.dom.classList.remove("simple");
-				};
-				else apply = function(page){
-					page.dom.classList.add("simple");
-					page.dom.classList.remove("advanced");
-				};
-				loopy.sidebar.pages.forEach(apply);
-			}
-		}));
-		page.addComponent("colorMode", new ComponentSlider({
-			bg: "colorMode",
-			label: "Color mode : ",
-			options: [0,1], // Aesthetic || Type logic
-			advanced: true,
-			defaultValue:0 // not advanced behavior when default
-		}));
+		injectPropsInSideBar(page,objTypeToTypeIndex("loopy"));
 		page.addComponent(new ComponentHTML({
 			html: `<hr/>
 <br><a target='_blank' href='../'>LOOPY</a> is made by <a target='_blank' href='http://ncase.me'>nicky case</a>
@@ -241,6 +218,9 @@ with your support <a target='_blank' href='https://www.patreon.com/ncase'>on pat
 <br>Had fun ? <span class='mini_button' onclick='publish(\"modal\",[\"save_link\"])'>Share it !</span><br>`
 
 		}));
+		page.onedit = function(){
+			injectPropsLabelInSideBar(page,objTypeToTypeIndex("loopy"));
+		};
 		self.addPage("Edit", page);
 	})();
 

@@ -319,8 +319,6 @@ function Model(loopy){
 		// META.
 		const persist = [
 			Node._UID,
-			loopy.globalState.loopyMode,
-			loopy.globalState.colorMode
 		];
 		injectedPersistProps(persist, loopy, objTypeToTypeIndex("loopy"));
 		data.push(persist);
@@ -387,14 +385,9 @@ function Model(loopy){
 		}
 
 		// META.
-		if(typeof globalState === "object"){
-			Node._UID = globalState[0];
-			loopy.globalState.loopyMode = globalState[1];
-			loopy.globalState.colorMode = globalState[2];
-			injectedRestoreProps(globalState,loopy,objTypeToTypeIndex("loopy"));
-		} else{ // legacy compatibility
-			Node._UID = globalState;
-		}
+		const importArray = typeof globalState === "object"?globalState:[globalState];
+		Node._UID = importArray[0];
+		injectedRestoreProps(importArray,loopy,objTypeToTypeIndex("loopy"));
 	};
 
 	self.clear = function(){

@@ -1,3 +1,60 @@
+injectProperty("loopy", "loopyMode",{
+        defaultValue:0,
+        persist:1,
+        sideBar:{
+            index: 1,
+            options: [ 0, 1], // Simple || Advanced
+            label: "LOOPY v2 mode :",
+            oninput: function(value){
+                let apply;
+                if(value) apply = function(page){
+                    page.dom.classList.add("advanced");
+                    page.dom.classList.remove("simple");
+                };
+                else apply = function(page){
+                    page.dom.classList.add("simple");
+                    page.dom.classList.remove("advanced");
+                };
+                loopy.sidebar.pages.forEach(apply);
+            }
+        }
+    }
+);
+injectProperty("loopy", "colorMode",{
+        defaultValue:0,
+        persist:2,
+        sideBar:{
+            index: 2,
+            options: [ 0, 1],
+            labelFunc: (v)=>v?"Color : significant for logic":"Color : only aesthetic",
+            advanced: true
+        }
+    }
+);
+injectProperty("loopy", "redKill",{
+        defaultValue:0,
+        persist:3,
+        sideBar:{
+            index: 3,
+            options: [ 0, 1],
+            labelFunc: (v)=>v?"Red : propagate death":"Red : is a normal color",
+            advanced: true,
+            colorLogic:true
+        }
+    }
+);
+injectProperty("loopy", "greenLife",{
+        defaultValue:0,
+        persist:4,
+        sideBar:{
+            index: 4,
+            options: [ 0, 1],
+            labelFunc: (v)=>v?"Green : back to life signal":"Green : is a normal color",
+            advanced: true,
+            colorLogic:true
+        }
+    }
+);
 /*injectProperty("node", "transmissionBehavior",{
         defaultValue:0,
         persist:6,
