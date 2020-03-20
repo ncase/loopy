@@ -17,7 +17,6 @@ Edge.COLORS = {
 Edge.allSignals = [];
 Edge.MAX_SIGNALS = 100;
 Edge.MAX_SIGNALS_PER_EDGE = 10;
-Edge.defaultStrength = 1;
 
 function Edge(model, config){
 
@@ -35,7 +34,6 @@ function Edge(model, config){
 		to: _makeErrorFunc("CAN'T LEAVE 'TO' BLANK"),
 		arc: 100,
 		rotation: 0,
-		strength: Edge.defaultStrength,
 	};
 	injectedDefaultProps(defaultProperties,objTypeToTypeIndex("edge"));
 	_configureProperties(self, config, defaultProperties);

@@ -65,6 +65,7 @@ function injectPropsInSideBar(page,typeIndex){
         const componentConfig = feat;
         componentConfig.bg = feat.name;
         if(feat.options) page.addComponent(feat.name, new ComponentSlider(componentConfig));
+        else if(feat.html) page.addComponent(feat.name, new ComponentHTML(componentConfig));
         else page.addComponent(feat.name, new ComponentInput(componentConfig));
     }
 }

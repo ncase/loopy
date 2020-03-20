@@ -15,6 +15,50 @@ function factorySwitchMode(disabledClass,activatedClass){
 
 // Loopy global features
 
+injectProperty("loopy", "beforeAll",{
+    sideBar:{
+        index: 0,
+        html:`<b style='font-size:1.4em'>LOOPY</b> (v2.0)
+        <br>a tool for thinking in systems
+        <br>
+        <br><span class='mini_button' onclick='publish("modal",["examples"])'>see examples</span>
+            <span class='mini_button' onclick='publish("modal",["howto"])'>how to</span>
+            <span class='mini_button' onclick='publish("modal",["credits"])'>credits</span>
+        <br>
+        <br><hr/>
+        <br><span class='mini_button' onclick='publish("modal",["save_link"])'>save as link</span>
+        <br>
+        <br><span class='mini_button' onclick='publish("export/file")'>save as file</span>
+            <span class='mini_button' onclick='publish("import/file")'>load from file</span>
+        <br>
+        <br><span class='mini_button' onclick='publish("modal",["embed"])'>embed in your website</span>
+        <br>
+        <br><span class='mini_button' onclick='publish("modal",["save_gif"])'>make a GIF using LICEcap</span>
+        <br>
+        <br><hr class="not_in_play_mode"/>`
+    }
+});
+injectProperty("loopy", "afterAll",{
+    sideBar:{
+        index: 99,
+        html: `<hr/>
+        <br><a target='_blank' href='../'>LOOPY</a> is made by <a target='_blank' href='http://ncase.me'>nicky case</a>
+            with your support <a target='_blank' href='https://www.patreon.com/ncase'>on patreon</a> &lt;3
+        <br>
+        <br><span style='font-size:0.85em'>P.S: go read <a target='_blank' href='https://www.amazon.com/Thinking-Systems-Donella-H-Meadows/dp/1603580557'>Thinking In Systems</a>, thx</span>
+        <br>
+        <br>LOOPY v2 reworked by <a target='_blank' style='font-size:0.90em' href='https://github.com/1000i100'>1000i100</a>
+        <br>
+        <br>Discover all the new features :
+        <br>- by exploring advanced mode,
+        <br>- or take a look in the <a target='_blank' href='https://github.com/1000i100/loopy#changelog'>changelog</a>.
+        <br>
+        <br>Unleash your creativity !
+        <br>
+        <br>Had fun ? <span class='mini_button' onclick='publish(\"modal\",[\"save_link\"])'>Share it !</span>
+        <br>`
+    }
+});
 injectProperty("loopy", "loopyMode",{
     defaultValue:0,
     persist:1,
@@ -152,17 +196,30 @@ injectProperty("node", "explode",{
 });
 
 // Edge features
+injectProperty("edge", "strength",{
+    defaultValue:1,
+    persist:3,
+    sideBar:{
+        index: 1,
+        options: [1,-1],
+        labelFunc: (v)=>`Relationship : ${v===1?'same':'invert'} effect`,
+        simpleOnly: true
+    }
+});
 
 injectProperty("edge", "signBehavior",{
     defaultValue:0,
     persist:5,
     sideBar:{
         index: 2,
-        options: [ 0, 1, 2],
+        options: [0,1,2,3,4,5],
         labelFunc: (v)=>[
-            "Sign Behavior : <br/>apply relationship effect",
-            "Sign Behavior : <br/>apply arrow sign",
-            "Sign Behavior : <br/>filter by arrow sign"
+            "Valency : preserved",
+            "Valency : inverted",
+            "Valency : allow only negative",
+            "Valency : allow only positive",
+            "Valency : convert to negative",
+            "Valency : convert to positive",
         ][v],
         advanced: true
     }
@@ -222,8 +279,40 @@ injectProperty("edge", "customLabel",{
         deserializeFunc:decodeURIComponent
     },
     sideBar:{
-        index: 99,
+        index: 98,
         label: "Custom name :",
         advanced: true
+    }
+});
+injectProperty("edge", "lengthInfo",{
+    sideBar:{
+        index: 99,
+        html:`(to make a stronger relationship, draw multiple arrows!)
+            <br><br>(to make a delayed relationship, draw longer arrows)`
+    }
+});
+
+// Label features
+injectProperty("label", "visibility",{
+    defaultValue:0,
+    persist:3,
+    sideBar:{
+        index: 1,
+        options: [0,1],
+        labelFunc: (v)=>`Show : ${v===1?'only in edit mode':'always'}`,
+        advanced: true
+    }
+});
+injectProperty("label", "text",{
+    defaultValue:"...",
+    persist:{
+        index:2,
+        serializeFunc:(v)=>encodeURIComponent(encodeURIComponent(v)),
+        deserializeFunc:decodeURIComponent
+    },
+    sideBar:{
+        index: 2,
+        label: "Label :",
+        textarea:true
     }
 });

@@ -17,11 +17,12 @@ function Label(model, config){
 	self.config = config;
 
 	// Default values...
-	_configureProperties(self, config, {
+	const defaultProperties = {
 		x: 0,
-		y: 0,
-		text: "..."
-	});
+			y: 0,
+	};
+	injectedDefaultProps(defaultProperties,objTypeToTypeIndex("label"));
+	_configureProperties(self, config, defaultProperties);
 
 	// Draw
 	self.draw = function(ctx){

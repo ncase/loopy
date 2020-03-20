@@ -29,113 +29,34 @@ function Sidebar(loopy){
 	// Node!
 	(function(){
 		const page = new SidebarPage();
-		page.addComponent(new ComponentButton({
-			header: true,
-			label: "back to top",
-			onclick: function(){
-				self.showPage("Edit");
-			}
-		}));
-		page.addComponent(new ComponentHTML({html: "<br/>"}));
+		backToTopButton(self, page);
 		injectPropsInSideBar(page,objTypeToTypeIndex("node"));
-
-		page.onedit = function(){
-			// Set color of Slider
-			const node = page.target;
-			const color = Node.COLORS[node.hue];
-			page.getComponent("init").setBGColor(color);
-
-			// Focus on the name field IF IT'S "" or "?"
-			const name = node.label;
-			if(name==="" || name==="?") page.getComponent("label").select();
-			injectPropsLabelInSideBar(page,objTypeToTypeIndex("node"));
-		};
-		page.addComponent(new ComponentButton({
-			label: "delete node",
-			//label: "delete circle",
-			onclick: function(node){
-				node.kill();
-				self.showPage("Edit");
-			}
-		}));
+		page.onshow = ()=> page.getComponent("label").select(); // Focus on the label field
+		page.onedit = ()=>injectPropsLabelInSideBar(page,objTypeToTypeIndex("node"));
+		deleteMeButton(self, page, "delete node");
 		self.addPage("Node", page);
 	})();
 
 	// Edge!
 	(function(){
 		const page = new SidebarPage();
-		page.addComponent(new ComponentButton({
-			header: true,
-			label: "back to top",
-			onclick: function(){
-				self.showPage("Edit");
-			}
-		}));
-		page.addComponent(new ComponentHTML({html: "<br/>"}));
-		const strengthLinkLabel = [];
-		strengthLinkLabel[-1] =	"Relationship : invert effect";
-		strengthLinkLabel[1] =	"Relationship : same effect";
-		page.addComponent("strength", new ComponentSlider({
-			bg: "strength",
-			label: "Relationship:",
-			//label: "Relationship:",
-			options: [1, -1],
-			//advanced: true,
-			simpleOnly: true,
-			defaultValue: 1,
-			oninput: function(value){
-				Edge.defaultStrength = value;
-			}
-		}));
+		backToTopButton(self, page);
 		injectPropsInSideBar(page,objTypeToTypeIndex("edge"));
-
-		page.addComponent(new ComponentHTML({
-			html: "(to make a stronger relationship, draw multiple arrows!)<br><br>"+
-			"(to make a delayed relationship, draw longer arrows)"
-		}));
-		page.addComponent(new ComponentButton({
-			//label: "delete edge",
-			label: "delete arrow",
-			//label: "delete relationship",
-			onclick: function(edge){
-				edge.kill();
-				self.showPage("Edit");
-			}
-		}));
-		page.onedit = function(){
-			const edge = page.target;
-			page.getComponent("strength").dom.querySelector('.component_label').innerHTML = strengthLinkLabel[edge.strength];
-			injectPropsLabelInSideBar(page,objTypeToTypeIndex("edge"));
-		};
+		deleteMeButton(self, page, "delete arrow");
+		page.onedit = ()=>injectPropsLabelInSideBar(page,objTypeToTypeIndex("edge"));
 		self.addPage("Edge", page);
 	})();
 
 	// Label!
 	(function(){
 		const page = new SidebarPage();
-		page.addComponent(new ComponentButton({
-			header: true,
-			label: "back to top",
-			onclick: function(){
-				self.showPage("Edit");
-			}
-		}));
-		page.addComponent(new ComponentHTML({html: "<br/>"}));
-		page.addComponent("text", new ComponentInput({
-			label: "Label:",
-			//label: "Label:",
-			textarea: true
-		}));
-		page.onshow = function(){
-			// Focus on the text field
-			page.getComponent("text").select();
-		};
+		backToTopButton(self, page);
+		injectPropsInSideBar(page,objTypeToTypeIndex("label"));
+		page.onshow = ()=> page.getComponent("text").select(); // Focus on the text field
 		page.onhide = function(){
-			
 			// If you'd just edited it...
 			const label = page.target;
 			if(!page.target) return;
-
 			// If text is "" or all spaces, DELETE.
 			const text = label.text;
 			if(/^\s*$/.test(text)){
@@ -143,15 +64,9 @@ function Sidebar(loopy){
 				page.target = null;
 				label.kill();
 			}
-
 		};
-		page.addComponent(new ComponentButton({
-			label: "delete label",
-			onclick: function(label){
-				label.kill();
-				self.showPage("Edit");
-			}
-		}));
+		deleteMeButton(self, page, "delete label");
+		page.onedit = ()=>injectPropsLabelInSideBar(page,objTypeToTypeIndex("label"));
 		self.addPage("Label", page);
 	})();
 
@@ -159,46 +74,8 @@ function Sidebar(loopy){
 	(function(){
 		const page = new SidebarPage();
 		page.target = loopy;
-		page.addComponent(new ComponentHTML({
-			html: ""+
-
-				"<b style='font-size:1.4em'>LOOPY</b> (v2.0)<br>a tool for thinking in systems<br><br>"+
-
-				"<span class='mini_button' onclick='publish(\"modal\",[\"examples\"])'>see examples</span> "+
-				"<span class='mini_button' onclick='publish(\"modal\",[\"howto\"])'>how to</span> "+
-				"<span class='mini_button' onclick='publish(\"modal\",[\"credits\"])'>credits</span><br><br>"+
-
-				"<hr/><br>"+
-
-				"<span class='mini_button' onclick='publish(\"modal\",[\"save_link\"])'>save as link</span> <br><br>"+
-				"<span class='mini_button' onclick='publish(\"export/file\")'>save as file</span> "+
-				"<span class='mini_button' onclick='publish(\"import/file\")'>load from file</span> <br><br>"+
-				"<span class='mini_button' onclick='publish(\"modal\",[\"embed\"])'>embed in your website</span> <br><br>"+
-				"<span class='mini_button' onclick='publish(\"modal\",[\"save_gif\"])'>make a GIF using LICEcap</span> <br><br>"+
-				'<hr class="not_in_play_mode"/>'
-		}));
 		injectPropsInSideBar(page,objTypeToTypeIndex("loopy"));
-		page.addComponent(new ComponentHTML({
-			html: `<hr/>
-<br><a target='_blank' href='../'>LOOPY</a> is made by <a target='_blank' href='http://ncase.me'>nicky case</a>
-with your support <a target='_blank' href='https://www.patreon.com/ncase'>on patreon</a> &lt;3
-<br>
-<br><span style='font-size:0.85em'>P.S: go read <a target='_blank' href='https://www.amazon.com/Thinking-Systems-Donella-H-Meadows/dp/1603580557'>Thinking In Systems</a>, thx</span>
-<br>
-<br>LOOPY v2 reworked by <a target='_blank' style='font-size:0.90em' href='https://github.com/1000i100'>1000i100</a>
-<br>
-<br>Discover all the new features :
-<br>- by exploring advanced mode,
-<br>- or take a look in the <a target='_blank' href='https://github.com/1000i100/loopy#changelog'>changelog</a>.
-<br>
-<br>Unleash your creativity !
-<br>
-<br>Had fun ? <span class='mini_button' onclick='publish(\"modal\",[\"save_link\"])'>Share it !</span><br>`
-
-		}));
-		page.onedit = function(){
-			injectPropsLabelInSideBar(page,objTypeToTypeIndex("loopy"));
-		};
+		page.onedit = ()=>injectPropsLabelInSideBar(page,objTypeToTypeIndex("loopy"));
 		self.addPage("Edit", page);
 	})();
 
@@ -209,6 +86,25 @@ with your support <a target='_blank' href='https://www.patreon.com/ncase'>on pat
 		}
 	});
 
+}
+function backToTopButton(sidebar, page){
+	page.addComponent(new ComponentButton({
+		header: true,
+		label: "back to top",
+		onclick: function(){
+			sidebar.showPage("Edit");
+		}
+	}));
+	page.addComponent(new ComponentHTML({html: "<br/>"}));
+}
+function deleteMeButton(sidebar, page, label){
+	page.addComponent(new ComponentButton({
+		label: label,
+		onclick: function(me){
+			me.kill();
+			sidebar.showPage("Edit");
+		}
+	}));
 }
 
 function SidebarPage(){

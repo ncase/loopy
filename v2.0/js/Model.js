@@ -279,13 +279,12 @@ function Model(loopy){
 			// 0 - from
 			// 1 - to
 			// 2 - arc
-			// 3 - strength
 			// 4 - rotation
 			const dataEdge = [
 				edge.from.id,
 				edge.to.id,
 				Math.round(edge.arc),
-				edge.strength,
+				undefined, // strength
 				Math.round(edge.rotation),
 			];
 			injectedPersistProps(dataEdge, edge, objTypeToTypeIndex("edge"));
@@ -299,11 +298,9 @@ function Model(loopy){
 			const label = self.labels[i];
 			// 0 - x
 			// 1 - y
-			// 2 - text
 			const persist = [
 				Math.round(label.x),
 				Math.round(label.y),
-				encodeURIComponent(encodeURIComponent(label.text))
 			];
 			injectedPersistProps(persist, label, objTypeToTypeIndex("label"));
 			labels.push(persist);
@@ -356,7 +353,6 @@ function Model(loopy){
 				from: edge[0],
 				to: edge[1],
 				arc: edge[2],
-				strength: edge[3],
 				rotation: edge[4],
 			};
 			injectedRestoreProps(edge,edgeConfig,objTypeToTypeIndex("edge"));
@@ -369,7 +365,6 @@ function Model(loopy){
 			const config = {
 				x: label[0],
 				y: label[1],
-				text: decodeURIComponent(label[2])
 			};
 			injectedRestoreProps(label,config,objTypeToTypeIndex("label"));
 			self.addLabel(config);
