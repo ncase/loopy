@@ -56,10 +56,18 @@ function _createCanvas(){
 }
 
 function _createLabel(message){
+	const wrapper = document.createElement("div");
+
 	const label = document.createElement("div");
-	label.innerHTML = message;
 	label.setAttribute("class","component_label");
-	return label;
+	label.innerHTML = message;
+	const doc = document.createElement("a");
+	doc.classList.add("docLink");
+	doc.title='Know more about this feature';
+	doc.innerHTML = '?'; // (O.ô) *help *doc *what? *more *know more *how? || how?
+	wrapper.appendChild(doc);
+	wrapper.appendChild(label);
+	return wrapper;
 }
 
 function _createButton(label, onclick){

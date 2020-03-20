@@ -196,10 +196,17 @@ function Component(){
 
 		// Edit the value!
 		self.page.target[self.propName] = value;
+
+		updateDocLink(self);
 		self.page.onedit(); // callback!
 		
 	};
 	self.setBGColor = function () {}
+}
+function updateDocLink(component) {
+	let type = component.page.id;
+	if(type==="Edit") type = 'Global';
+	component.dom.querySelector('.docLink').href = `javascript:publish("modal",["doc","${type}/${component.propName}/${component.getValue()}"])`;
 }
 
 function ComponentInput(config){
@@ -225,6 +232,7 @@ function ComponentInput(config){
 	self.show = function(){
 		input.value = self.getValue();
 		updateClassActiveDefault(self,config.defaultValue);
+		updateDocLink(self);
 	};
 
 	// Select
@@ -338,6 +346,7 @@ function ComponentSlider(config){
 	// Show
 	self.show = function(){
 		updateClassActiveDefault(self,config.defaultValue);
+		updateDocLink(self);
 		movePointer();
 	};
 

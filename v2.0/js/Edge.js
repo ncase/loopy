@@ -308,16 +308,19 @@ function Edge(model, config){
 		// My label is...
 		const s = self.strength;
 		let l;
-		if(s>=3) l="+++";
-		else if(s>=2) l="++";
-		else if(s>=1) l="+";
-		else if(s===0) l="?";
-		else if(s>=-1) l="–"; // EM dash, not hyphen.
-		else if(s>=-2) l="– –";
-		else l="– – –";
-		if(self.signBehavior===1) l='|'+l+'|';
-		if(self.signBehavior===2) l='F'+l;
-		// noinspection JSUnresolvedVariable
+		if(loopy.loopyMode===0){
+			if(s>=3) l="+++";
+			else if(s>=2) l="++";
+			else if(s>=1) l="+";
+			else if(s===0) l="?";
+			else if(s>=-1) l="–"; // EM dash, not hyphen.
+			else if(s>=-2) l="– –";
+			else l="– – –";
+		} else {
+			const symbol = ['=','⤭','F–','F+','|–|','|+|'];
+			l=symbol[self.signBehavior];
+		}
+		//
 		if(self.customLabel) l=self.customLabel;
 		self.label = l;
 

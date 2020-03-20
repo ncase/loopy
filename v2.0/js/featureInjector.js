@@ -89,7 +89,7 @@ function injectPropsLabelInSideBar(page,typeIndex){
         if(parseInt(typeIndex)===0){ //if node, set BG Color
             component.setBGColor(Node.COLORS[page.target.hue]);
         }
-        if(feat.labelFunc) component.dom.querySelector('.component_label').innerHTML = feat.labelFunc(page.target[feat.name]);
+        if(feat.labelFunc) component.dom.querySelector('.component_label').innerHTML = feat.labelFunc(page.target[feat.name],page.target);
     }
 }
 

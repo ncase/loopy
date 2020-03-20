@@ -29,13 +29,13 @@ function Modal(loopy){
 	document.getElementById("modal_close").onclick = self.hide;
 
 	// Show... what page?
-	subscribe("modal", function(pageName){
+	subscribe("modal", function(pageName,opt=""){
 
 		self.show();
 		const page = self.showPage(pageName);
 
 		// Do something
-		if(page.onshow) page.onshow();
+		if(page.onshow) page.onshow(opt);
 
 		// Dimensions
 		const dom = document.getElementById("modal");
@@ -84,6 +84,23 @@ function Modal(loopy){
 
 		self.addPage("howto", page);
 
+	})();
+
+	// doc
+	(function(){
+		const page = new Page();
+		page.width = 800;
+		page.height = 600;
+		page.addComponent(new ModalIframe({
+			page: page,
+			src: "",
+			width: page.width-30,
+			height: page.height-50
+		}));
+		page.onshow = (opt)=>{
+			page.dom.querySelector("iframe").src = `pages/doc/?${opt}`;
+		};
+		self.addPage("doc", page);
 	})();
 
 	// Credits

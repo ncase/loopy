@@ -28,7 +28,14 @@ injectProperty("node", "size",{
     sideBar:{
         index: 3,
         options: [0.0001, 1, 5, 100],
-        label: "Size :",
+        labelFunc: (v)=>{
+            const cases = [];
+            cases[0.0001] ="Size : tiny → boolean capacity";
+            cases[1]="Size : normal → x1 capacity";
+            cases[5] ="Size : big → x5 capacity";
+            cases[100] ="Size : huge → x100 capacity";
+            return cases[parseFloat(v)];
+        },
         advanced: true
     }
 });

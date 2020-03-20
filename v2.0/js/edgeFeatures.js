@@ -16,14 +16,14 @@ injectProperty("edge", "signBehavior",{
     sideBar:{
         index: 2,
         options: [0,1,2,3,4,5],
-        labelFunc: (v)=>[
-            "Valency : preserved",
-            "Valency : inverted",
-            "Valency : allow only negative",
-            "Valency : allow only positive",
-            "Valency : convert to negative",
-            "Valency : convert to positive",
-        ][v],
+        labelFunc: (v,obj)=>`<sup title="Relationship state in simple mode">${obj.strength>0?'+':'–'} </sup>Valency : ${[
+            "preserved",
+            "inverted",
+            "allow only negative",
+            "allow only positive",
+            "convert to negative",
+            "convert to positive",
+        ][v]}`,
         advanced: true
     }
 });
@@ -64,8 +64,8 @@ injectProperty("edge", "edgeTargetColor",{
         options: [-1,0,1,2,3,4,5],
         labelFunc: (v)=>{
             if(loopy.colorLogic===1){
-                if(parseInt(v)=== -1) return "Color converter : as is";
-                else return `Color converter : to ${COLORS_NAME[v]}`;
+                if(parseInt(v)=== -1) return "Color conversion : as is";
+                else return `Color conversion : to ${COLORS_NAME[v]}`;
             } else{
                 if(parseInt(v)=== -1) return "End color : auto from start color";
                 else return `End color : ${COLORS_NAME[v]}`;

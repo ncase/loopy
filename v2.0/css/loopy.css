@@ -311,6 +311,13 @@ div[big=yes] .play_button_label{
 MODAL
 
 **********/
+.docLink{
+	float:right;
+	font-size: 70%;
+	text-decoration: none;
+	cursor: pointer;
+}
+.docLink:hover{transform: scale(2)}
 
 #modal_container{
 	display: none;
