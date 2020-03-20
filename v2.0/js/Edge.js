@@ -133,7 +133,7 @@ function Edge(model, config){
 			} else if(self.signBehavior===0){
 				lastSignal.delta *= self.strength;
 			}
-			if(loopy.globalState.colorMode===1 && self.edgeTargetColor!== -1) lastSignal.color = self.edgeTargetColor;
+			if(loopy.colorLogic===1 && self.edgeTargetColor!== -1) lastSignal.color = self.edgeTargetColor;
 			self.to.takeSignal(lastSignal);
 
 			// Pop it, move on down
@@ -171,7 +171,7 @@ function Edge(model, config){
 			// Signal's COLOR, BLENDING
 			let fromColor = Node.COLORS[self.from.hue];
 			let toColor = Node.COLORS[self.to.hue];
-			if(loopy.globalState.colorMode===1){
+			if(loopy.colorLogic===1){
 				fromColor = Node.COLORS[signal.color];
 				if(self.edgeTargetColor=== -1) toColor = Node.COLORS[signal.color];
 				else toColor = Node.COLORS[self.edgeTargetColor];

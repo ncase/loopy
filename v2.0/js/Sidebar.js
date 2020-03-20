@@ -37,31 +37,9 @@ function Sidebar(loopy){
 			}
 		}));
 		page.addComponent(new ComponentHTML({html: "<br/>"}));
-		page.addComponent("label", new ComponentInput({
-			label: "Name:"
-			//label: "Name:"
-		}));
-		page.addComponent("hue", new ComponentSlider({
-			bg: "color",
-			label: "Color:",
-			options: [0,1,2,3,4,5],
-			oninput: function(value){
-				Node.defaultHue = value;
-			}
-		}));
-		page.addComponent("init", new ComponentSlider({
-			bg: "initial",
-			label: "Start Amount:",
-			options: [0, 0.16, 0.33, 0.50, 0.66, 0.83, 1],
-			//options: [0, 1/6, 2/6, 3/6, 4/6, 5/6, 1],
-			oninput: function(value){
-				Node.defaultValue = value;
-			}
-		}));
 		injectPropsInSideBar(page,objTypeToTypeIndex("node"));
 
 		page.onedit = function(){
-
 			// Set color of Slider
 			const node = page.target;
 			const color = Node.COLORS[node.hue];
@@ -313,8 +291,7 @@ function Component(){
 		// TO IMPLEMENT
 	};
 	self.getValue = function(){
-		if(self.page.target) return self.page.target[self.propName];
-		else return loopy.globalState[self.propName];
+		return self.page.target[self.propName];
 	};
 	self.setValue = function(value){
 		
@@ -322,11 +299,11 @@ function Component(){
 		publish("model/changed");
 
 		// Edit the value!
-		if(self.page.target) self.page.target[self.propName] = value;
-		else loopy.globalState[self.propName] = value;
+		self.page.target[self.propName] = value;
 		self.page.onedit(); // callback!
 		
 	};
+	self.setBGColor = function () {}
 }
 
 function ComponentInput(config){
@@ -367,6 +344,13 @@ function advancedConditionalDisplay(self) {
 	adv.setAttribute("class","adv_disclaimer");
 	self.dom.appendChild(adv);
 }
+function colorLogicConditionalDisplay(self) {
+	self.dom.classList.add('colorLogic');
+	const adv = document.createElement("div");
+	adv.innerHTML = "This feature need activated colorLogic !";
+	adv.setAttribute("class","colorLogic_disclaimer");
+	self.dom.appendChild(adv);
+}
 function simpleOnlyConditionalDisplay(self) {
 	self.dom.classList.add('simpleOnly');
 }
@@ -394,6 +378,7 @@ function ComponentSlider(config){
 	self.dom = document.createElement("div");
 	self.dom.classList.add('not_in_play_mode');
 	if(config.advanced) advancedConditionalDisplay(self);
+	if(config.colorLogic) colorLogicConditionalDisplay(self);
 	if(config.simpleOnly) simpleOnlyConditionalDisplay(self);
 	const label = _createLabel(config.label);
 	self.dom.appendChild(label);

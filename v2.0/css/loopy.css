@@ -272,13 +272,24 @@ div[big=yes] .play_button_label{
 {
 	display: none;
 }
-.adv{
+.adv, .colorLogic,
+.advanced .adv.colorLogic
+{
 	display: none;
 }
-.advanced .adv{
+.advanced .adv,
+.advanced.colorLogicMode .adv.colorLogic
+{
 	display: block;
 }
-.simple .adv.active{
+.adv_disclaimer, .colorLogic_disclaimer {
+	display: none;
+	color: #b84;
+	font-size: 80%;
+}
+.simple .adv.active,
+.colorAestheticMode .adv.colorLogic.active
+{
 	display: block;
 	border: 1px dashed #b84;
 	background-image: linear-gradient(to bottom,#fed 0,#fed 20px,#ddd 20px);
@@ -286,12 +297,14 @@ div[big=yes] .play_button_label{
 	padding: 8px;
 	padding-top: 2px;
 }
-.adv_disclaimer {
-	display: none;
-	color: #b84;
-	font-size: 80%;
+.colorAestheticMode .adv.colorLogic.active {
+	border: 1px dashed #b44;
+	background: #fdd; /*linear-gradient(to bottom,#fdd 0,#fdd 20px,#ddd 20px);*/
 }
-.simple .adv.active>.adv_disclaimer{display: block;}
+.colorLogic_disclaimer {color: #b44;}
+.simple .adv.active>.adv_disclaimer,
+.colorAestheticMode .adv.colorLogic.active>.colorLogic_disclaimer
+{display: block;}
 
 /**********
 

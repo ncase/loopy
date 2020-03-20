@@ -262,16 +262,10 @@ function Model(loopy){
 			// 0 - id
 			// 1 - x
 			// 2 - y
-			// 3 - init value
-			// 4 - label
-			// 5 - hue
 			const persist = [
 				node.id,
 				Math.round(node.x),
 				Math.round(node.y),
-				node.init,
-				encodeURIComponent(encodeURIComponent(node.label)),
-				node.hue,
 			];
 			injectedPersistProps(persist, node, objTypeToTypeIndex("node"));
 			nodes.push(persist);
@@ -350,9 +344,6 @@ function Model(loopy){
 				id: node[0],
 				x: node[1],
 				y: node[2],
-				init: node[3],
-				label: decodeURIComponent(node[4]),
-				hue: node[5],
 			};
 			injectedRestoreProps(node,config,objTypeToTypeIndex("node"));
 			self.addNode(config);
