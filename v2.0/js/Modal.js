@@ -98,7 +98,7 @@ function Modal(loopy){
 			height: page.height-50
 		}));
 		page.onshow = (opt)=>{
-			page.dom.querySelector("iframe").src = `pages/doc/?${opt}`;
+			page.dom.querySelector("iframe").src = `pages/doc.html?${opt}`;
 		};
 		self.addPage("doc", page);
 	})();
