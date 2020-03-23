@@ -46,7 +46,7 @@
         if(doc.status>=400) doc = await fetch(`doc/${context[0]}.md`);
         if(doc.status>=400) doc = await fetch(`doc/default.md`);
         const rawMD = await doc.text();
-        document.getElementById('doc').innerHTML = marked(rawMD,{});
+        document.getElementById('doc').innerHTML = cleaning(marked(rawMD,{}));
         const targetParts = [
             [context[0].toLowerCase(),context[0],""],
             [context[1],context[1].toLowerCase(),""],
@@ -65,6 +65,11 @@
             const found = document.getElementById(target);
             if(!!found) return location.hash = target;
         }
+    }
+    function cleaning(strHtml) {
+        strHtml.replace(/<iframe[^>]*(width=[^ ]+)[ >]/g,(full,catched)=>full.replace(catched,''));
+        strHtml.replace(/<iframe[^>]*(height=[^ ]+)[ >]/g,(full,catched)=>full.replace(catched,''));
+        return strHtml;
     }
     main();
 </script>

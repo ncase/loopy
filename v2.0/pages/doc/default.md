@@ -39,12 +39,16 @@ Donec a dui eu leo efficitur blandit. Vivamus egestas viverra odio, eu faucibus 
 
 Quisque iaculis ligula nec metus fermentum tincidunt. Fusce vel nisi vel dui viverra egestas. Maecenas pretium, velit non consectetur pretium, arcu sem aliquet mauris, et tempus neque lacus lobortis turpis. Nullam id sodales augue. Mauris sit amet vulputate justo. Sed quis ultrices lectus, sed tempus nisl. Mauris viverra velit quis leo dapibus, a tristique ex iaculis. Mauris at bibendum magna, id porttitor leo. Vestibulum in ex commodo, sodales neque in, aliquet metus.
 
+<hr id="choice_0"/>
+
 # Node
 
 Proin ex sem, vehicula vitae purus ac, viverra rutrum felis. Fusce vel dolor et tortor pharetra fringilla. Vestibulum vulputate tellus et diam cursus dignissim. Phasellus tempus vulputate metus sed egestas. In hac habitasse platea dictumst. Nullam id rutrum libero. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vivamus aliquam ipsum malesuada consequat bibendum. Quisque arcu magna, consequat cursus sapien nec, vehicula dignissim velit. Nullam vitae semper lectus. Nullam faucibus laoreet turpis in molestie.
 
 Curabitur placerat justo a ultricies rutrum. Praesent mattis tristique sodales. Ut et ullamcorper massa. Proin tincidunt nunc ut vulputate rhoncus. Ut lacinia interdum aliquet. Nulla eget enim non dui elementum rhoncus. Mauris dictum est at enim aliquam lacinia. Morbi erat risus, sagittis congue nibh at, ultricies porttitor lacus. Ut consequat, nulla vitae aliquam dignissim, velit erat dictum turpis, id aliquet mi quam nec turpis. Mauris venenatis viverra fermentum. Mauris pharetra mattis felis, sed facilisis diam bibendum eget. 
 
+<hr id="choice_1"/>
 
+<iframe width="500" height="440" style="border: 0;" src="http://localhost:63342/loopy/v2.0/?embed=1&signal=[1,1]&data=[[[1,718,355,1,%22something%22,4,1,0,0,0,0],[2,720,514,1,%22something%2520else%22,5,1,0,0,0,0]],[[2,1,94,-1,0,0,-1,-1,%22%22,0],[1,2,89,1,0,0,-1,-1,%22%22,0]],[[924,443,%22need%2520ideas%2520on%2520what%2520to%250Asimulate%253F%2520how%2520about%253A%250A%250A%25E3%2583%25BBtechnology%250A%25E3%2583%25BBenvironment%250A%25E3%2583%25BBeconomics%250A%25E3%2583%25BBbusiness%250A%25E3%2583%25BBpolitics%250A%25E3%2583%25BBculture%250A%25E3%2583%25BBpsychology%250A%250Aor%2520better%2520yet%252C%2520a%250A*combination*%2520of%250Athose%2520systems.%250Ahappy%2520modeling!%22,0,-1]],[2,1,0,0,0]%5D"></iframe>
 
 

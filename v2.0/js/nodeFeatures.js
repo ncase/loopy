@@ -1,5 +1,13 @@
 // Node features
-
+function updateNodeSize (self,v){
+    // Node size
+    const selectedNode = self.page.target;
+    if(selectedNode.size===5) selectedNode.radius=1.2*Node.DEFAULT_RADIUS;
+    if(selectedNode.size===100) selectedNode.radius=1.5*Node.DEFAULT_RADIUS;
+    if(selectedNode.size===1) selectedNode.radius=Node.DEFAULT_RADIUS;
+    if(selectedNode.size<1) selectedNode.radius=0.5*Node.DEFAULT_RADIUS;
+    if(!selectedNode.label) selectedNode.radius=0.1*Node.DEFAULT_RADIUS;
+}
 injectProperty("node", "label",{
     defaultValue:"?",
     immutableDefault:true,
@@ -10,7 +18,8 @@ injectProperty("node", "label",{
     },
     sideBar:{
         index: 1,
-        label: "Name :"
+        label: "Name :",
+        oninput: updateNodeSize,
     }
 });
 injectProperty("node", "hue",{
@@ -36,6 +45,7 @@ injectProperty("node", "size",{
             cases[100] ="Size : huge → x100 capacity";
             return cases[parseFloat(v)];
         },
+        oninput: updateNodeSize,
         advanced: true
     }
 });
@@ -55,8 +65,9 @@ injectProperty("node", "overflow",{
     sideBar:{
         index: 5,
         options: [ 0, 0.1, 0.2, 0.4, 0.8, 1.6, 3.2, 6.4],
-        label: "Positive overflow threshold :",
-        advanced: true
+        label: "Overflow threshold :",
+        advanced: true,
+        combineWithNext:true
     }
 });
 injectProperty("node", "underflow",{

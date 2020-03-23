@@ -194,6 +194,14 @@ div[big=yes] .play_button_label{
 	left:-25px;
 	margin: 10px 0;
 }
+#sidebar .combineWithNext{
+	margin: 0;
+}
+#sidebar .combineWithNext+div .component_label,
+#sidebar .combineWithNext+div .docLink{
+display: none
+}
+
 .component_input{
 	border: none;
 	
@@ -237,6 +245,8 @@ div[big=yes] .play_button_label{
 	width: 15px;
 	height: 10px;
 }
+.combineWithNext .component_slider_graphic{top: 12px;}
+.combineWithNext .component_slider_pointer{top: 0px;}
 .component_label{
 	margin-bottom: 5px;
 }
@@ -316,6 +326,8 @@ MODAL
 	font-size: 70%;
 	text-decoration: none;
 	cursor: pointer;
+	padding: 10px 20px;
+	margin: -10px -20px;
 }
 .docLink:hover{transform: scale(2)}
 

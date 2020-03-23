@@ -82,7 +82,7 @@ function injectPropsLabelInSideBar(page,typeIndex){
         const feat = EDIT_MODEL[typeIndex][i];
         const component = page.getComponent(feat.name);
         if(parseInt(typeIndex)===3){ //if loopy/global, init
-            if(feat.oninput) feat.oninput(page.target[feat.name]);
+            if(feat.oninput) feat.oninput(page.target, page.target[feat.name]);
             component.show();
         }
 
@@ -110,6 +110,9 @@ function injectedRestoreProps(srcArray,targetConfig,typeIndex) {
         if(typeof targetConfig[PERSIST_MODEL[typeIndex][i].name] !== "undefined" && parseInt(typeIndex)!==3) throw "collision"; // except for loopy globals
         if(typeof srcArray[i] !== "undefined" && srcArray[i] !== null && srcArray[i] !== PERSIST_MODEL[typeIndex][i].defaultValue)
             targetConfig[PERSIST_MODEL[typeIndex][i].name] = PERSIST_MODEL[typeIndex][i].deserializeFunc( srcArray[i] );
+    }
+    for(let i in EDIT_MODEL[typeIndex]) if(EDIT_MODEL[typeIndex].hasOwnProperty(i)){
+        if(EDIT_MODEL[typeIndex][i].oninput) EDIT_MODEL[typeIndex][i].oninput({page:{target:targetConfig}},targetConfig[i]);
     }
 }
 const PERSIST_MODEL = [];

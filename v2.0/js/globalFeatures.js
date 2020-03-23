@@ -1,5 +1,5 @@
 function factorySwitchMode(disabledClass,activatedClass){
-    return function(value){
+    return function(self, value){
         let apply;
         if(value) apply = function(page){
             page.dom.classList.add(activatedClass);

@@ -224,6 +224,9 @@ function ComponentInput(config){
 	input.oninput = function(){
 		self.setValue(input.value);
 		updateClassActiveDefault(self,config.defaultValue);
+		if(config.oninput){
+			config.oninput(self,self.getValue());
+		}
 	};
 	self.dom.appendChild(label);
 	self.dom.appendChild(input);
@@ -281,13 +284,14 @@ function ComponentSlider(config){
 	// DOM: label + slider
 	self.dom = document.createElement("div");
 	self.dom.classList.add('not_in_play_mode');
+	if(config.combineWithNext) self.dom.classList.add('combineWithNext');;
 	if(config.advanced) advancedConditionalDisplay(self);
 	if(config.colorLogic) colorLogicConditionalDisplay(self);
 	if(config.simpleOnly) simpleOnlyConditionalDisplay(self);
 	const label = _createLabel(config.label);
 	self.dom.appendChild(label);
 	const sliderDOM = document.createElement("div");
-	sliderDOM.setAttribute("class","component_slider");
+	sliderDOM.classList.add("component_slider");
 	self.dom.appendChild(sliderDOM);
 
 	// Slider DOM: graphic + pointer
@@ -295,11 +299,29 @@ function ComponentSlider(config){
 	slider.draggable = false;
 	slider.src = "css/sliders/"+config.bg+".png";
 	slider.setAttribute("class","component_slider_graphic");
+	sliderDOM.appendChild(slider);
+	//TODO: implement the following
+	if(config.dynamicUI){
+		if(config.dynamicUI.mergedPointer){
+			//addClass to add space for pointer in following images
+		}
+		if(config.dynamicUI.left){
+			//addLeftImage
+		}
+		if(config.dynamicUI.right){
+			//addRightImage
+		}
+		if(config.dynamicUI.active){
+			//addActiveImage
+		}
+		if(config.dynamicUI.hover){
+			//addHoverImage
+		}
+	}
 	const pointer = new Image();
 	pointer.draggable = false;
-	pointer.src = "css/sliders/slider_pointer.png";
+	pointer.src = `css/sliders/slider_pointer_${config.combineWithNext?'down':'up'}.png`;
 	pointer.setAttribute("class","component_slider_pointer");
-	sliderDOM.appendChild(slider);
 	sliderDOM.appendChild(pointer);
 	const movePointer = function(){
 		const value = self.getValue();
@@ -334,7 +356,7 @@ function ComponentSlider(config){
 		// Callback! (if any)
 		injectPropsUpdateDefault(self,option);
 		if(config.oninput){
-			config.oninput(option);
+			config.oninput(self,option);
 		}
 
 		// Move pointer there.

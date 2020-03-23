@@ -100,27 +100,26 @@ function Node(model, config){
 	// SIGNALS ///////////////////////////
 	//////////////////////////////////////
 
-	//let shiftIndex = 0;
 	self.sendSignal = function(signal){
 		let myEdges = self.model.getEdgesByStartNode(self);
-		//myEdges = _shiftArray(myEdges, shiftIndex);
-		//shiftIndex = (shiftIndex+1)%myEdges.length;
 		for(let i=0; i<myEdges.length; i++){
 			myEdges[i].addSignal(signal);
 		}
 	};
 
 	self.takeSignal = function(signal){
+		if(loopy.colorLogic && loopy.greenLife && signal.color===3) self.live();
+		if(loopy.colorLogic && loopy.redKill && signal.color===0) self.die();
 		if(self.died) return;
 		if(!self.deltaPool) self.deltaPool={"-1":0,0:0,1:0,2:0,3:0,4:0,5:0,6:0}; // Edge.COLORS
 
 		if(loopy.colorLogic===1 && !self.aggregate) self.aggregate = [];
 
 		if(loopy.colorLogic===1){
-			if(self.hue === signal.color) self.value += signal.delta;
-		}else self.value += signal.delta;
-		if(loopy.colorLogic===1)	self.deltaPool[signal.color] += signal.delta;
-		else self.deltaPool[self.hue] += signal.delta;
+			if(self.hue === signal.color) self.value += signal.delta/self.size;
+		}else self.value += signal.delta/self.size;
+		if(loopy.colorLogic===1)	self.deltaPool[signal.color] += signal.delta/self.size;
+		else self.deltaPool[self.hue] += signal.delta/self.size;
 		self.lastSignalAge = signal.age;
 		self.reseted = false;
 
@@ -136,8 +135,8 @@ function Node(model, config){
 		}
 		else if(self.aggregate) return;
 		if(loopy.colorLogic===1 && self.hue === signal.color){
-			self.valueBeforeAggregationPool = self.value - signal.delta;
-		}else self.valueBeforeAggregationPool = self.value - signal.delta;
+			self.valueBeforeAggregationPool = self.value - signal.delta/self.size;
+		}else self.valueBeforeAggregationPool = self.value - signal.delta/self.size;
 
 		const signalSpeedRatio = 8 / Math.pow(2,self.loopy.signalSpeed);
 
@@ -146,7 +145,7 @@ function Node(model, config){
 				let deltaPool;
 				if(loopy.colorLogic===1)	deltaPool = self.deltaPool[signal.color];
 				else deltaPool = self.deltaPool[self.hue];
-				const newSignal = {delta:deltaPool,age:self.lastSignalAge,color:signal.color};
+				const newSignal = {delta:deltaPool*self.size,age:self.lastSignalAge,color:signal.color};
 				// Only propagate beyond threshold
 				if(!self.transmissionBehavior) self.sendSignal(newSignal);
 				else if (self.value < 0 && self.transmissionBehavior===2) self.die();
@@ -285,18 +284,21 @@ function Node(model, config){
 		ctx.fill();
 
 		// Text!
-		let fontsize = 40;
-		ctx.font = "normal "+fontsize+"px sans-serif";
-		ctx.textAlign = "center";
-		ctx.textBaseline = "middle";
-		ctx.fillStyle = "#000";
-		let width = ctx.measureText(self.label).width;
-		while(width > r*2 - 30){ // -30 for buffer. HACK: HARD-CODED.
-			fontsize -= 1;
+		if(self.label){
+			let fontsize = 40;
 			ctx.font = "normal "+fontsize+"px sans-serif";
-			width = ctx.measureText(self.label).width;
+			ctx.textAlign = "center";
+			ctx.textBaseline = "middle";
+			ctx.fillStyle = "#000";
+			let width = ctx.measureText(self.label).width;
+
+			while(width > r*1.5){// - 30){ // -30 for buffer. HACK: HARD-CODED.
+				fontsize -= 1;
+				ctx.font = "normal "+fontsize+"px sans-serif";
+				width = ctx.measureText(self.label).width;
+			}
+			ctx.fillText(self.label, 0, 0);
 		}
-		ctx.fillText(self.label, 0, 0);
 
 		// WOBBLE CONTROLS
 		const cl = 40;
@@ -356,15 +358,16 @@ function Node(model, config){
 	//////////////////////////////////////
 
 	self.die = function(){
+		if(!self.died && loopy.colorLogic && loopy.redKill) self.sendSignal({delta:-.33,color:0});
 		self.died=true;
-		self.oldhue = self.hue;
+		if(self.hue!==6) self.oldhue = self.hue;
 		self.hue=6;
-		self.value = 0;
+		//self.value = 0;
 		publish("died",[self]);
 	};
 	self.live = function(){
 		self.died=false;
-		self.hue = self.oldhue || self.hue;
+		self.hue = typeof self.oldhue !== 'undefined'?self.oldhue:self.hue;
 		publish("live",[self]);
 	};
 
