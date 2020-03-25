@@ -399,6 +399,8 @@ function Edge(model, config){
 	// Draw
 	self.draw = function(ctx){
 
+
+
 		// Width & Color
 		if(self.edgeTargetColor===-3) {
 			ctx.lineWidth = 4;
@@ -411,62 +413,66 @@ function Edge(model, config){
 		else gradient.addColorStop(1,Edge.COLORS[self.edgeTargetColor]);
 		ctx.strokeStyle = gradient;
 
-		// Translate & Rotate!
-		ctx.save();
-		ctx.translate(fx, fy);
-		ctx.rotate(a);
+			// Translate & Rotate!
+			ctx.save();
+			ctx.translate(fx, fy);
+			ctx.rotate(a);
 
-		// Highlight!
-		if(self.loopy.sidebar.currentPage.target === self){
+		if(self.loopy.mode!==Loopy.MODE_PLAY || (
+			self.from.label !== "autoplay"
+			&& !self.from.died && !self.to.died
+		)){
+			// Highlight!
+			if(self.loopy.sidebar.currentPage.target === self){
+				ctx.save();
+				ctx.translate(lx, ly);
+				ctx.rotate(-a);
+				ctx.beginPath();
+				ctx.arc(0, 5, 60, 0, Math.TAU, false);
+				ctx.fillStyle = HIGHLIGHT_COLOR;
+				ctx.fill();
+				ctx.restore();
+			}
+
+			// Arc it!
+			ctx.beginPath();
+			if(self.arc>0){
+				ctx.arc(w/2, y2, r, startAngle, end, false);
+			}else{
+				ctx.arc(w/2, y2, r, -startAngle, end, true);
+			}
+
+			// Arrow HEAD!
+			ctx.save();
+			ctx.translate(ax, ay);
+			if(self.arc<0) ctx.scale(-1,-1);
+			ctx.rotate(aa);
+			ctx.moveTo(-arrowLength, -arrowLength);
+			ctx.lineTo(0,0);
+			ctx.lineTo(-arrowLength, arrowLength);
+			if(self.edgeTargetColor===-3) {
+				const size = 1;
+				const distance = 12
+				ctx.moveTo((-arrowLength +distance) * size, -arrowLength * size);
+				ctx.lineTo(distance,0);
+				ctx.lineTo((-arrowLength +distance) * size, arrowLength * size);
+			}
+			ctx.restore();
+
+			// Stroke!
+			ctx.stroke();
+
+			// Draw label
+			ctx.font = "100 60px sans-serif";
+			ctx.textAlign = "center";
+			ctx.textBaseline = "middle";
 			ctx.save();
 			ctx.translate(lx, ly);
 			ctx.rotate(-a);
-			ctx.beginPath();
-			ctx.arc(0, 5, 60, 0, Math.TAU, false);
-			ctx.fillStyle = HIGHLIGHT_COLOR;
-			ctx.fill();
+			ctx.fillStyle = "#999";
+			ctx.fillText(self.label, 0, 0);
 			ctx.restore();
 		}
-
-		// Arc it!
-		ctx.beginPath();
-		if(self.arc>0){
-			ctx.arc(w/2, y2, r, startAngle, end, false);
-		}else{
-			ctx.arc(w/2, y2, r, -startAngle, end, true);
-		}
-
-		// Arrow HEAD!
-		ctx.save();
-		ctx.translate(ax, ay);
-		if(self.arc<0) ctx.scale(-1,-1);
-		ctx.rotate(aa);
-		ctx.moveTo(-arrowLength, -arrowLength);
-		ctx.lineTo(0,0);
-		ctx.lineTo(-arrowLength, arrowLength);
-		if(self.edgeTargetColor===-3) {
-			const size = 1;
-			const distance = 12
-			ctx.moveTo((-arrowLength +distance) * size, -arrowLength * size);
-			ctx.lineTo(distance,0);
-			ctx.lineTo((-arrowLength +distance) * size, arrowLength * size);
-		}
-		ctx.restore();
-
-		// Stroke!
-		ctx.stroke();
-
-		// Draw label
-		ctx.font = "100 60px sans-serif";
-		ctx.textAlign = "center";
-		ctx.textBaseline = "middle";
-		ctx.save();
-		ctx.translate(lx, ly);
-		ctx.rotate(-a);
-		ctx.fillStyle = "#999";
-		ctx.fillText(self.label, 0, 0);
-		ctx.restore();
-
 		// DRAW SIGNALS
 		self.drawSignals(ctx);
 

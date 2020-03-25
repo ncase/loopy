@@ -208,6 +208,8 @@ function Node(model, config){
 	let _circleRadius = 0;
 	self.draw = function(ctx){
 
+		if(self.loopy.mode===Loopy.MODE_PLAY && self.label === "autoplay") return;
+
 		// Retina
 		const x = self.x*2;
 		const y = self.y*2;
