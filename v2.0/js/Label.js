@@ -3,7 +3,15 @@
 LABEL!
 
 **********************************/
-
+Label.COLORS = {
+	"-1":"#000000", // black
+	0: "#880000", // red
+	1: "#885533", // orange
+	2: "#888800", // yellow
+	3: "#558800", // green
+	4: "#446688", // blue
+	5: "#664488", // purple
+};
 Label.FONTSIZE = 40;
 
 function Label(model, config){
@@ -27,6 +35,7 @@ function Label(model, config){
 	// Draw
 	self.draw = function(ctx){
 
+		if(self.visibility===1 && self.loopy.mode===Loopy.MODE_PLAY) return;
 		// Retina
 		const x = self.x*2;
 		const y = self.y*2;
@@ -51,7 +60,7 @@ function Label(model, config){
 		ctx.font = "100 "+Label.FONTSIZE+"px sans-serif";
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
-		ctx.fillStyle = "#000";
+		ctx.fillStyle = Label.COLORS[self.textColor];
 
 		// ugh new lines are a PAIN.
 		const lines = self.breakText();

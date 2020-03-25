@@ -319,11 +319,14 @@ function _shiftArray(array, shiftIndex){
 }
 
 const RECURRENT_LZMA_SCHEME = "XQAAAAISAAAAAAAAAAAt";
-
+function setCharAt(str,index,chr) {
+	if(index > str.length-1) return str;
+	return str.substr(0,index) + chr + str.substr(index+1);
+}
 function urlToStdB64 (urlStr) {
 	const parts = urlStr.split("/");
 	let b64 = RECURRENT_LZMA_SCHEME;
-	for(let i = 0; i< parts[0].length;i+=2) b64[parseInt(parts[0][i])] = parts[0][i+1];
+	for(let i = 0; i< parts[0].length;i+=2) b64 = setCharAt(b64,parseInt(parts[0][i]),parts[0][i+1]);
 	b64 += parts[1];
 	return b64.split('_').join('+').split('-').join('/').split('.').join('=');
 }

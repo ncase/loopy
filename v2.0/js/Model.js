@@ -327,7 +327,6 @@ function Model(loopy){
 
 	self.deserialize = function(dataString){
 		if(dataString[0]!=='[') dataString = LZMA.decompress(base64DecToArr(urlToStdB64(dataString)).map((v)=>v>128?v-256:v));
-
 		self.clear();
 
 		const data = JSON.parse(dataString);
