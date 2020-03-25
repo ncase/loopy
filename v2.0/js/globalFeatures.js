@@ -80,25 +80,3 @@ injectProperty("loopy", "colorLogic",{
         oninput: factorySwitchMode("colorAestheticMode","colorLogicMode")
     }
 });
-injectProperty("loopy", "redKill",{
-    defaultValue:0,
-    persist:3,
-    sideBar:{
-        index: 3,
-        options: [ 0, 1],
-        labelFunc: (v)=>v?"Red : propagate death":"Red : is a normal color",
-        advanced: true,
-        colorLogic:true
-    }
-});
-injectProperty("loopy", "greenLife",{
-    defaultValue:0,
-    persist:4,
-    sideBar:{
-        index: 4,
-        options: [ 0, 1],
-        labelFunc: (v)=>v?"Green : back to life signal":"Green : is a normal color",
-        advanced: true,
-        colorLogic:true
-    }
-});

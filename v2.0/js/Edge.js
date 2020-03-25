@@ -4,6 +4,7 @@ EDGE!
 
 **********************************/
 Edge.COLORS = {
+	"-3":"#000000", // black
 	"-1":"#666666", // grey
 	0: "#EA3E3E", // red
 	1: "#EA9D51", // orange
@@ -187,9 +188,10 @@ function Edge(model, config){
 
 			// Also, tween the scaleY, flipping, IF delta change
 			if(
-				(self.signBehavior===1 && self.strength>0 && signal.delta<0)
-				|| (self.signBehavior===1 && self.strength<0 && signal.delta>0)
-				|| (self.strength<0 && self.signBehavior===0)
+				(loopy.loopyMode===0 && self.strength<0)
+				|| (loopy.loopyMode===1 && self.signBehavior===1)
+				|| (loopy.loopyMode===1 && self.signBehavior===4 && signal.delta>0)
+				|| (loopy.loopyMode===1 && self.signBehavior===5 && signal.delta<0)
 			){
 				// sin/cos-animate it for niceness.
 				const flip = Math.cos(blend*Math.PI); // (0,1) -> (1,-1)
@@ -203,17 +205,10 @@ function Edge(model, config){
 				ctx.globalAlpha = 0.25;
 			}
 
-			// Draw an arrow
-			ctx.beginPath();
-			ctx.moveTo(-2,0);
-			ctx.lineTo(0,-2);
-			ctx.lineTo(2,0);
-			ctx.lineTo(1,0);
-			ctx.lineTo(1,2);
-			ctx.lineTo(-1,2);
-			ctx.lineTo(-1,0);
-			ctx.fillStyle = signalColor;
-			ctx.fill();
+			if(signal.vital && signal.delta<0) drawDeath(ctx); // draw death
+			else if(signal.vital && signal.delta>0) drawLife(ctx); // draw life
+			else if(!signal.vital && self.quantitative===1) drawAmountArrow(ctx, signalColor); // draw weight
+			else drawTendencyArrow(ctx, signalColor);
 
 			// Restore
 			ctx.restore();
@@ -405,10 +400,15 @@ function Edge(model, config){
 	self.draw = function(ctx){
 
 		// Width & Color
-		ctx.lineWidth = 4*Math.abs(self.strength)-2;
+		if(self.edgeTargetColor===-3) {
+			ctx.lineWidth = 4;
+		} else ctx.lineWidth = 4*Math.abs(self.strength)-2;
 		const gradient = ctx.createLinearGradient(0,0,ax,ay);
 		gradient.addColorStop(0.4,Edge.COLORS[self.edgeFilterColor]);
-		gradient.addColorStop(1,Edge.COLORS[self.edgeTargetColor===-1?self.edgeFilterColor:self.edgeTargetColor]);
+		if(self.edgeTargetColor===-2) {
+			for(let x = 0;x<6;x++) gradient.addColorStop(0.5+x/10,Edge.COLORS[x]);
+		} else if(self.edgeTargetColor===-1) gradient.addColorStop(1,Edge.COLORS[self.edgeFilterColor]);
+		else gradient.addColorStop(1,Edge.COLORS[self.edgeTargetColor]);
 		ctx.strokeStyle = gradient;
 
 		// Translate & Rotate!
@@ -444,6 +444,13 @@ function Edge(model, config){
 		ctx.moveTo(-arrowLength, -arrowLength);
 		ctx.lineTo(0,0);
 		ctx.lineTo(-arrowLength, arrowLength);
+		if(self.edgeTargetColor===-3) {
+			const size = 1;
+			const distance = 12
+			ctx.moveTo((-arrowLength +distance) * size, -arrowLength * size);
+			ctx.lineTo(distance,0);
+			ctx.lineTo((-arrowLength +distance) * size, arrowLength * size);
+		}
 		ctx.restore();
 
 		// Stroke!
@@ -556,6 +563,80 @@ function Edge(model, config){
 			bottom: bottom
 		};
 	};
+}
+function drawTendencyArrow(ctx, signalColor){
+	ctx.beginPath();
+	ctx.moveTo(-2,0);
+	ctx.lineTo(0,-2);
+	ctx.lineTo(2,0);
+	ctx.lineTo(1,0);
+	ctx.lineTo(1,2);
+	ctx.lineTo(0,1);
+	ctx.lineTo(-1,2);
+	ctx.lineTo(-1,0);
+	ctx.fillStyle = signalColor;
+	ctx.fill();
+}
+function drawAmountArrow(ctx, signalColor){
+	ctx.beginPath();
+	ctx.moveTo(-2,0);
+	ctx.lineTo(0,-2);
+	ctx.lineTo(2,0);
+	ctx.lineTo(1,0);
+	ctx.lineTo(1,2);
+	ctx.lineTo(-1,2);
+	ctx.lineTo(-1,0);
+	ctx.fillStyle = signalColor;
+	ctx.fill();
+}
+function drawDeath(ctx){
+	ctx.beginPath();
+	ctx.moveTo(0.75,-2);
+	ctx.lineTo(1.25,-1.5);
+	ctx.lineTo(1.25,-0.75);
+	ctx.lineTo(0.75,-0.5);
+	ctx.lineTo(0.75,0.25);
+	ctx.lineTo(0,0.5);
+	ctx.lineTo(-0.75,0.25);
+	ctx.lineTo(-0.75,-0.5);
+	ctx.lineTo(-1.25,-0.75);
+	ctx.lineTo(-1.25,-1.5);
+	ctx.lineTo(-0.75,-2);
+	ctx.fillStyle = '#000000';
+	ctx.fill();
 
+	const eyesShiftX = -0.1;
+	const eyesShiftY = -0.25;
+	ctx.beginPath();
+	ctx.moveTo(-eyesShiftX-1,eyesShiftY-1);
+	ctx.lineTo(-eyesShiftX-0.75,eyesShiftY-1.25);
+	ctx.lineTo(-eyesShiftX-0.5,eyesShiftY-1);
+	ctx.lineTo(-eyesShiftX-0.75,eyesShiftY-0.75);
+	ctx.moveTo(eyesShiftX+1,eyesShiftY-1);
+	ctx.lineTo(eyesShiftX+0.75,eyesShiftY-1.25);
+	ctx.lineTo(eyesShiftX+0.5,eyesShiftY-1);
+	ctx.lineTo(eyesShiftX+0.75,eyesShiftY-0.75);
+	ctx.fillStyle = '#FFFFFF';
+	ctx.fill();
 
+	ctx.beginPath();
+	const skullDistance = 0.5;
+	const boneSize = 1.5;
+	ctx.moveTo(-boneSize,skullDistance);
+	ctx.lineTo(boneSize,boneSize+skullDistance);
+	ctx.moveTo(-boneSize,boneSize+skullDistance);
+	ctx.lineTo(boneSize,skullDistance);
+	ctx.lineWidth = 0.4;
+	ctx.strokeStyle = '#000000';
+	ctx.stroke();
+
+}
+function drawLife(ctx){
+	ctx.beginPath();
+	ctx.moveTo(-2,0);
+	ctx.lineTo(0,-2);
+	ctx.lineTo(2,0);
+	ctx.lineTo(0,2);
+	ctx.fillStyle = '#009900';
+	ctx.fill();
 }

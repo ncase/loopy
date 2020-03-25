@@ -24,7 +24,6 @@ injectProperty("label", "text",{
     defaultValue:"...",
     persist:{
         index:2,
-        serializeFunc:(v)=>encodeURIComponent(encodeURIComponent(v)),
         deserializeFunc:decodeURIComponent
     },
     sideBar:{

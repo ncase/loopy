@@ -19,10 +19,11 @@ injectProperty("edge", "signBehavior",{
         labelFunc: (v,obj)=>`<sup title="Relationship state in simple mode">${obj.strength>0?'+':'–'} </sup>Valency : ${[
             "preserved",
             "inverted",
-            "allow only negative",
+            "allow only negative",// remove (invert can do it)
             "allow only positive",
-            "convert to negative",
+            "convert to negative", // remove (invert can do it)
             "convert to positive",
+            // random 50% filter
         ][v]}`,
         advanced: true
     }
@@ -32,24 +33,44 @@ injectProperty("edge", "quantitative",{
     persist:9,
     sideBar:{
         index: 3,
-        options: [0, 1],
+        options: [0, 1, 2],
         labelFunc: (v)=>[
             "Signal type : tendency",
             "Signal type : quantity",
+            "Signal type : vital change"
         ][v],
         advanced: true
     }
 });
+
+injectProperty("edge", "filter",{
+    defaultValue:0,
+    persist:10,
+    sideBar:{
+        index: 4,
+        options: [0, 1, 2, 3, 4, 5],
+        labelFunc: (v)=>[
+            "Filter : allow any signal",
+            "Filter : allow arrow signal",
+            "Filter : allow death signal",
+            "Filter : allow life signal",
+            "Filter : allow death & life signal",
+            "Filter : randomly allow signal",
+        ][v],
+        advanced: true
+    }
+});
+
 const COLORS_NAME = ["red", "orange", "yellow", "green", "blue", "purple"];
 injectProperty("edge", "edgeFilterColor",{
     defaultValue:-1,
     persist:6,
     sideBar:{
-        index: 4,
+        index: 5,
         options: [-1,0,1,2,3,4,5],
         labelFunc: (v)=>{
             if(loopy.colorLogic===1){
-                if(parseInt(v)=== -1) return "Color filter : all signal pass";
+                if(parseInt(v)=== -1) return "Color filter : all color signal pass";
                 else return `Color filter : ${COLORS_NAME[v]} signal only`;
             } else return "Start color : ";
         },
@@ -60,15 +81,19 @@ injectProperty("edge", "edgeTargetColor",{
     defaultValue:-1,
     persist:7,
     sideBar:{
-        index: 5,
-        options: [-1,0,1,2,3,4,5],
+        index: 6,
+        options: [-1,0,1,2,3,4,5,-2,-3],
         labelFunc: (v)=>{
             if(loopy.colorLogic===1){
-                if(parseInt(v)=== -1) return "Color conversion : as is";
-                else return `Color conversion : to ${COLORS_NAME[v]}`;
+                if(parseInt(v)=== -1) return "Color conversion : none";
+                if(parseInt(v)=== -2) return "Color conversion : to random";
+                if(parseInt(v)=== -3) return "Signal color to node color";
+                return `Color conversion : to ${COLORS_NAME[v]}`;
+                // convert to random color (from target output allowed color) (colorLogic only)
+                // convert node to signal color (colorLogic only)
             } else{
                 if(parseInt(v)=== -1) return "End color : auto from start color";
-                else return `End color : ${COLORS_NAME[v]}`;
+                return `End color : ${COLORS_NAME[v]}`;
             }
         },
         advanced: true
@@ -78,7 +103,6 @@ injectProperty("edge", "customLabel",{
     defaultValue:"",
     persist:{
         index:8,
-        serializeFunc:(v)=>encodeURIComponent(encodeURIComponent(v)),
         deserializeFunc:decodeURIComponent
     },
     sideBar:{

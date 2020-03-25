@@ -108,6 +108,12 @@ function Model(loopy){
 			return(edge.from===startNode);
 		});
 	};
+	// Get all edges with start node
+	self.getEdgesByEndNode = function(endNode){
+		return self.edges.filter(function(edge){
+			return(edge.to===endNode);
+		});
+	};
 
 
 
@@ -316,13 +322,11 @@ function Model(loopy){
 
 		// Return as string!
 		let dataString = JSON.stringify(data);
-		dataString = dataString.replace(/"/gi, "%22"); // and ONLY URIENCODE THE QUOTES
-		dataString = dataString.substr(0, dataString.length-1) + "%5D";// also replace THE LAST CHARACTER
-		return dataString;
-
+		return stdB64ToUrl(base64EncArr(LZMA.compress(dataString,9).map((v)=>v<0?v+256:v)));
 	};
 
 	self.deserialize = function(dataString){
+		if(dataString[0]!=='[') dataString = LZMA.decompress(base64DecToArr(urlToStdB64(dataString)).map((v)=>v>128?v-256:v));
 
 		self.clear();
 

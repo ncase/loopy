@@ -13,7 +13,6 @@ injectProperty("node", "label",{
     immutableDefault:true,
     persist:{
         index:4,
-        serializeFunc:(v)=>encodeURIComponent(encodeURIComponent(v)),
         deserializeFunc:decodeURIComponent
     },
     sideBar:{
@@ -105,5 +104,16 @@ injectProperty("node", "explode",{
             return cases[parseInt(v)];
         },
         advanced: true
+    }
+});
+injectProperty("node", "foreignColor",{
+    defaultValue:0,
+    persist:11,
+    sideBar:{
+        index: 9,
+        options: [ 0, 1],
+        labelFunc: (v)=>`Foreign color signal : ${v?'drop':'transmit'}`,
+        advanced: true,
+        colorLogic:true
     }
 });

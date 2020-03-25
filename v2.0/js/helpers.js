@@ -318,4 +318,20 @@ function _shiftArray(array, shiftIndex){
 	return moveThisAround.concat(array);
 }
 
+const RECURRENT_LZMA_SCHEME = "XQAAAAISAAAAAAAAAAAt";
 
+function urlToStdB64 (urlStr) {
+	const parts = urlStr.split("/");
+	let b64 = RECURRENT_LZMA_SCHEME;
+	for(let i = 0; i< parts[0].length;i+=2) b64[parseInt(parts[0][i])] = parts[0][i+1];
+	b64 += parts[1];
+	return b64.split('_').join('+').split('-').join('/').split('.').join('=');
+}
+function stdB64ToUrl (b64){
+	b64 = b64.split('+').join('_').split('/').join('-').split('=').join('.');
+	let start = '';
+	for(let i =0; i<RECURRENT_LZMA_SCHEME.length; i++){
+		if(b64[i]!==RECURRENT_LZMA_SCHEME[i]) start+=`${i}${b64[i]}`;
+	}
+	return `${start}/${b64.substr(RECURRENT_LZMA_SCHEME.length)}`
+}
