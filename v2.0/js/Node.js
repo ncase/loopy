@@ -108,6 +108,7 @@ function Node(model, config){
 	};
 
 	self.takeSignal = function(signal){
+		if(loopy.colorLogic && self.foreignColor && signal.color!==self.hue) return; // drop signal
 		if(loopy.colorLogic && loopy.greenLife && signal.color===3) self.live();
 		if(loopy.colorLogic && loopy.redKill && signal.color===0) self.die();
 		if(self.died) return;
