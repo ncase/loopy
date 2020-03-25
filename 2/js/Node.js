@@ -109,44 +109,36 @@ function Node(model, config){
 
 	self.takeSignal = function(signal){
 		if(loopy.colorLogic && self.foreignColor && signal.color!==self.hue) return; // drop signal
-		if(loopy.colorLogic && loopy.greenLife && signal.color===3) self.live();
-		if(loopy.colorLogic && loopy.redKill && signal.color===0) self.die();
+		//if(loopy.colorLogic && loopy.greenLife && signal.color===3) self.live();
+		//if(loopy.colorLogic && loopy.redKill && signal.color===0) self.die();
 		if(self.died) return;
-		if(!self.deltaPool) self.deltaPool={"-1":0,0:0,1:0,2:0,3:0,4:0,5:0,6:0}; // Edge.COLORS
+		if(!self.deltaPool) self.deltaPool=0;
+		if(!self.aggregate) self.aggregate = 0;
 
-		if(loopy.colorLogic===1 && !self.aggregate) self.aggregate = [];
-
-		if(loopy.colorLogic===1){
-			if(self.hue === signal.color) self.value += signal.delta/self.size;
-		}else self.value += signal.delta/self.size;
-		if(loopy.colorLogic===1)	self.deltaPool[signal.color] += signal.delta/self.size;
-		else self.deltaPool[self.hue] += signal.delta/self.size;
+		if(self.hue === signal.color || loopy.colorLogic===0){
+			self.value += signal.delta/self.size;
+			self.deltaPool += signal.delta/self.size;
+			// Animation
+			// _offsetVel += 0.08 * (signal.delta/Math.abs(signal.delta));
+			if(signal.delta>0) _offsetVel -= 6 ;
+			if(signal.delta<0) _offsetVel += 6 ;
+			if(self.aggregate) return;
+		}
 		self.lastSignalAge = signal.age;
 		self.reseted = false;
 
-		// self.sendSignal(signal.delta*0.9); // PROPAGATE SLIGHTLY WEAKER
-
-		// Animation
-		// _offsetVel += 0.08 * (signal.delta/Math.abs(signal.delta));
-		if(signal.delta>0) _offsetVel -= 6 ;
-		if(signal.delta<0) _offsetVel += 6 ;
-
-		if(loopy.colorLogic===1) {
-			if(self.aggregate[signal.color]) return;
-		}
-		else if(self.aggregate) return;
-		if(loopy.colorLogic===1 && self.hue === signal.color){
+		if(loopy.colorLogic===0 || self.hue === signal.color){
 			self.valueBeforeAggregationPool = self.value - signal.delta/self.size;
-		}else self.valueBeforeAggregationPool = self.value - signal.delta/self.size;
+		}
+		if(self.hue !== signal.color && loopy.colorLogic===1){
+			const newSignal = {delta:signal.delta,age:signal.age,color:signal.color,vital:signal.vital};
+			self.sendSignal(newSignal);
+		}
 
 		const signalSpeedRatio = 8 / Math.pow(2,self.loopy.signalSpeed);
-
-		const aggregate = setTimeout(function () {
+		const aggregateFunc = () => {
 			if(self.loopy.mode===Loopy.MODE_PLAY && !self.reseted){
-				let deltaPool;
-				if(loopy.colorLogic===1)	deltaPool = self.deltaPool[signal.color];
-				else deltaPool = self.deltaPool[self.hue];
-				const newSignal = {delta:deltaPool*self.size,age:self.lastSignalAge,color:signal.color};
+				const newSignal = {delta:self.deltaPool*self.size,age:self.lastSignalAge,color:signal.color,vital:signal.vital};
 				// Only propagate beyond threshold
 				if(!self.transmissionBehavior) self.sendSignal(newSignal);
 				else if (self.value < 0 && self.transmissionBehavior===2) self.die();
@@ -157,18 +149,13 @@ function Node(model, config){
 				if(self.value<0) self.value = 0;
 				if(self.value>1) self.value = 1;
 			}
-			if(loopy.colorLogic===1){
-				self.deltaPool[signal.color]=0;
-				self.aggregate[signal.color]=false;
-			}
-			else {
-				self.aggregate=false;
-				self.deltaPool[self.hue]=0;
-			}
-		} ,1000 * self.aggregationLatency * signalSpeedRatio);
+			self.aggregate=false;
+			self.deltaPool=0;
+		};
 
-		if(loopy.colorLogic===1) self.aggregate[signal.color]=aggregate;
-		else self.aggregate = aggregate;
+		if(self.aggregationLatency){
+			self.aggregate = setTimeout( aggregateFunc,1000 * self.aggregationLatency * signalSpeedRatio);
+		} else aggregateFunc();
 	};
 
 
