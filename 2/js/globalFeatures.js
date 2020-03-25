@@ -14,7 +14,10 @@ function factorySwitchMode(disabledClass,activatedClass){
 }
 
 // Loopy global features
-
+/*injectProperty("loopy", "embed",{
+    defaultValue:0, // bool
+    persist:0, // reserved
+});*/
 injectProperty("loopy", "beforeAll",{
     sideBar:{
         index: 0,

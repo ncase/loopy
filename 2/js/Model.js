@@ -253,7 +253,7 @@ function Model(loopy){
 	// SERIALIZE & DE-SERIALIZE //
 	//////////////////////////////
 
-	self.serialize = function(){
+	self.serialize = function(embed, autoPlaySignal){
 
 		const data = [];
 		// 0 - nodes
@@ -315,7 +315,7 @@ function Model(loopy){
 
 		// META.
 		const persist = [
-			Node._UID,
+			embed?1:0,
 		];
 		injectedPersistProps(persist, loopy, objTypeToTypeIndex("loopy"));
 		data.push(persist);
@@ -375,7 +375,7 @@ function Model(loopy){
 
 		// META.
 		const importArray = typeof globalState === "object"?globalState:[globalState];
-		Node._UID = importArray[0];
+		loopy.embedded = loopy.embedded?1:importArray[0];
 		injectedRestoreProps(importArray,loopy,objTypeToTypeIndex("loopy"));
 	};
 

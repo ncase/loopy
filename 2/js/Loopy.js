@@ -55,10 +55,6 @@ function Loopy(config){
 	self.erase = new Eraser(self);
 	self.label = new Labeller(self);
 
-	// Play Controls
-	self.playbar = new PlayControls(self);
-	self.playbar.showPage("Editor"); // start here
-
 	// Modal
 	self.modal = new Modal(self);
 
@@ -115,6 +111,13 @@ function Loopy(config){
 			self.sidebar.dom.setAttribute("mode","play");
 			self.toolbar.dom.setAttribute("mode","play");
 			document.getElementById("canvasses").removeAttribute("cursor"); // TODO: EVENT BASED
+			const autoplayNodes = loopy.model.nodes.filter((n)=>n.label==="autoplay");
+			for(let node of autoplayNodes){
+				node.takeSignal({
+					delta: 0.33,
+					color:node.hue
+				});
+			}
 		}else{
 			publish("model/reset");
 		}
@@ -172,16 +175,12 @@ function Loopy(config){
 		input.click();
 	});
 
-	self.saveToURL = function(embed,autoPlaySignal){
+	self.saveToURL = function(embed){
 
 		// Create link
-		const uri = self.model.serialize();
+		const uri = self.model.serialize(embed);
 		const base = window.location.origin + window.location.pathname;
-		const historyLink = base+"?data="+uri;
-		let link;
-		if(embed && autoPlaySignal && autoPlaySignal>0) link = `${base}?embed=1&signal=[${autoPlaySignal},1]&data=${uri}`;
-		else if(embed) link = base+"?embed=1&data="+uri;
-		else link = historyLink;
+		const historyLink = base+"?"+uri;
 
 		// NO LONGER DIRTY!
 		self.dirty = false;
@@ -189,14 +188,15 @@ function Loopy(config){
 		// PUSH TO HISTORY
 		window.history.replaceState(null, null, historyLink);
 
-		return link;
+		return historyLink;
 	};
 	
 	// "BLANK START" DATA:
-	const _blankData = "[[[1,403,223,1,%22something%22,4],[2,405,382,1,%22something%2520else%22,5]],[[2,1,94,-1,0],[1,2,89,1,0]],[[609,311,%22need%2520ideas%2520on%2520what%2520to%250Asimulate%253F%2520how%2520about%253A%250A%250A%25E3%2583%25BBtechnology%250A%25E3%2583%25BBenvironment%250A%25E3%2583%25BBeconomics%250A%25E3%2583%25BBbusiness%250A%25E3%2583%25BBpolitics%250A%25E3%2583%25BBculture%250A%25E3%2583%25BBpsychology%250A%250Aor%2520better%2520yet%252C%2520a%250A*combination*%2520of%250Athose%2520systems.%250Ahappy%2520modeling!%22]],2%5D";
+	const _blankData = "[[[1,403,223,1,%22something%22,4],[2,405,382,1,%22something%2520else%22,5]],[[2,1,94,-1,0],[1,2,89,1,0]],[[609,311,%22need%2520ideas%2520on%2520what%2520to%250Asimulate%253F%2520how%2520about%253A%250A%250A%25E3%2583%25BBtechnology%250A%25E3%2583%25BBenvironment%250A%25E3%2583%25BBeconomics%250A%25E3%2583%25BBbusiness%250A%25E3%2583%25BBpolitics%250A%25E3%2583%25BBculture%250A%25E3%2583%25BBpsychology%250A%250Aor%2520better%2520yet%252C%2520a%250A*combination*%2520of%250Athose%2520systems.%250Ahappy%2520modeling!%22]],0%5D";
 
 	self.loadFromURL = function(){
 		let data = _getParameterByName("data");
+		if(!data) data=location.href.split("?")[1];
 		if(!data) data=decodeURIComponent(_blankData);
 		self.model.deserialize(data);
 
@@ -211,6 +211,10 @@ function Loopy(config){
 	///////////////////////////
 
 	self.init();
+
+	// Play Controls
+	self.playbar = new PlayControls(self);
+	self.playbar.showPage("Editor"); // start here
 
 	if(self.embedded){
 
@@ -245,7 +249,8 @@ function Loopy(config){
 			signal = JSON.parse(signal);
 			const node = self.model.getNode(signal[0]);
 			node.takeSignal({
-				delta: signal[1]*0.33
+				delta: signal[1]*0.33,
+				color:node.hue
 			});
 		}
 
