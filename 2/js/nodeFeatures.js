@@ -63,18 +63,18 @@ injectProperty("node", "overflow",{
     persist:8,
     sideBar:{
         index: 5,
-        options: [ 0, 0.1, 0.2, 0.4, 0.8, 1.6, 3.2, 6.4],
+        options: [0, 0.16, 0.33, 0.50, 0.66, 0.83, 1],
         label: "Overflow threshold :",
         advanced: true,
         combineWithNext:true
     }
 });
 injectProperty("node", "underflow",{
-    defaultValue:0,
+    defaultValue:1,
     persist:9,
     sideBar:{
         index: 6,
-        options: [ 0, 0.1, 0.2, 0.4, 0.8, 1.6, 3.2, 6.4],
+        options: [0, 0.16, 0.33, 0.50, 0.66, 0.83, 1],
         label: "Negative overflow threshold :",
         advanced: true
     }
@@ -85,7 +85,7 @@ injectProperty("node", "aggregationLatency",{
     sideBar:{
         index: 7,
         options: [ 0, 0.1, 0.2, 0.4, 0.8, 1.6, 3.2, 6.4],
-        labelFunc: (v)=>"Aggregation latency : "+v+"s",
+        labelFunc: (v)=>`Aggregation latency : ${v?v+'s':'none'}`,
         advanced: true
     }
 });

@@ -107,11 +107,12 @@ function Node(model, config){
 		}
 	};
 
-	self.takeSignal = function(signal){
+	self.takeSignal = function(signal,fromEdge=undefined){
 		if(loopy.colorLogic && self.foreignColor && signal.color!==self.hue) return; // drop signal
 		//if(loopy.colorLogic && loopy.greenLife && signal.color===3) self.live();
 		//if(loopy.colorLogic && loopy.redKill && signal.color===0) self.die();
 		if(self.died) return;
+		if(loopy.colorLogic && fromEdge && fromEdge.edgeTargetColor===-3) return self.hue = signal.color;
 		if(!self.deltaPool) self.deltaPool=0;
 		if(!self.aggregate) self.aggregate = 0;
 

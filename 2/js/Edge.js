@@ -53,6 +53,17 @@ function Edge(model, config){
 		if(self.signBehavior===2 && self.strength>0 && signal.delta<0) return;
 		if(self.edgeFilterColor!== -1 && self.edgeFilterColor !== signal.color) return;
 
+		// choose random color from possible colors
+		if(loopy.colorLogic===1 && self.edgeTargetColor=== -2){
+			let candidateColors = {};
+			const outputEdges = loopy.model.getEdgesByStartNode(self.to);
+			outputEdges.forEach((edge)=>candidateColors[edge.edgeFilterColor]=1);
+			if(candidateColors[-1]) candidateColors = [0,1,2,3,4,5];
+			else candidateColors = Object.keys(candidateColors);
+			signal.finalColor = candidateColors[Math.floor(Math.random()*candidateColors.length)];
+			console.log(signal.finalColor, signal.color, signal);
+		}
+
 		// IF ALREADY TOO MANY, FORGET IT
 		if(Edge.allSignals.length>Edge.MAX_SIGNALS){
 			return;
@@ -132,8 +143,9 @@ function Edge(model, config){
 			} else if(self.signBehavior===0){
 				lastSignal.delta *= self.strength;
 			}
-			if(loopy.colorLogic===1 && self.edgeTargetColor!== -1) lastSignal.color = self.edgeTargetColor;
-			self.to.takeSignal(lastSignal);
+			if(loopy.colorLogic===1 && self.edgeTargetColor>= 0) lastSignal.color = self.edgeTargetColor;
+			if(loopy.colorLogic===1 && self.edgeTargetColor=== -2) lastSignal.color = typeof lastSignal.finalColor!== "undefined"?lastSignal.finalColor:lastSignal.color;
+			self.to.takeSignal(lastSignal, self);
 
 			// Pop it, move on down
 			self.removeSignal(lastSignal);
@@ -172,7 +184,8 @@ function Edge(model, config){
 			let toColor = Node.COLORS[self.to.hue];
 			if(loopy.colorLogic===1){
 				fromColor = Node.COLORS[signal.color];
-				if(self.edgeTargetColor=== -1) toColor = Node.COLORS[signal.color];
+				if(self.edgeTargetColor=== -2) toColor = Node.COLORS[typeof signal.finalColor !== "undefined"?signal.finalColor:signal.color];
+				else if(self.edgeTargetColor=== -1 || self.edgeTargetColor=== -3) toColor = Node.COLORS[signal.color];
 				else toColor = Node.COLORS[self.edgeTargetColor];
 			}
 			let blend;

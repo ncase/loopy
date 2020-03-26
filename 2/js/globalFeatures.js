@@ -1,22 +1,32 @@
-function factorySwitchMode(disabledClass,activatedClass){
-    return function(self, value){
-        let apply;
-        if(value) apply = function(page){
-            page.dom.classList.add(activatedClass);
-            page.dom.classList.remove(disabledClass);
-        };
-        else apply = function(page){
-            page.dom.classList.add(disabledClass);
-            page.dom.classList.remove(activatedClass);
-        };
-        loopy.sidebar.pages.forEach(apply);
-    }
-}
-
 // Loopy global features
-/*injectProperty("loopy", "embed",{
+/*injectProperty("loopy", "Node._UID",{
     defaultValue:0, // bool
     persist:0, // reserved
+});*/
+injectProperty("loopy", "loopyMode",{
+    defaultValue:0,
+    persist:1,
+    sideBar:{
+        index: 1,
+        options: [ 0, 1], // Simple || Advanced
+        label: "LOOPY v2 mode :",
+        oninput: factorySwitchMode("simple","advanced")
+    }
+});
+injectProperty("loopy", "colorLogic",{
+    defaultValue:0,
+    persist:2,
+    sideBar:{
+        index: 2,
+        options: [ 0, 1],
+        labelFunc: (v)=>v?"Color : significant for logic":"Color : only aesthetic",
+        advanced: true,
+        oninput: factorySwitchMode("colorAestheticMode","colorLogicMode")
+    }
+});
+/*injectProperty("loopy", "embed",{
+    defaultValue:0, // bool
+    persist:3, // reserved
 });*/
 injectProperty("loopy", "beforeAll",{
     sideBar:{
@@ -62,24 +72,17 @@ injectProperty("loopy", "afterAll",{
         <br>`
     }
 });
-injectProperty("loopy", "loopyMode",{
-    defaultValue:0,
-    persist:1,
-    sideBar:{
-        index: 1,
-        options: [ 0, 1], // Simple || Advanced
-        label: "LOOPY v2 mode :",
-        oninput: factorySwitchMode("simple","advanced")
+function factorySwitchMode(disabledClass,activatedClass){
+    return function(self, value){
+        let apply;
+        if(value) apply = function(page){
+            page.dom.classList.add(activatedClass);
+            page.dom.classList.remove(disabledClass);
+        };
+        else apply = function(page){
+            page.dom.classList.add(disabledClass);
+            page.dom.classList.remove(activatedClass);
+        };
+        loopy.sidebar.pages.forEach(apply);
     }
-});
-injectProperty("loopy", "colorLogic",{
-    defaultValue:0,
-    persist:2,
-    sideBar:{
-        index: 2,
-        options: [ 0, 1],
-        labelFunc: (v)=>v?"Color : significant for logic":"Color : only aesthetic",
-        advanced: true,
-        oninput: factorySwitchMode("colorAestheticMode","colorLogicMode")
-    }
-});
+}

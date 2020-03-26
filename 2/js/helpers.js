@@ -331,7 +331,7 @@ function urlToStdB64 (urlStr) {
 	return b64.split('_').join('+').split('-').join('/').split('.').join('=');
 }
 function stdB64ToUrl (b64){
-	b64 = b64.split('+').join('_').split('/').join('-').split('=').join('.');
+	b64 = b64.split('+').join('_').split('/').join('-').split('=').join('.').replace(/[^-_.a-zA-Z0-9]/g,'');
 	let start = '';
 	for(let i =0; i<RECURRENT_LZMA_SCHEME.length; i++){
 		if(b64[i]!==RECURRENT_LZMA_SCHEME[i]) start+=`${i}${b64[i]}`;

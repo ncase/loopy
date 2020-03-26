@@ -55,7 +55,7 @@ injectProperty("edge", "filter",{
             "Filter : allow death signal",
             "Filter : allow life signal",
             "Filter : allow death & life signal",
-            "Filter : randomly allow signal",
+            "Filter : randomly allow signal", // 🎲
         ][v],
         advanced: true
     }

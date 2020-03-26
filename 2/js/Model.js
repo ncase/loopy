@@ -315,6 +315,9 @@ function Model(loopy){
 
 		// META.
 		const persist = [
+			Node._UID,
+			undefined,
+			undefined,
 			embed?1:0,
 		];
 		injectedPersistProps(persist, loopy, objTypeToTypeIndex("loopy"));
@@ -375,7 +378,8 @@ function Model(loopy){
 
 		// META.
 		const importArray = typeof globalState === "object"?globalState:[globalState];
-		loopy.embedded = loopy.embedded?1:importArray[0];
+		Node._UID = importArray[0];
+		loopy.embedded = loopy.embedded?1:importArray[3];
 		injectedRestoreProps(importArray,loopy,objTypeToTypeIndex("loopy"));
 	};
 
