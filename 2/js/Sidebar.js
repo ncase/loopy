@@ -218,6 +218,8 @@ function ComponentInput(config){
 	// DOM: label + text input
 	self.dom = document.createElement("div");
 	if(config.advanced) advancedConditionalDisplay(self);
+	if(config.colorLogic) colorLogicConditionalDisplay(self);
+	if(config.simpleOnly) simpleOnlyConditionalDisplay(self);
 	const label = _createLabel(config.label);
 	const className = config.textarea ? "component_textarea" : "component_input";
 	const input = _createInput(className, config.textarea);
@@ -284,7 +286,7 @@ function ComponentSlider(config){
 	// DOM: label + slider
 	self.dom = document.createElement("div");
 	self.dom.classList.add('not_in_play_mode');
-	if(config.combineWithNext) self.dom.classList.add('combineWithNext');;
+	if(config.combineWithNext) self.dom.classList.add('combineWithNext');
 	if(config.advanced) advancedConditionalDisplay(self);
 	if(config.colorLogic) colorLogicConditionalDisplay(self);
 	if(config.simpleOnly) simpleOnlyConditionalDisplay(self);
@@ -305,10 +307,10 @@ function ComponentSlider(config){
 		if(config.dynamicUI.mergedPointer){
 			//addClass to add space for pointer in following images
 		}
-		if(config.dynamicUI.left){
+		if(config.dynamicUI.activeAtLeft){
 			//addLeftImage
 		}
-		if(config.dynamicUI.right){
+		if(config.dynamicUI.activeAtRight){
 			//addRightImage
 		}
 		if(config.dynamicUI.active){
@@ -387,6 +389,9 @@ function ComponentButton(config){
 
 	// DOM: just a button
 	self.dom = document.createElement("div");
+	if(config.advanced) advancedConditionalDisplay(self);
+	if(config.colorLogic) colorLogicConditionalDisplay(self);
+	if(config.simpleOnly) simpleOnlyConditionalDisplay(self);
 	const button = _createButton(config.label, function(){
 		config.onclick(self.page.target);
 	});
@@ -407,11 +412,14 @@ function ComponentHTML(config){
 
 	// just a div
 	self.dom = document.createElement("div");
+	if(config.advanced) advancedConditionalDisplay(self);
+	if(config.colorLogic) colorLogicConditionalDisplay(self);
+	if(config.simpleOnly) simpleOnlyConditionalDisplay(self);
 	self.dom.innerHTML = config.html;
 
 }
 
-function ComponentOutput(){ //(config)
+function ComponentOutput(config){
 
 	// Inherit
 	const self = this;
@@ -419,6 +427,9 @@ function ComponentOutput(){ //(config)
 
 	// DOM: just a readonly input that selects all when clicked
 	self.dom = _createInput("component_output");
+	if(config.advanced) advancedConditionalDisplay(self);
+	if(config.colorLogic) colorLogicConditionalDisplay(self);
+	if(config.simpleOnly) simpleOnlyConditionalDisplay(self);
 	self.dom.setAttribute("readonly", "true");
 	self.dom.onclick = function(){
 		self.dom.select();

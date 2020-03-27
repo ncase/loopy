@@ -108,12 +108,12 @@ injectProperty("edge", "customLabel",{
         deserializeFunc:decodeURIComponent
     },
     sideBar:{
-        index: 98,
+        index: 90,
         label: "Custom name :",
         advanced: true
     }
 });
-injectProperty("edge", "lengthInfo",{
+injectProperty("edge", "lengthInfoDetail",{
     sideBar:{
         index: 99,
         simpleOnly: true,
@@ -121,11 +121,11 @@ injectProperty("edge", "lengthInfo",{
             <br><br>(to make a delayed relationship, draw longer arrows)`
     }
 });
-injectProperty("edge", "lengthInfo",{
+injectProperty("edge", "lengthInfoEssential",{
     sideBar:{
         index: 98,
         advanced: true,
-        html:`(stronger link ? Draw multiple arrows)
-            <br>(delay signal ? Draw longer arrows)`
+        html:`Stronger link : multiple arrows
+            <br>Delay signal : longer arrows`
     }
 });
