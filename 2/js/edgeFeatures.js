@@ -28,34 +28,34 @@ injectProperty("edge", "signBehavior",{
         advanced: true
     }
 });
-injectProperty("edge", "quantitative",{
-    defaultValue:0,
-    persist:9,
-    sideBar:{
-        index: 3,
-        options: [0, 1, 2],
-        labelFunc: (v)=>[
-            "Signal type : tendency",
-            "Signal type : quantity",
-            "Signal type : vital change"
-        ][v],
-        advanced: true
-    }
-});
 
 injectProperty("edge", "filter",{
     defaultValue:0,
     persist:10,
     sideBar:{
-        index: 4,
+        index: 3,
         options: [0, 1, 2, 3, 4, 5],
         labelFunc: (v)=>[
-            "Filter : allow any signal",
-            "Filter : allow arrow signal",
-            "Filter : allow death signal",
-            "Filter : allow life signal",
-            "Filter : allow death & life signal",
-            "Filter : randomly allow signal", // 🎲
+            "Allow : any signal",
+            "Allow : only arrow signal",
+            "Allow : only death signal",
+            "Allow : only life signal",
+            "Allow : death & life signal",
+            "Allow : randomly some signal", // 🎲
+        ][v],
+        advanced: true
+    }
+});
+injectProperty("edge", "quantitative",{
+    defaultValue:0,
+    persist:9,
+    sideBar:{
+        index: 4,
+        options: [0, 1, 2],
+        labelFunc: (v)=>[
+            "Signal : input as tendency",
+            "Signal : input as quantity",
+            "Signal : output as vital change"
         ][v],
         advanced: true
     }
@@ -93,6 +93,8 @@ injectProperty("edge", "edgeTargetColor",{
                 // convert node to signal color (colorLogic only)
             } else{
                 if(parseInt(v)=== -1) return "End color : auto from start color";
+                if(parseInt(v)=== -2) return "End color : rainbow";
+                if(parseInt(v)=== -3) return "End color : black double arrow";
                 return `End color : ${COLORS_NAME[v]}`;
             }
         },
@@ -114,7 +116,16 @@ injectProperty("edge", "customLabel",{
 injectProperty("edge", "lengthInfo",{
     sideBar:{
         index: 99,
+        simpleOnly: true,
         html:`(to make a stronger relationship, draw multiple arrows!)
             <br><br>(to make a delayed relationship, draw longer arrows)`
+    }
+});
+injectProperty("edge", "lengthInfo",{
+    sideBar:{
+        index: 98,
+        advanced: true,
+        html:`(stronger link ? Draw multiple arrows)
+            <br>(delay signal ? Draw longer arrows)`
     }
 });
