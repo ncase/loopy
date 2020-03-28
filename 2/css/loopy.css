@@ -233,20 +233,34 @@ display: none
 	width: 250px;
 	height: 52px;
 }
-.component_slider_graphic{
+.component_slider_graphic,
+.component_slider_clickCatcher,
+.component_slider_graphic_activeAtLeft,
+.component_slider_graphic_activeAtRight,
+.component_slider_graphic_activeOption
+{
 	position: absolute;
+	background-size: cover;
+	background-repeat: no-repeat;
 	width: 250px;
 	height: 40px;
 	cursor: pointer;
 }
+.component_slider_graphic_activeAtLeft{ left: 0; background-position: left center;}
+.component_slider_graphic_activeAtRight{ right: 0; background-position: right center;}
 .component_slider_pointer{
 	position: absolute;
 	top: 42px;
 	width: 15px;
 	height: 10px;
 }
-.combineWithNext .component_slider_graphic{top: 12px;}
+.combineWithNext .component_slider_graphic,
+.combineWithNext .component_slider_graphic_activeOption,
+.combineWithNext .component_slider_graphic_activeAtLeft,
+.combineWithNext .component_slider_graphic_activeAtRight {top: 12px;}
 .combineWithNext .component_slider_pointer{top: 0px;}
+.component_slider_clickCatcher{height: 52px}
+
 .component_label{
 	margin-bottom: 5px;
 }

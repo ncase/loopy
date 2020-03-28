@@ -66,7 +66,9 @@ injectProperty("node", "overflow",{
         options: [0, 0.16, 0.33, 0.50, 0.66, 0.83, 1],
         label: "Overflow threshold :",
         advanced: true,
-        combineWithNext:true
+        combineWithNext:true,
+        activeAtRight:true,
+        activeOption:true
     }
 });
 injectProperty("node", "underflow",{
@@ -76,7 +78,9 @@ injectProperty("node", "underflow",{
         index: 6,
         options: [0, 0.16, 0.33, 0.50, 0.66, 0.83, 1],
         label: "Negative overflow threshold :",
-        advanced: true
+        advanced: true,
+        activeAtLeft:true,
+        activeOption:true
     }
 });
 injectProperty("node", "aggregationLatency",{

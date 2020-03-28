@@ -275,6 +275,14 @@ function updateClassActiveDefault(self, defaultValue) {
 		for(let so of simpleOnly) so.classList.remove("inactive");
 	}
 }
+function addDynamicUIbgImage(sliderDOM,imgName, myClass, fileExtension='png') {
+	const slider = document.createElement("div");
+	slider.draggable = false;
+	slider.style.backgroundImage = `url(css/sliders/${imgName}_${myClass}.${fileExtension})`;
+	slider.classList.add(`component_slider_graphic_${myClass}`);
+	sliderDOM.appendChild(slider);
+	return slider;
+}
 function ComponentSlider(config){
 
 	// Inherit
@@ -300,38 +308,51 @@ function ComponentSlider(config){
 	const slider = new Image();
 	slider.draggable = false;
 	slider.src = "css/sliders/"+config.bg+".png";
-	slider.setAttribute("class","component_slider_graphic");
+	slider.classList.add("component_slider_graphic");
 	sliderDOM.appendChild(slider);
 	//TODO: implement the following
-	if(config.dynamicUI){
-		if(config.dynamicUI.mergedPointer){
-			//addClass to add space for pointer in following images
-		}
-		if(config.dynamicUI.activeAtLeft){
-			//addLeftImage
-		}
-		if(config.dynamicUI.activeAtRight){
-			//addRightImage
-		}
-		if(config.dynamicUI.active){
-			//addActiveImage
-		}
-		if(config.dynamicUI.hover){
-			//addHoverImage
-		}
-	}
+	/*if(config.mergedPointer){
+		sliderDOM.classList.add("pointerIncluded");
+	}*/
+	if(config.activeAtLeft) config.activeAtLeft = addDynamicUIbgImage(sliderDOM,config.bg,"activeAtLeft");
+	if(config.activeAtRight) config.activeAtRight = addDynamicUIbgImage(sliderDOM,config.bg,"activeAtRight");
+	if(config.activeOption) config.activeOption = addDynamicUIbgImage(sliderDOM,config.bg,"activeOption");
+	/*if(config.hover){
+		sliderDOM.appendChild(addDynamicUIbgImage(sliderDOM,config.bg,"hoverOption","gif"));
+	}*/
 	const pointer = new Image();
 	pointer.draggable = false;
 	pointer.src = `css/sliders/slider_pointer_${config.combineWithNext?'down':'up'}.png`;
 	pointer.setAttribute("class","component_slider_pointer");
 	sliderDOM.appendChild(pointer);
-	const movePointer = function(){
+	const clickCatcher = document.createElement('div')
+	clickCatcher.draggable = false;
+	clickCatcher.classList.add("class","component_slider_clickCatcher");
+	sliderDOM.appendChild(clickCatcher);
+
+	const movePointer = function() {
 		const value = self.getValue();
 		const optionIndex = config.options.indexOf(value);
-		const x = (optionIndex+0.5) * (250/config.options.length);
-		pointer.style.left = (x-7.5)+"px";
+		const x = (optionIndex + 0.5) * (250 / config.options.length);
+		pointer.style.left = (x - 7.5) + "px";
+		if (config.activeAtLeft) {
+			const x = (optionIndex + 1) * (250 / config.options.length);
+			config.activeAtLeft.style.width = `${x}px`;
+		}
+		if (config.activeAtRight) {
+			const x = - optionIndex * (250 / config.options.length);
+			const size = 250 - optionIndex * (250 / config.options.length);
+			config.activeAtRight.style.width = `${size}px`;
+			config.activeAtRight.style.backgroundPosition = `${x}px 0`;
+		}
+		if (config.activeOption) {
+			const x = - optionIndex * (250 / config.options.length);
+			const left = optionIndex * (250 / config.options.length);
+			config.activeOption.style.left = `${left}px`;
+			config.activeOption.style.width = `${250 / config.options.length}px`;
+			config.activeOption.style.backgroundPosition = `${x}px 0`;
+		}
 	};
-
 	// On click... (or on drag)
 	let isDragging = false;
 	const onmousedown = function(event){
@@ -365,7 +386,7 @@ function ComponentSlider(config){
 		movePointer();
 
 	};
-	_addMouseEvents(slider, onmousedown, onmousemove, onmouseup);
+	_addMouseEvents(sliderDOM, onmousedown, onmousemove, onmouseup);
 
 	// Show
 	self.show = function(){
