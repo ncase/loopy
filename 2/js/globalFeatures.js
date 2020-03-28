@@ -38,16 +38,6 @@ injectProperty("loopy", "beforeAll",{
             <span class='mini_button' onclick='publish("modal",["howto"])'>how to</span>
             <span class='mini_button' onclick='publish("modal",["credits"])'>credits</span>
         <br>
-        <br><hr/>
-        <br><span class='mini_button' onclick='publish("modal",["save_link"])'>save as link</span>
-        <br>
-        <br><span class='mini_button' onclick='publish("export/file")'>save as file</span>
-            <span class='mini_button' onclick='publish("import/file")'>load from file</span>
-        <br>
-        <br><span class='mini_button' onclick='publish("modal",["embed"])'>embed in your website</span>
-        <br>
-        <br><span class='mini_button' onclick='publish("modal",["save_gif"])'>make a GIF using LICEcap</span>
-        <br>
         <br><hr class="not_in_play_mode"/>`
     }
 });
@@ -55,11 +45,27 @@ injectProperty("loopy", "afterAll",{
     sideBar:{
         index: 99,
         html: `<hr/>
-        <br><a target='_blank' href='../'>LOOPY</a> is made by <a target='_blank' href='http://ncase.me'>nicky case</a>
-            with your support <a target='_blank' href='https://www.patreon.com/ncase'>on patreon</a> &lt;3
+        <br><span class='mini_button' onclick='publish("modal",["save_link"])'>save as link</span>
+            <span class='mini_button' onclick='publish("modal",["embed"])' title="or website">embed in your blog</span>
         <br>
-        <br><span style='font-size:0.85em'>P.S: go read <a target='_blank' href='https://www.amazon.com/Thinking-Systems-Donella-H-Meadows/dp/1603580557'>Thinking In Systems</a>, thx</span>
+        <br><span class='mini_button' onclick='publish("export/file")'>save as file</span>
+            <span class='mini_button' onclick='publish("import/file")'>load from file</span>
         <br>
+        <div class="adv">
+            <br><span class='mini_button' onclick='publish("export/json")'>json export</span>
+                <span class='mini_button' onclick='publish("import/url")'>load from url</span>
+            <br>
+            <br><span class='mini_button' onclick='publish("modal",["save_gif"])'>make a GIF using LICEcap</span>
+            <br>
+        </div>
+        <br><hr/>
+        <div class="simpleOnly">
+            <br><a target='_blank' href='../'>LOOPY</a> is made by <a target='_blank' href='http://ncase.me'>nicky case</a>
+                with your support <a target='_blank' href='https://www.patreon.com/ncase'>on patreon</a> &lt;3
+            <br>
+            <br><span style='font-size:0.85em'>P.S: go read <a target='_blank' href='https://www.amazon.com/Thinking-Systems-Donella-H-Meadows/dp/1603580557'>Thinking In Systems</a>, thx</span>
+            <br>
+        </div>
         <br>LOOPY v2 reworked by <a target='_blank' style='font-size:0.90em' href='https://github.com/1000i100'>1000i100</a>
         <br>
         <br>Discover all the new features :
