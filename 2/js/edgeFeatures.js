@@ -37,9 +37,9 @@ injectProperty("edge", "filter",{
         options: [0, 1, 2, 3, 4, 5],
         labelFunc: (v)=>[
             "Allow : any signal",
-            "Allow : only arrow signal",
-            "Allow : only death signal",
-            "Allow : only life signal",
+            "Allow : only arrow signal", // ⬍ ⮃
+            "Allow : only death signal", // ☠ 💀 🕱
+            "Allow : only life signal", // ❀ 🏵
             "Allow : death & life signal",
             "Allow : randomly some signal", // 🎲
         ][v],
@@ -109,7 +109,7 @@ injectProperty("edge", "customLabel",{
     },
     sideBar:{
         index: 90,
-        label: "Custom name :",
+        label: "Custom name :", // ⚙
         advanced: true
     }
 });

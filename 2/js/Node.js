@@ -11,7 +11,8 @@ Node.COLORS = {
 	3: "#BFEE3F", // green
 	4: "#7FD4FF", // blue
 	5: "#A97FFF", // purple
-	6: "#DDDDDD"  // light grey -> died
+	6: "#DDDDDD",  // light grey -> died
+	7: "#AAAAAA"  // node settings
 };
 
 
@@ -230,6 +231,15 @@ function Node(model, config){
 		}
 
 		// White-gray bubble with colored border
+		if(self.foreignColor){
+			ctx.beginPath();
+			ctx.arc(0, 0, r+8, 0, Math.TAU, false);
+			ctx.fillStyle = "#fff";
+			ctx.fill();
+			ctx.lineWidth = 6;
+			ctx.strokeStyle = color;
+			ctx.stroke();
+		}
 		ctx.beginPath();
 		ctx.arc(0, 0, r-2, 0, Math.TAU, false);
 		ctx.fillStyle = "#fff";

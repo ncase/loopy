@@ -313,11 +313,8 @@ function ComponentSlider(config){
 
 	// Slider DOM: graphic + pointer
 
-	const slider = new Image();
-	slider.draggable = false;
-	slider.src = "css/sliders/"+config.bg+".png";
-	slider.classList.add("component_slider_graphic");
-	sliderDOM.appendChild(slider);
+	const sliderBG = addBgImage(sliderDOM,'component_slider_graphic');
+	const slider = addBgImage(sliderDOM,'component_slider_graphic',config.bg);
 	//TODO: implement the following
 	/*if(config.mergedPointer){
 		sliderDOM.classList.add("pointerIncluded");
@@ -329,38 +326,35 @@ function ComponentSlider(config){
 		sliderDOM.appendChild(addDynamicUIbgImage(sliderDOM,config.bg,"hoverOption","gif"));
 	}*/
 	const pointer = addBgImage(sliderDOM,'component_slider_pointer');
-	/*
-	pointer.draggable = false;
-	pointer.src = `css/sliders/slider_pointer_${config.combineWithNext?'down':'up'}.png`;
-	pointer.setAttribute("class","component_slider_pointer");
-	sliderDOM.appendChild(pointer);
-	*/
-	const clickCatcher = document.createElement('div')
-	clickCatcher.draggable = false;
-	clickCatcher.classList.add("class","component_slider_clickCatcher");
-	sliderDOM.appendChild(clickCatcher);
+	const clickCatcher = addBgImage(sliderDOM,'component_slider_clickCatcher');
 
 	const movePointer = function() {
 		const value = self.getValue();
 		const optionIndex = config.options.indexOf(value);
 		const x = (optionIndex + 0.5) * (250 / config.options.length);
 		pointer.style.left = (x - 7.5) + "px";
-		if (config.activeAtLeft) {
-			const x = (optionIndex + 1) * (250 / config.options.length);
-			config.activeAtLeft.style.width = `${x}px`;
-		}
-		if (config.activeAtRight) {
-			const x = - optionIndex * (250 / config.options.length);
-			const size = 250 - optionIndex * (250 / config.options.length);
-			config.activeAtRight.style.width = `${size}px`;
-			config.activeAtRight.style.backgroundPosition = `${x}px 0`;
-		}
+		let active = 0;
 		if (config.activeOption) {
+			active=1;
 			const x = - optionIndex * (250 / config.options.length);
 			const left = optionIndex * (250 / config.options.length);
 			config.activeOption.style.left = `${left}px`;
 			config.activeOption.style.width = `${250 / config.options.length}px`;
 			config.activeOption.style.backgroundPosition = `${x}px 0`;
+		}
+		if (config.activeAtLeft) {
+			const x = (optionIndex + 1 - active) * (250 / config.options.length);
+			config.activeAtLeft.style.width = `${x}px`;
+			slider.style.right = `0px`;
+			slider.style.backgroundPosition = `${- (optionIndex + 1) * (250 / config.options.length)}px`
+			slider.style.width = `${250 - (optionIndex + 1) * (250 / config.options.length)}px`
+		}
+		if (config.activeAtRight) {
+			const x = - (optionIndex + active) * (250 / config.options.length);
+			const size = 250 - (optionIndex + active) * (250 / config.options.length);
+			config.activeAtRight.style.width = `${size}px`;
+			config.activeAtRight.style.backgroundPosition = `${x}px 0`;
+			slider.style.width = `${optionIndex * (250 / config.options.length)}px`
 		}
 	};
 	// On click... (or on drag)
@@ -407,7 +401,7 @@ function ComponentSlider(config){
 
 	// BG Color!
 	self.setBGColor = function(color){
-		slider.style.background = color;
+		sliderBG.style.backgroundColor = color;
 	};
 
 }

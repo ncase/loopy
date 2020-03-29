@@ -25,6 +25,7 @@ Version 2.0 (by [1000i100](https://github.com/1000i100)) :
 - ADD : edge sign behavior (classic relationship behavior || convert to arrow sign || filter by arrow sign)
 - ADD : edge custom color and gradient
 - ADD : autoplay option for embed export
+- ADD : compact the edition sidebar on small screen.
 
 Version 1.1 (by [Nicky Case](https://github.com/ncase)) :
 - node amounts are now "uncapped"    

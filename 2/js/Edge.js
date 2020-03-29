@@ -325,8 +325,10 @@ function Edge(model, config){
 			else if(s>=-2) l="– –";
 			else l="– – –";
 		} else {
-			const symbol = ['=','⤭','F–','F+','|–|','|+|'];
-			l=symbol[self.signBehavior];
+			const signBehavior = ['=','⤭','F–','F+','|–|','|+|'];
+			const filter = ['','⬍','🕱','❀','❀🕱','🎲'];
+			if(self.filter && !self.signBehavior) l=filter[self.filter];
+			else l=`${filter[self.filter]}${signBehavior[self.signBehavior]}`;
 		}
 		//
 		if(self.customLabel) l=self.customLabel;
@@ -448,27 +450,38 @@ function Edge(model, config){
 			}
 
 			// Arc it!
-			ctx.beginPath();
-			if(self.arc>0){
-				ctx.arc(w/2, y2, r, startAngle, end, false);
-			}else{
-				ctx.arc(w/2, y2, r, -startAngle, end, true);
+			function drawArc(ctx,arc,w,y2,r,startAngle,end) {
+				ctx.save();
+				ctx.beginPath();
+				if(self.arc>0){
+					ctx.arc(w/2, y2, r, startAngle, end, false);
+				}else{
+					ctx.arc(w/2, y2, r, -startAngle, end, true);
+				}
+				ctx.stroke();
+				ctx.restore();
 			}
+			let baseOffset =0;
+			if(self.quantitative===1){
+				baseOffset=4;
+				drawArc(ctx,self.arc,w,y2,r-4,startAngle,end);
+				drawArc(ctx,self.arc,w,y2,r+4,startAngle,end);
+
+			}else drawArc(ctx,self.arc,w,y2,r,startAngle,end);
 
 			// Arrow HEAD!
 			ctx.save();
 			ctx.translate(ax, ay);
 			if(self.arc<0) ctx.scale(-1,-1);
 			ctx.rotate(aa);
-			ctx.moveTo(-arrowLength, -arrowLength);
-			ctx.lineTo(0,0);
-			ctx.lineTo(-arrowLength, arrowLength);
-			if(self.edgeTargetColor===-3) {
-				const size = 1;
-				const distance = 12
-				ctx.moveTo((-arrowLength +distance) * size, -arrowLength * size);
-				ctx.lineTo(distance,0);
-				ctx.lineTo((-arrowLength +distance) * size, arrowLength * size);
+			drawArrow(ctx,arrowLength,1,baseOffset);
+			if(self.edgeTargetColor===-3) drawArrow(ctx,arrowLength,1,12+baseOffset,1);
+			if(self.quantitative===2) {
+				drawArrow(ctx,arrowLength,1,-2.5*arrowLength+baseOffset);
+				drawArrow(ctx,arrowLength,1,-2.5*arrowLength+4+baseOffset);
+				//drawArrow(ctx,arrowLength,1,4+baseOffset);
+				drawArrow(ctx,arrowLength,-1,-2.5*arrowLength+baseOffset);
+				drawArrow(ctx,arrowLength,-1,-2.5*arrowLength+4+baseOffset);
 			}
 			ctx.restore();
 
@@ -658,4 +671,9 @@ function drawLife(ctx){
 	ctx.lineTo(0,2);
 	ctx.fillStyle = '#009900';
 	ctx.fill();
+}
+function drawArrow(ctx,arrowLength, dir=1,offset=0,size=1){
+	ctx.moveTo((-dir*arrowLength +offset) * size, -arrowLength * size);
+	ctx.lineTo(offset,0);
+	ctx.lineTo((-dir*arrowLength +offset) * size, arrowLength * size);
 }
