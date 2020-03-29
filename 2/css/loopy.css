@@ -152,8 +152,10 @@ div[big=yes] .play_button_label{
 	-ms-user-select: none;
 	user-select: none;
 }
+.globalLoopyFirstItem{margin-top: -20px;}
 #sidebar > div{
 	margin: 25px;
+	padding-top: 20px;
 }
 #sidebar > div > div{
 	margin-bottom: 20px;
@@ -192,7 +194,7 @@ div[big=yes] .play_button_label{
 	width: 300px;
 	position: relative;
 	left:-25px;
-	margin: 10px 0;
+	margin: 30px 0;
 }
 #sidebar .combineWithNext{
 	margin: 0;
@@ -253,13 +255,29 @@ display: none
 	top: 42px;
 	width: 15px;
 	height: 10px;
+	background-image: url("sliders/slider_pointer_up.png");
+	background-size: cover;
 }
 .combineWithNext .component_slider_graphic,
 .combineWithNext .component_slider_graphic_activeOption,
 .combineWithNext .component_slider_graphic_activeAtLeft,
 .combineWithNext .component_slider_graphic_activeAtRight {top: 12px;}
-.combineWithNext .component_slider_pointer{top: 0px;}
+.combineWithNext .component_slider_pointer{top: 0px; background-image: url("sliders/slider_pointer_down.png");}
 .component_slider_clickCatcher{height: 52px}
+
+#sidebar > .compact{padding-top: 5px;}
+#sidebar .compact hr{margin: 5px 0;}
+#sidebar > .compact > div{margin-bottom: 0;}
+.compact .component_slider{height: 40px;}
+.compact .component_slider_pointer{top: 30px;background-image: url("sliders/slider_high_contrast_pointer_up.png");}
+.compact .combineWithNext .component_slider_graphic,
+.compact .combineWithNext .component_slider_graphic_activeOption,
+.compact .combineWithNext .component_slider_graphic_activeAtLeft,
+.compact .combineWithNext .component_slider_graphic_activeAtRight {top: 0;}
+.compact .combineWithNext .component_slider_pointer{top: 0; background-image: url("sliders/slider_high_contrast_pointer_down.png");}
+.compact .component_slider_clickCatcher{height: 40px}
+.compact .component_label{margin-bottom: 0;}
+.compact .component_button{font-size: 20px;padding: 2px 10px;}
 
 .component_label{
 	margin-bottom: 5px;

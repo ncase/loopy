@@ -95,7 +95,6 @@ function backToTopButton(sidebar, page){
 			sidebar.showPage("Edit");
 		}
 	}));
-	page.addComponent(new ComponentHTML({html: "<br/>"}));
 }
 function deleteMeButton(sidebar, page, label){
 	page.addComponent(new ComponentButton({
@@ -116,8 +115,13 @@ function SidebarPage(){
 
 	// DOM
 	self.dom = document.createElement("div");
-	self.show = function(){ self.dom.style.display="block"; self.onshow(); };
 	self.hide = function(){ self.dom.style.display="none"; self.onhide(); };
+	self.show = function(){
+		self.dom.style.display="block";
+		self.dom.classList.remove("compact");
+		if(self.dom.offsetHeight>innerHeight) self.dom.classList.add("compact");
+		self.onshow();
+	};
 
 	// Components
 	self.components = [];
@@ -275,13 +279,16 @@ function updateClassActiveDefault(self, defaultValue) {
 		for(let so of simpleOnly) so.classList.remove("inactive");
 	}
 }
+function addBgImage(sliderDOM, className, imgName='', fileExtension='png') {
+	const img = document.createElement("div");
+	img.draggable = false;
+	if(imgName) img.style.backgroundImage = `url(css/sliders/${imgName}.${fileExtension})`;
+	img.classList.add(className);
+	sliderDOM.appendChild(img);
+	return img;
+}
 function addDynamicUIbgImage(sliderDOM,imgName, myClass, fileExtension='png') {
-	const slider = document.createElement("div");
-	slider.draggable = false;
-	slider.style.backgroundImage = `url(css/sliders/${imgName}_${myClass}.${fileExtension})`;
-	slider.classList.add(`component_slider_graphic_${myClass}`);
-	sliderDOM.appendChild(slider);
-	return slider;
+	return addBgImage(sliderDOM,`component_slider_graphic_${myClass}`,`${imgName}_${myClass}`,fileExtension);
 }
 function ComponentSlider(config){
 
@@ -305,6 +312,7 @@ function ComponentSlider(config){
 	self.dom.appendChild(sliderDOM);
 
 	// Slider DOM: graphic + pointer
+
 	const slider = new Image();
 	slider.draggable = false;
 	slider.src = "css/sliders/"+config.bg+".png";
@@ -320,11 +328,13 @@ function ComponentSlider(config){
 	/*if(config.hover){
 		sliderDOM.appendChild(addDynamicUIbgImage(sliderDOM,config.bg,"hoverOption","gif"));
 	}*/
-	const pointer = new Image();
+	const pointer = addBgImage(sliderDOM,'component_slider_pointer');
+	/*
 	pointer.draggable = false;
 	pointer.src = `css/sliders/slider_pointer_${config.combineWithNext?'down':'up'}.png`;
 	pointer.setAttribute("class","component_slider_pointer");
 	sliderDOM.appendChild(pointer);
+	*/
 	const clickCatcher = document.createElement('div')
 	clickCatcher.draggable = false;
 	clickCatcher.classList.add("class","component_slider_clickCatcher");
