@@ -252,8 +252,12 @@ function Model(loopy){
 	//////////////////////////////
 	// SERIALIZE & DE-SERIALIZE //
 	//////////////////////////////
-
-	self.serialize = function(embed, autoPlaySignal){
+	self.serializeToBinary = function(embed) {
+		//FIXME: implement binary serializer
+		return LZMA.compress(self.serializeToJson(embed),9).map((v)=>v<0?v+256:v)
+	};
+	self.serializeToUrl = (embed)=> stdB64ToUrl(base64EncArr(LZMA.compress(self.serializeToJson(embed),9).map((v)=>v<0?v+256:v)));
+	self.serializeToJson = function(embed){
 
 		const data = [];
 		// 0 - nodes
@@ -324,12 +328,17 @@ function Model(loopy){
 		data.push(persist);
 
 		// Return as string!
-		let dataString = JSON.stringify(data);
-		return stdB64ToUrl(base64EncArr(LZMA.compress(dataString,9).map((v)=>v<0?v+256:v)));
+		return JSON.stringify(data);
 	};
 
-	self.deserialize = function(dataString){
-		if(dataString[0]!=='[') dataString = LZMA.decompress(base64DecToArr(urlToStdB64(dataString)).map((v)=>v>128?v-256:v));
+	self.deserializeFromUrl = (dataString)=>{
+		if(dataString[0]==='[') return self.deserializeFromJson(dataString);
+		else return self.deserializeFromBinary(base64DecToArr(urlToStdB64(dataString)).map((v)=>v>128?v-256:v));
+	};
+	self.deserializeFromBinary = (dataUint8Array)=>{
+		return self.deserializeFromJson(LZMA.decompress(dataUint8Array));
+	};
+	self.deserializeFromJson = function(dataString){
 		self.clear();
 
 		const data = JSON.parse(dataString);

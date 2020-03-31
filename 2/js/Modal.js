@@ -117,6 +117,20 @@ function Modal(loopy){
 		self.addPage("credits", page);
 	})();
 
+	// urlRemoteFile
+	(function(){
+		const page = new Page();
+		page.width = 500;
+		page.height = 155;
+		const desc = page.addComponent(new ComponentHTML({
+			html: `Upload your .loopy.json or .loopy file into a website (with CORS header allowing ${location.host}) then add it url to this one :`
+		}));
+		desc.dom.style.fontSize = "15px";
+		const output = page.addComponent(new ComponentOutput({}));
+		output.output(`${location.href.split('?')[0].split('#')[0]}?url=https://where_your_uploaded_file_is_located/your_file.loopy`);
+		self.addPage("urlRemoteFile", page);
+	})();
+
 	// Save as link
 	(function(){
 		const page = new Page();

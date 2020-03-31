@@ -52,7 +52,7 @@ injectProperty("loopy", "afterAll",{
         <br>
         <div class="adv">
             <br><span class='mini_button' onclick='publish("export/json")'>json export</span>
-                <span class='mini_button' onclick='publish("import/url")'>load from url</span>
+                <span class='mini_button' onclick='publish("modal",["urlRemoteFile"])'>load from url</span>
             <br>
             <br><span class='mini_button' onclick='publish("modal",["save_gif"])'>make a GIF using LICEcap</span>
             <br>

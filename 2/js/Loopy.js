@@ -148,8 +148,20 @@ function Loopy(config){
 
 	subscribe("export/file", function(){
 		const element = document.createElement('a');
-		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + self.model.serialize());
+		element.setAttribute('href', 'data:application/octet-stream;base64,' + base64EncArr(self.model.serializeToBinary()));
 		element.setAttribute('download', "system_model.loopy");
+
+		element.style.display = 'none';
+		document.body.appendChild(element);
+
+		element.click();
+
+		document.body.removeChild(element);
+	});
+	subscribe("export/json", function(){
+		const element = document.createElement('a');
+		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + self.model.serializeToJson());
+		element.setAttribute('download', "system_model.loopy.json");
 
 		element.style.display = 'none';
 		document.body.appendChild(element);
@@ -166,19 +178,26 @@ function Loopy(config){
 			// noinspection JSUnresolvedVariable
 			const file = e.target.files[0];
 			const reader = new FileReader();
-			reader.readAsText(file,'UTF-8');
-			reader.onload = readerEvent => {
-				const content = readerEvent.target.result;
-				self.model.deserialize(content);
-			}
+			reader.readAsArrayBuffer(file);
+			reader.onload = readerEvent => importDataFromArrayBuffer(readerEvent.target.result);
 		};
 		input.click();
 	});
+	function importDataFromArrayBuffer(dataInArrayBuffer){
+		const enc = new TextDecoder("utf-8");
+		let content = enc.decode(dataInArrayBuffer);
+		if(content[0]==='[') return self.model.deserializeFromJson(content);
+		self.model.deserializeFromBinary(new Uint8Array(dataInArrayBuffer));
+
+		const globalEditPage = self.sidebar.pages[3];
+		injectPropsLabelInSideBar(globalEditPage,objTypeToTypeIndex("loopy"));
+
+	}
 
 	self.saveToURL = function(embed){
 
 		// Create link
-		const uri = self.model.serialize(embed);
+		const uri = self.model.serializeToUrl(embed);
 		const base = window.location.origin + window.location.pathname;
 		let historyLink = base+"?"+uri;
 
@@ -200,13 +219,18 @@ function Loopy(config){
 	const _blankData = "[[[1,403,223,1,%22something%22,4],[2,405,382,1,%22something%2520else%22,5]],[[2,1,94,-1,0],[1,2,89,1,0]],[[609,311,%22need%2520ideas%2520on%2520what%2520to%250Asimulate%253F%2520how%2520about%253A%250A%250A%25E3%2583%25BBtechnology%250A%25E3%2583%25BBenvironment%250A%25E3%2583%25BBeconomics%250A%25E3%2583%25BBbusiness%250A%25E3%2583%25BBpolitics%250A%25E3%2583%25BBculture%250A%25E3%2583%25BBpsychology%250A%250Aor%2520better%2520yet%252C%2520a%250A*combination*%2520of%250Athose%2520systems.%250Ahappy%2520modeling!%22]],2%5D";
 
 	self.loadFromURL = function(){
-		let data = _getParameterByName("data");
-		if(!data) data=location.href.split("?")[1];
-		if(!data) data=location.href.split("#")[1];
-		if(!data) data=decodeURIComponent(_blankData);
-		self.model.deserialize(data);
+		let remoteDataUrl = _getParameterByName("url");
+		if(remoteDataUrl){
+			fetch(remoteDataUrl).then(r=>r.arrayBuffer()).then(ab=>importDataFromArrayBuffer(ab));
+		} else {
+			let data = _getParameterByName("data");
+			if(!data) data=location.href.split("?")[1];
+			if(!data) data=location.href.split("#")[1];
+			if(!data) data=decodeURIComponent(_blankData);
+			self.model.deserializeFromUrl(data);
+		}
 
-		const globalEditPage = self.sidebar.pages[3]
+		const globalEditPage = self.sidebar.pages[3];
 		injectPropsLabelInSideBar(globalEditPage,objTypeToTypeIndex("loopy"));
 
 	}; 
