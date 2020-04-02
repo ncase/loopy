@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Test JS</title>
+    <meta charset="utf-8">
+</head>
+<body>
+<script>
+    let testOk = 0;
+    let skippedTest = 0;
+    const testList = [];
+    function xtest() {skippedTest++;}
+    function testEqual(message,pendingResult,testFunc){
+        testList.push(async ()=>{
+            try{
+                const res = await testFunc();
+                if(res===pendingResult)testOk++;
+                else console.error(`${res} should be ${pendingResult} in test : ${message}`);
+            } catch (e) {
+                console.error(message,e);
+            }
+        });
+    }
+    function test(message,testFunc){
+        testList.push(async ()=>{
+            try{
+                if(await testFunc())testOk++;
+                else console.error(message);
+            } catch (e) {
+                console.error(message,e);
+            }
+        });
+    }
+    async function runAllTest(){
+        for(let func of testList) await func();
+        let skipped = '';
+        if(skippedTest) skipped = `, skipped : ${skippedTest}`;
+        let failed = '';
+        if(testOk<testList.length) failed = `, failed : ${testList.length-testOk}`;
+        console.log(`Test summary : passed : ${testOk}${skipped}${failed}, TOTAL : ${testList.length+skippedTest}`);
+    }
+</script>
+<script src="BitArray.js"></script>
+<script src="BitArray.test.js"></script>
+<script>
+runAllTest();
+</script>
+</body>
+</html>
