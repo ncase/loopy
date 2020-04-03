@@ -1,8 +1,6 @@
 
 // Label features
-injectProperty("label", "x",{persist:{index:0,binFunc:factoryRatio(10,innerWidth),serializeFunc:v=>Math.round(v)}});
-injectProperty("label", "y",{persist:{index:1,binFunc:factoryRatio(10,innerHeight),serializeFunc:v=>Math.round(v)}});
-injectProperty("label", "textColor",{
+injectProperty("group", "textColor",{
     defaultValue:-1,
     persist:4,
     sideBar:{
@@ -12,7 +10,7 @@ injectProperty("label", "textColor",{
         advanced: true
     }
 });
-injectProperty("label", "visibility",{
+injectProperty("group", "visibility",{
     defaultValue:0,
     persist:3,
     sideBar:{
@@ -22,7 +20,7 @@ injectProperty("label", "visibility",{
         advanced: true
     }
 });
-injectProperty("label", "text",{
+injectProperty("group", "text",{
     defaultValue:"...",
     persist:{
         index:2,

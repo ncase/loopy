@@ -8,11 +8,15 @@ function updateNodeSize (self,v){
     if(selectedNode.size<1) selectedNode.radius=0.5*Node.DEFAULT_RADIUS;
     if(!selectedNode.label) selectedNode.radius=0.1*Node.DEFAULT_RADIUS;
 }
+injectProperty("node", "id",{persist:{index:0,jsonOnly:true}});
+injectProperty("node", "x",{persist:{index:1,binFunc:factoryRatio(10,innerWidth),serializeFunc:v=>Math.round(v)}});
+injectProperty("node", "y",{persist:{index:2,binFunc:factoryRatio(10,innerHeight),serializeFunc:v=>Math.round(v)}});
 injectProperty("node", "label",{
     defaultValue:"?",
     immutableDefault:true,
     persist:{
         index:4,
+        jsonOnly:true, // string have special store in binary mode
         deserializeFunc:decodeURIComponent
     },
     sideBar:{

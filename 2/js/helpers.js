@@ -324,10 +324,13 @@ function setCharAt(str,index,chr) {
 	return str.substr(0,index) + chr + str.substr(index+1);
 }
 function urlToStdB64 (urlStr) {
+	let b64 = urlStr;
 	const parts = urlStr.split("/");
-	let b64 = RECURRENT_LZMA_SCHEME;
-	for(let i = 0; i< parts[0].length;i+=2) b64 = setCharAt(b64,parseInt(parts[0][i]),parts[0][i+1]);
-	b64 += parts[1];
+	if(parts.length===2){
+		b64 = RECURRENT_LZMA_SCHEME;
+		for(let i = 0; i< parts[0].length;i+=2) b64 = setCharAt(b64,parseInt(parts[0][i]),parts[0][i+1]);
+		b64 += parts[1];
+	}
 	return b64.split('_').join('+').split('-').join('/').split('.').join('=');
 }
 function stdB64ToUrl (b64){
@@ -336,5 +339,42 @@ function stdB64ToUrl (b64){
 	for(let i =0; i<RECURRENT_LZMA_SCHEME.length; i++){
 		if(b64[i]!==RECURRENT_LZMA_SCHEME[i]) start+=`${i}${b64[i]}`;
 	}
-	return `${start}/${b64.substr(RECURRENT_LZMA_SCHEME.length)}`
+	const diffStartVersion =`${start}/${b64.substr(RECURRENT_LZMA_SCHEME.length)}`;
+	if(diffStartVersion.length<b64.length) return diffStartVersion;
+	else return b64;
+}
+function factoryRatio(bitNumber,ratioRef,signed=false){
+	if (signed) return {
+			bit: bitNumber,
+			encode: (v) => Math.round(Math.pow(2, bitNumber) * v / ratioRef) + Math.pow(2, bitNumber - 1) % Math.pow(2, bitNumber),
+			decode: (v) => Math.round(v * ratioRef / Math.pow(2, bitNumber)) - Math.pow(2, bitNumber - 1) % Math.pow(2, bitNumber)
+		};
+	else return {
+			bit: bitNumber,
+			encode: (v) => Math.round(Math.pow(2, bitNumber) * v / ratioRef),
+			decode: (v) => Math.round(v * ratioRef / Math.pow(2, bitNumber))
+		};
+}
+function countEntities(){
+	const types = get_PERSIST_TYPE_array().map(t=>`${t.name.toLowerCase()}s`);
+	const entities = {};
+	types.filter(t=>loopy.model[t]).forEach(t=>entities[t]=loopy.model[t].length);
+	return entities;
+}
+function entityRefBitSize(){
+	const entitiesCount = countEntities();
+	const maxEntities = Object.values(entitiesCount).reduce((acc,cur)=>Math.max(acc,cur),0);
+	return Math.ceil(Math.log2(maxEntities));
+}
+function entitiesSize(){
+	const types = get_PERSIST_TYPE_array().map(t=>`${t.name.toLowerCase()}s`);
+	const entities = {};
+	for(let i in PERSIST_MODEL)
+		PERSIST_MODEL.forEach((t,i)=>entities[types[i]]=t.reduce((acc,cur)=>acc+cur.bit||acc,0));
+	return entities;
+}
+function statArray(arr){
+	const stat = {};
+	arr.forEach(e=>stat[e]?stat[e]++:stat[e]=1);
+	return stat;
 }

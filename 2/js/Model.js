@@ -146,7 +146,42 @@ function Model(loopy){
 
 		// Remove label
 		self.labels.splice(self.labels.indexOf(label),1);
-		
+
+	};
+
+
+
+
+
+	///////////////////
+	// GROUPS /////////
+	///////////////////
+
+	// Groups
+	self.groups = [];
+
+	// Remove label
+	self.addGroup = function(config){
+
+		// Model's been changed!
+		publish("model/changed");
+
+		// Add label
+		const group = new Group(self,config);
+		self.groups.push(group);
+		self.update();
+		return group;
+	};
+
+	// Remove group
+	self.removeGroup = function(group){
+
+		// Model's been changed!
+		publish("model/changed");
+
+		// Remove label
+		self.groups.splice(self.groups.indexOf(group),1);
+
 	};
 
 
@@ -252,9 +287,84 @@ function Model(loopy){
 	//////////////////////////////
 	// SERIALIZE & DE-SERIALIZE //
 	//////////////////////////////
+	function appendBinary(bytesArray,offset,data,bitNumber){
+
+	}
+	function externalizeStrings(){
+		// for each type (nodes, edges, labels, groups), list strings fields
+		// for each element of each type and for each string fields, store stringData as key with length as value.
+		// sort by length (and alphabetically if length is equal)
+		// replace length by order index
+		// for each element of each type and for each string fields, add element.stringFieldNameIndex = the string index
+		// export the string array
+
+		// concatenate all strings map all characters used, choose an other as separator
+		// concatenate them again with the separator between each
+		// BWT transform them // or BWT BWFT ZRL BWBT EC SFE MTF JBE EJBE
+		// index symbols and reduce bit by symbols if the result is smaller than original
+
+		// OR JUST concatenate them with ` as separator and hope LZMA will do the job.
+
+		const stringFields = [];
+		for(let typeIndex in EDIT_MODEL) if(EDIT_MODEL.hasOwnProperty(typeIndex))
+			for(let i in EDIT_MODEL[typeIndex]) if(EDIT_MODEL[typeIndex].hasOwnProperty(i)) {
+			const field = EDIT_MODEL[typeIndex][i];
+			if(!field.options && !field.html) stringFields.push({type:typeIndex,fieldName:field.name});
+		}
+
+		const strings = [];
+		for(let stringField of stringFields){
+			const typeName = get_PERSIST_TYPE_array()[stringField["type"]].name.toLowerCase();
+			loopy.model[`${typeName}s`].forEach((item)=>strings.push(item[stringField["fieldName"]]));
+		}
+		const utf8string = strings.join('`');
+		const stringUint8Array = (new StringView(utf8string)).rawData;
+		//console.log(utf8string.length,stringUint8Array.length);
+		return stringUint8Array;
+	}
 	self.serializeToBinary = function(embed) {
-		//FIXME: implement binary serializer
-		return LZMA.compress(self.serializeToJson(embed),9).map((v)=>v<0?v+256:v)
+		const entitiesKindsCount = 4; // nodes, edges, labels, loopys //, groups, groupPairs
+		const entitiesCount = countEntities();
+		const bitToRefAnyEntity = entityRefBitSize();
+		const entitiesSizes = entitiesSize();
+
+		let size = 10+Object.keys(entitiesCount).length*bitToRefAnyEntity+Object.keys(entitiesSizes).length*8+entitiesSizes['loopys'];//+stringArea.length*8;
+		for (let entity in entitiesCount) size+=entitiesCount[entity]*entitiesSizes[entity];
+		console.log(`uncompressed bin size : ${size}b + strArea`);
+		const bitArray = new BitArray(size);
+		bitArray.append(0,1);// Version number (This Version Start With 0, on 1bit, to allow evolution starting with 1)
+		bitArray.append(embed?1:0,1);
+		bitArray.append(entitiesKindsCount,4);
+		bitArray.append(bitToRefAnyEntity,4);
+		for (let entity in entitiesCount) bitArray.append(entitiesCount[entity],bitToRefAnyEntity);
+		for (let entity in entitiesSizes) if(entity==="loopys" || entitiesCount[entity]) bitArray.append(entitiesSizes[entity],8);
+		saveToBinary(bitArray,loopy,3,entitiesSizes["loopys"],bitArray.maxOffset);
+		const nodesAreaStart = bitArray.maxOffset;
+		loopy.model.nodes.forEach((n)=>saveToBinary(bitArray,n,0,entitiesSizes["nodes"],nodesAreaStart));
+		const edgesAreaStart = bitArray.maxOffset;
+		loopy.model.edges.forEach((n)=>saveToBinary(bitArray,n,1,entitiesSizes["edges"],edgesAreaStart));
+		const labelsAreaStart = bitArray.maxOffset;
+		loopy.model.labels.forEach((n)=>saveToBinary(bitArray,n,2,entitiesSizes["labels"],labelsAreaStart));
+		//const groupsAreaStart = bitArray.maxOffset;
+		//loopy.model.groups.forEach((n)=>saveToBinary(bitArray,n,4,entitiesSizes["groups"],groupsAreaStart));
+		//const groupPairsAreaStart = bitArray.maxOffset;
+		//loopy.model.groupPairs.forEach((n)=>saveToBinary(bitArray,n,5,entitiesSizes["groupPairs"],groupPairsAreaStart));
+
+		console.log(`pre-compressed bin size : ${bitArray.maxOffset}b + strArea`);
+		const stringArea = externalizeStrings();
+		console.log(`strArea bin size : ${stringArea.buffer.byteLength*8}b`);
+		//console.log("stringArea char stats : ",Object.values(statArray(stringArea)).sort((a,b)=>a<b));
+
+		const realBytesSize = Math.ceil(bitArray.offset/8);
+		const bin = new Uint8Array(realBytesSize + stringArea.buffer.byteLength);
+		console.log(realBytesSize);
+		bin.set(new Uint8Array(bitArray.rawData.buffer,0,realBytesSize), 0);
+		bin.set(stringArea, realBytesSize);
+
+		const compressedBin = LZMA.compress(bin,9).map((v)=>v<0?v+256:v);
+		console.log(bin.buffer.byteLength,compressedBin.length);
+		if(bin.buffer.byteLength < compressedBin.length) return bin;
+		return compressedBin;
 	};
 	self.serializeToUrl = (embed)=> stdB64ToUrl(base64EncArr(LZMA.compress(self.serializeToJson(embed),9).map((v)=>v<0?v+256:v)));
 	self.serializeToJson = function(embed){
@@ -269,14 +379,7 @@ function Model(loopy){
 		const nodes = [];
 		for(let i=0;i<self.nodes.length;i++){
 			const node = self.nodes[i];
-			// 0 - id
-			// 1 - x
-			// 2 - y
-			const persist = [
-				node.id,
-				Math.round(node.x),
-				Math.round(node.y),
-			];
+			const persist = [];
 			injectedPersistProps(persist, node, objTypeToTypeIndex("node"));
 			nodes.push(persist);
 		}
@@ -286,17 +389,7 @@ function Model(loopy){
 		const edges = [];
 		for(let i=0;i<self.edges.length;i++){
 			const edge = self.edges[i];
-			// 0 - from
-			// 1 - to
-			// 2 - arc
-			// 4 - rotation
-			const dataEdge = [
-				edge.from.id,
-				edge.to.id,
-				Math.round(edge.arc),
-				undefined, // strength
-				Math.round(edge.rotation),
-			];
+			const dataEdge = [];
 			injectedPersistProps(dataEdge, edge, objTypeToTypeIndex("edge"));
 			edges.push(dataEdge);
 		}
@@ -306,12 +399,7 @@ function Model(loopy){
 		const labels = [];
 		for(let i=0;i<self.labels.length;i++){
 			const label = self.labels[i];
-			// 0 - x
-			// 1 - y
-			const persist = [
-				Math.round(label.x),
-				Math.round(label.y),
-			];
+			const persist = [];
 			injectedPersistProps(persist, label, objTypeToTypeIndex("label"));
 			labels.push(persist);
 		}
@@ -336,55 +424,44 @@ function Model(loopy){
 		else return self.deserializeFromBinary(base64DecToArr(urlToStdB64(dataString)).map((v)=>v>128?v-256:v));
 	};
 	self.deserializeFromBinary = (dataUint8Array)=>{
+		//FIXME: implement binary deserializer
 		return self.deserializeFromJson(LZMA.decompress(dataUint8Array));
 	};
-	self.deserializeFromJson = function(dataString){
+		self.deserializeFromJson = function(dataString){
+		return self.deserializeFromLegacyJson(dataString);
+	};
+	self.deserializeFromHumanReadableJson = (dataString)=>{
+		//TODO: deserializeFromHumanReadableJson
+	};
+	self.deserializeFromLegacyJson = (dataString)=>{
 		self.clear();
-
 		const data = JSON.parse(dataString);
-
 		// Get from array!
 		const nodes = data[0];
 		const edges = data[1];
 		const labels = data[2];
 		const globalState = data[3];
-
 		// Nodes
 		for(let i=0;i<nodes.length;i++){
 			const node = nodes[i];
-			const config = {
-				id: node[0],
-				x: node[1],
-				y: node[2],
-			};
+			const config = {};
 			injectedRestoreProps(node,config,objTypeToTypeIndex("node"));
 			self.addNode(config);
 		}
-
 		// Edges
 		for(let i=0;i<edges.length;i++){
 			const edge = edges[i];
-			const edgeConfig = {
-				from: edge[0],
-				to: edge[1],
-				arc: edge[2],
-				rotation: edge[4],
-			};
+			const edgeConfig = {};
 			injectedRestoreProps(edge,edgeConfig,objTypeToTypeIndex("edge"));
 			self.addEdge(edgeConfig);
 		}
-
 		// Labels
 		for(let i=0;i<labels.length;i++){
 			const label = labels[i];
-			const config = {
-				x: label[0],
-				y: label[1],
-			};
+			const config = {};
 			injectedRestoreProps(label,config,objTypeToTypeIndex("label"));
 			self.addLabel(config);
 		}
-
 		// META.
 		const importArray = typeof globalState === "object"?globalState:[globalState];
 		Node._UID = importArray[0];

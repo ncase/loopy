@@ -128,6 +128,21 @@ function Modal(loopy){
 		desc.dom.style.fontSize = "15px";
 		const output = page.addComponent(new ComponentOutput({}));
 		output.output(`${location.href.split('?')[0].split('#')[0]}?url=https://where_your_uploaded_file_is_located/your_file.loopy`);
+
+		const label = document.createElement("div");
+		label.style.fontSize = "15px";
+		label.style.marginTop = "6px";
+		const baseUrl = location.href.split('?')[0].split('#')[0];
+		let path = baseUrl;
+		if(path[path.length-1]!=='/'){
+			const pathParts = baseUrl.split('/');
+			pathParts.pop();
+			path = `${pathParts.join('/')}/`;
+		}
+		label.innerHTML = `<a href="${baseUrl}?url=${path}pages/examples/example.loopy.json">Click here to view a working example.</a>`;
+		page.dom.appendChild(label);
+
+
 		self.addPage("urlRemoteFile", page);
 	})();
 

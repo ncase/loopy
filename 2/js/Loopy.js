@@ -160,7 +160,7 @@ function Loopy(config){
 	});
 	subscribe("export/json", function(){
 		const element = document.createElement('a');
-		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + self.model.serializeToJson());
+		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + self.model.serializeToLegacyJson());
 		element.setAttribute('download', "system_model.loopy.json");
 
 		element.style.display = 'none';

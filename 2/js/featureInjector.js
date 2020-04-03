@@ -35,26 +35,36 @@ function injectProperty(objType,propertyName,config={}) {
     if(typeof objType.default[propertyName] !== "undefined") throw `objType.default[propertyName] collision with ${propertyName}`;
     objType.default[propertyName] = config.defaultValue;
     if(!EDIT_MODEL[typeIndex]) EDIT_MODEL[typeIndex] = [];
-    if(EDIT_MODEL[typeIndex][config.sideBar.index]) throw `sideBar position collision : ${config.sideBar.index} ${propertyName}`;
+    if(config.sideBar){
+        if(EDIT_MODEL[typeIndex][config.sideBar.index]) throw `sideBar position collision : ${config.sideBar.index} ${propertyName}`;
 
-    const sideBarData = config.sideBar;
-    sideBarData.name = propertyName;
-    sideBarData.defaultValue = config.defaultValue;
-    EDIT_MODEL[typeIndex][config.sideBar.index] = sideBarData;
+        const sideBarData = config.sideBar;
+        sideBarData.name = propertyName;
+        sideBarData.defaultValue = config.defaultValue;
+        EDIT_MODEL[typeIndex][config.sideBar.index] = sideBarData;
 
-    //noinspection JSUnresolvedVariable
-    if(!config.immutableDefault) EDIT_MODEL[typeIndex][config.sideBar.index].updateDefault = (value)=> objType.default[propertyName] = value;
+        //noinspection JSUnresolvedVariable
+        if(!config.immutableDefault) EDIT_MODEL[typeIndex][config.sideBar.index].updateDefault = (value)=> objType.default[propertyName] = value;
+    }
+
 
     if(typeof config.persist !== "undefined"){
         if(typeof config.persist !== "object" && isFinite(parseInt(config.persist))) config.persist = {index:config.persist};
         if(isNaN(parseInt(config.persist.index))) throw `in injectProperty, if config.persist, config.persist.index is required`;
         if(!PERSIST_MODEL[typeIndex]) PERSIST_MODEL[typeIndex] = [];
         if(PERSIST_MODEL[typeIndex][config.persist.index]) throw `config.persist.index collision : ${JSON.stringify(PERSIST_MODEL[typeIndex][config.persist.index])}`;
-        const persist = {name:propertyName};
+        const persist = {name:propertyName,jsonOnly:config.persist.jsonOnly};
 
         persist.serializeFunc = config.persist.serializeFunc?config.persist.serializeFunc:(v)=>v;
         persist.deserializeFunc = config.persist.deserializeFunc?config.persist.deserializeFunc:(v)=>v;
         persist.defaultValue = config.defaultValue;
+        persist.bit = config.persist.bit?config.persist.bit:
+            config.persist.binFunc?config.persist.binFunc.bit:
+                config.sideBar?config.sideBar.options?Math.ceil(Math.log2(config.sideBar.options.length)):0:0;
+        if(!persist.jsonOnly){
+            persist.encode = config.persist.binFunc? config.persist.binFunc.encode:(v)=>config.sideBar.options.indexOf(v);
+            persist.decode = config.persist.binFunc? config.persist.binFunc.decode:(v)=>config.sideBar.options[v];
+        }
         PERSIST_MODEL[typeIndex][config.persist.index] = persist;
     }
 
@@ -99,19 +109,33 @@ function injectedDefaultProps(targetConfig,typeIndex) {
         targetConfig[i]=objType.default[i];
     }
 }
+function saveToBinary(bitArray,objToPersist,typeIndex,entityBitSize,zAreaStartOffset){
+    const toSave = [];
+    for(let i in PERSIST_MODEL[typeIndex]) {
+        const prop = PERSIST_MODEL[typeIndex][i];
+        if(prop.bit) {
+            if(typeof toSave[i] !== "undefined") throw `collision : ${typeIndex} ${prop.name}`;
+            toSave[i] = {value:prop.encode(objToPersist[prop.name]),bit:prop.bit};
+        }
+    }
+    const tmpBitArray = new BitArray(entityBitSize);
+    toSave.forEach((e)=>tmpBitArray.append(e.value,e.bit));
+    tmpBitArray.offset = 0;
+    bitArray.zPush(tmpBitArray,entityBitSize,zAreaStartOffset);
+}
 function injectedPersistProps(persistArray,objToPersist,typeIndex) {
-    for(let i in PERSIST_MODEL[typeIndex]) if(PERSIST_MODEL[typeIndex].hasOwnProperty(i)){
-        if(typeof persistArray[i] !== "undefined") throw "collision";
+    for(let i in PERSIST_MODEL[typeIndex]) {
+        if(typeof persistArray[i] !== "undefined") throw `collision : ${typeIndex} ${PERSIST_MODEL[typeIndex][i].name}`;
         persistArray[i] = PERSIST_MODEL[typeIndex][i].serializeFunc( objToPersist[PERSIST_MODEL[typeIndex][i].name])
     }
 }
 function injectedRestoreProps(srcArray,targetConfig,typeIndex) {
-    for(let i in PERSIST_MODEL[typeIndex]) if(PERSIST_MODEL[typeIndex].hasOwnProperty(i)){
-        if(typeof targetConfig[PERSIST_MODEL[typeIndex][i].name] !== "undefined" && parseInt(typeIndex)!==3) throw "collision"; // except for loopy globals
+    for(let i in PERSIST_MODEL[typeIndex]) {
+        //if(typeof targetConfig[PERSIST_MODEL[typeIndex][i].name] !== "undefined" && parseInt(typeIndex)!==3) throw `collision : ${typeIndex} ${PERSIST_MODEL[typeIndex][i].name}`; // except for loopy globals
         if(typeof srcArray[i] !== "undefined" && srcArray[i] !== null && srcArray[i] !== PERSIST_MODEL[typeIndex][i].defaultValue)
             targetConfig[PERSIST_MODEL[typeIndex][i].name] = PERSIST_MODEL[typeIndex][i].deserializeFunc( srcArray[i] );
     }
-    for(let i in EDIT_MODEL[typeIndex]) if(EDIT_MODEL[typeIndex].hasOwnProperty(i)){
+    for(let i in EDIT_MODEL[typeIndex]) {
         if(EDIT_MODEL[typeIndex][i].oninput) EDIT_MODEL[typeIndex][i].oninput({page:{target:targetConfig}},targetConfig[i]);
     }
 }
@@ -122,7 +146,9 @@ function get_PERSIST_TYPE_array() {
         Node,
         Edge,
         Label,
-        Loopy
+        Loopy,
+        //Group,
+        //GroupPair,
     ];
 }
 function objTypeToTypeIndex(objType) {

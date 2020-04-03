@@ -30,12 +30,10 @@ function Node(model, config){
 
 	// Default values...
 	const defaultProperties = {
-		id: Node._getUID,
-		x: 0,
-		y: 0,
 		radius: Node.DEFAULT_RADIUS,
 	};
 	injectedDefaultProps(defaultProperties,objTypeToTypeIndex("node"));
+	defaultProperties["id"]=Node._getUID;
 	_configureProperties(self, config, defaultProperties);
 	// Value: from 0 to 1
 	self.value = self.init;
