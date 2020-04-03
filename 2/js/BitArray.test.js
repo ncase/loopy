@@ -1,10 +1,10 @@
-function initBitArray(){
-    const rawBuffer = new ArrayBuffer(8);
+function initBitArray(size=8*8){
+    const rawBuffer = new ArrayBuffer(Math.ceil(size/8));
     const data = new DataView(rawBuffer);
     data.setUint32(0,242_424_242,false);
     return new BitArray(data);
 }
-function log(buffer){
+function binView(buffer,compactness=true){
     const view = new Uint8Array(buffer);
     let str = "";
     for(let i in view){
@@ -13,9 +13,29 @@ function log(buffer){
         for (let i=8;i>bin.length;i--) pad = `0${pad}`;
         str = `${str}${pad}${bin} `;
     }
-    console.log(str);
+    // compactView
+    if(!compactness) return str.trim();
+    else {
+        let compactStr = '';
+        const emptyBytes = str.split('00000000 ');
+        let empty = 0;
+        let i=0;
+        for(i in emptyBytes){
+            if(i>0) empty+=8;
+            if(emptyBytes[i]!==''){
+                if(empty>0) compactStr=`${compactStr}[0:${empty}b] ${emptyBytes[i]}`;
+                else compactStr=`${compactStr}${emptyBytes[i]}`;
+                empty=0;
+            }
+        }
+        if(empty>0) compactStr=`${compactStr}[0:${empty}b] ${emptyBytes[i]}`;
+        return compactStr.trim();
+    }
 }
-log(initBitArray().rawData.buffer);
+function log(bitArray){
+    console.log(bitArray.maxOffset,binView(bitArray.rawData.buffer));
+}
+log(initBitArray());
 
 testEqual(`get 0 for the first 4bit`, 0, async ()=>initBitArray().get(4,0));
 testEqual(`get 14 for the first 8bit`, 14, async ()=>initBitArray().get(8,0));
@@ -34,3 +54,53 @@ testEqual(`set 42 on 7bit at offset 20 (and verify previous and next data are pr
 
 testEqual(`append 1,0,1,42,0 (on 10bits)`,
     724, async ()=>initBitArray().append(1).append(0).append(1).append(42).append(0).get(10,0));
+testEqual(`set bitArray`,
+    '00001110 01110011 00010000 11100111 00110001 10011011 00100000 [0:8b] 00001110 01110011 00011001 10110010 [0:32b]',
+    async ()=>binView(initBitArray(16*8).set(initBitArray(),32,64).set(initBitArray(),32,20).rawData.buffer));
+testEqual(`export partial bitArray`,
+    '10101000',
+    async ()=>binView((new BitArray(16)).append(42,10).export(6,4).rawData.buffer));
+
+
+testEqual(`zGet first identical 30bit`,
+    '[0:24b] 10101000',
+    async ()=>binView((new BitArray(64)).append(42,30).append(parseInt('1111110001111110',2),16).zGet(30,0,0).rawData.buffer));
+testEqual(`zGet 2nd identical 30bit`,
+    '[0:24b] 10101000',
+    async ()=>binView((new BitArray(64)).append(42,30).append(parseInt('1111110001111110',2),16).zGet(30,0,1).rawData.buffer));
+
+testEqual(`equalSequence pass if equal`,
+    true,
+    async ()=>(new BitArray(15)).append(42,15).equalSequence(6,9,(new BitArray(10)).append(42,9),3));
+testEqual(`equalSequence fail if not equal`,
+    false,
+    async ()=>(new BitArray(15)).append(43,15).equalSequence(6,9,(new BitArray(10)).append(42,9),3));
+
+testEqual(`zPush some identical data on 30bit each`,
+    {offset:48/*90*/, bitView:'[0:24b] 10101011 11110001 11111000 [0:80b]'},
+    async ()=>{
+        const res = initBitArray(128).zPush(42,30).zPush(42,30).zPush(42,30);
+        return {offset:res.offset,bitView:binView(res.rawData.buffer)};
+    });
+testEqual(`zPush some similar data on 30bit each`,
+    {offset:55/*90*/, bitView:'[0:24b] 10101011 11101000 00001111 11110010 [0:72b]'},
+    async ()=>{
+        const res = initBitArray(128).zPush(42,30).zPush(43,30).zPush(42,30);
+        return {offset:res.offset,bitView:binView(res.rawData.buffer)};
+    });
+testEqual(`zPush some similar data on 100bit each`,
+    {offset:135/*200*/, bitView:'[0:88b] 00101010 00001101 01000000 00011010 10101011 01100000 [0:72b]'},
+    async ()=>{
+        const line0 = (new BitArray(100)).set(42,6,90);
+        const line1 = (new BitArray(100)).set(42,6,90).set(42,6,40);
+        const res = (new BitArray(202)).zPush(line0,100).zPush(line1,100);
+        return {offset:res.offset,bitView:binView(res.rawData.buffer)};
+    });
+xtestEqual(`zPush some similar data on 100bit each (and don't compress when it's not effective`,
+    {offset:120/*200*/, bitView:'[0:88b] 00101010 00001101 01000000 00011010 1010 1 ????? 000 [0:??b]'},
+    async ()=>{
+        const line0 = (new BitArray(100)).set(42,6,90);
+        const line1 = (new BitArray(100)).set(43,6,90).set(42,6,40);
+        const res = (new BitArray(202)).zPush(line0,100).zPush(line1,100);
+        return {offset:res.offset,bitView:binView(res.rawData.buffer)};
+    });

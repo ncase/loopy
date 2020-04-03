@@ -9,13 +9,19 @@
     let testOk = 0;
     let skippedTest = 0;
     const testList = [];
-    function xtest() {skippedTest++;}
+    const xtest = xtestEqual = ()=>skippedTest++;
     function testEqual(message,pendingResult,testFunc){
         testList.push(async ()=>{
             try{
                 const res = await testFunc();
-                if(res===pendingResult)testOk++;
-                else console.error(`${res} should be ${pendingResult} in test : ${message}`);
+                const strRes = JSON.stringify(res);
+                const strPending = JSON.stringify(pendingResult);
+                if(strRes===strPending)testOk++;
+                else {
+                    console.error(`${strRes} should be ${strPending} in test : ${message}`);
+                    console.log(strRes, "received");
+                    console.log(strPending,"control");
+                }
             } catch (e) {
                 console.error(message,e);
             }
