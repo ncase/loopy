@@ -15,9 +15,7 @@ jobs:
           mkdir .public
           mv * .public/
           mv .public public
-          ls
-          ls public
-          rm public/LICENCE.txt public/README.md
+          rm public/LICENSE.txt public/README.md
       - name: SSH setup
         env:
           DEPLOY_KEY: ${{ secrets.deploy_key }}
