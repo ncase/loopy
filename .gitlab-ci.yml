@@ -7,8 +7,9 @@ build:
   stage: build
   image: node:current-alpine
   script:
-    - mkdir public
-    - mv * public/
+    - mkdir .public
+    - mv * .public/
+    - mv .public public
     - rm public/LICENSE.txt public/README.md
   artifacts:
     paths:

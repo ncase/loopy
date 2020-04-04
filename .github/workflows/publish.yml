@@ -12,8 +12,9 @@ jobs:
       - uses: actions/checkout@v1
       - name: build
         run: |
-          mkdir public
-          mv * public/
+          mkdir .public
+          mv * .public/
+          mv .public public
           rm public/LICENCE.txt public/README.md
       - name: SSH setup
         env:
