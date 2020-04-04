@@ -1,0 +1,30 @@
+name: Deploy
+on:
+  push:
+    branches:
+      - gh-pages
+
+jobs:
+  deploy_job:
+    name: Deploy Job
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1
+      - name: build
+        run: |
+          mkdir public
+          mv * public/
+          rm public/LICENCE.txt public/README.md
+      - name: SSH setup
+        env:
+          DEPLOY_KEY: ${{ secrets.deploy_key }}
+          #KNOWN_HOSTS: ${{ secrets.known_hosts }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "${DEPLOY_KEY}" > ~/.ssh/my_rsync_key
+          echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+          echo "IdentityFile ~/.ssh/my_rsync_key" >> ~/.ssh/config
+          chmod -R 700 ~/.ssh
+      - name: Rsync deployment
+        run: |
+          rsync -az -e ssh --delete public/ gammanu@1000i100.fr:~/lo0p.it
