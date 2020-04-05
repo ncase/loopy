@@ -123,7 +123,8 @@ injectProperty("edge", "lengthInfoDetail",{
         index: 99,
         simpleOnly: true,
         html:`(to make a stronger relationship, draw multiple arrows!)
-            <br><br>(to make a delayed relationship, draw longer arrows)`
+            <br><br>(to make a delayed relationship, draw longer arrow : <span class="component_label"></span>)`,
+        labelFunc: (v,edge)=>`${(edge.getArrowLength()/240).toPrecision(2)}s`,
     }
 });
 injectProperty("edge", "lengthInfoEssential",{
@@ -131,6 +132,8 @@ injectProperty("edge", "lengthInfoEssential",{
         index: 98,
         advanced: true,
         html:`Stronger link : multiple arrows
-            <br>Delay signal : longer arrows`
+            <br>Delay signal : longer arrow
+            <br/>Signal thru this arrow : <span class="component_label"></span>`,
+        labelFunc: (v,edge)=>`${(edge.getArrowLength()/240).toPrecision(3)}s`,
     }
 });

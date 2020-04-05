@@ -11,6 +11,15 @@ function updateNodeSize (self,v){
 injectProperty("node", "id",{persist:{index:0,jsonOnly:true}});
 injectProperty("node", "x",{persist:{index:1,binFunc:factoryRatio(10,innerWidth),serializeFunc:v=>Math.round(v)}});
 injectProperty("node", "y",{persist:{index:2,binFunc:factoryRatio(10,innerHeight),serializeFunc:v=>Math.round(v)}});
+/**
+ * toggleable visibility in play mode (visible, hidden in play mode, hidden when dead)
+ *
+ * toggleable interactivity in play mode (read-only, user interactive)
+ *
+ * custom image url (to load an image for the circle
+ *
+ * borderless switch (if borderless, scale it up a bit and remove borders)
+ */
 injectProperty("node", "label",{
     defaultValue:"?",
     immutableDefault:true,

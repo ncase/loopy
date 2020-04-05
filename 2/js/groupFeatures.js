@@ -1,34 +1,21 @@
 
-// Label features
-injectProperty("group", "textColor",{
-    defaultValue:-1,
-    persist:4,
-    sideBar:{
-        index: 1,
-        options: [-1,0,1,2,3,4,5],
-        label: "Text color :",
-        advanced: true
-    }
+injectProperty("group", "name",{
 });
-injectProperty("group", "visibility",{
-    defaultValue:0,
-    persist:3,
-    sideBar:{
-        index: 2,
-        options: [0,1],
-        labelFunc: (v)=>`Show : ${v===1?'only in edit mode':'always'}`,
-        advanced: true
-    }
+injectProperty("group", "contentVisibility",{
+    /**
+     * always visible
+     * always hidden in play mode
+     * only visible when including an active signal
+     * hidden until an incoming signal reach it (then still visible)
+
+     when a group is hidden all his content is hidden with it.
+     if an element is in more than one group, it will be shown if at least one of these group is in visible state.
+     */
 });
-injectProperty("group", "text",{
-    defaultValue:"...",
-    persist:{
-        index:2,
-        deserializeFunc:decodeURIComponent
-    },
-    sideBar:{
-        index: 3,
-        label: "Label :",
-        textarea:true
-    }
+injectProperty("group", "bgVisibility",{
+    // default: when visible (contentVisibility)
+    // only in edit mode
+    // always but scene cam don't resize to it
+});
+injectProperty("group", "bgColor",{
 });

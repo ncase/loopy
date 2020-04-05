@@ -258,6 +258,10 @@ function Edge(model, config){
 		// PRE-CALCULATE THE MATH (for retina canvas) //
 		////////////////////////////////////////////////
 
+		if(loopy.sidebar.currentPage.target === self){
+			injectPropsLabelInSideBar(loopy.sidebar.currentPage,objTypeToTypeIndex('edge'));
+		}
+
 		// Edge case: if arc is EXACTLY zero, whatever, add 0.1 to it.
 		if(self.arc===0) self.arc=0.1;
 
