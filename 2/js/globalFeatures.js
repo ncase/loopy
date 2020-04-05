@@ -24,6 +24,22 @@ injectProperty("loopy", "colorLogic",{
         oninput: factorySwitchMode("colorAestheticMode","colorLogicMode")
     }
 });
+/*
+injectProperty("loopy", "cameraMode",{
+    defaultValue:0,
+    persist:3,
+    sideBar:{
+        index: 3,
+        options: [0, 1,2],
+        labelFunc: (v)=>`Camera : ${[
+            "resize to scene", // scene cam
+            "follow signals", // signal cam
+            "user controllable", // free cam
+        ][v]}`,
+        advanced: true
+    }
+});
+*/
 /*injectProperty("loopy", "embed",{
     defaultValue:0, // bool
     persist:3, // reserved

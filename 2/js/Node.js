@@ -101,19 +101,94 @@ function Node(model, config){
 
 	self.sendSignal = function(signal){
 		let myEdges = self.model.getEdgesByStartNode(self);
+
+		const quantitativeAcceptingEdges = [];
 		for(let i=0; i<myEdges.length; i++){
-			myEdges[i].addSignal(signal);
+			const edge = myEdges[i];
+			const newSignal = {
+				delta: signal.delta>0?0.33:-0.33,
+				color: signal.color,
+				age: signal.age,
+				vital:signal.vital,
+			};
+
+			// random half filtering
+			if(edge.filter===5 && Math.random()<.5) continue;
+			// vital filtering
+			if(edge.filter===1 && signal.vital) continue;
+			if(edge.filter===2 && !signal.vital) continue;
+			if(edge.filter===2 && signal.delta>0) continue;
+			if(edge.filter===3 && !signal.vital) continue;
+			if(edge.filter===2 && signal.delta<0) continue;
+			if(edge.filter===4 && !signal.vital) continue;
+			if(edge.filter>=2 && edge.filter<=4) newSignal.vital = false;
+			// vital emitting
+			if(edge.quantitative===2 || newSignal.vital) {
+				newSignal.vital=true;
+				edge.addSignal(newSignal);
+				continue;
+			}
+
+			// Sign constraint filtering
+			if(edge.signBehavior===2 && signal.delta>0) continue;
+			if(edge.signBehavior===3 && signal.delta<0) continue;
+			// Color constraint filtering
+			if(loopy.colorLogic===1 && edge.edgeFilterColor!== -1 && edge.edgeFilterColor !== signal.color) continue;
+
+			if(loopy.colorLogic===1 && self.hue !== signal.color) {
+				if(edge.quantitative===0) edge.addSignal(newSignal);
+				if(edge.quantitative===1) quantitativeAcceptingEdges.push(edge);
+			}
+
+			// Threshold filtering
+			if(self.value<self.overflow && signal.delta>0) continue;
+			if(self.value>self.underflow && signal.delta<0) continue;
+
+			// Only propagate beyond threshold
+			//if(!self.transmissionBehavior) self.sendSignal(newSignal);
+			//else if (self.value < 0 && self.transmissionBehavior===2) self.die();
+			//else if(loopy.colorLogic===1){
+			//	if(self.value<0 || self.value>1) self.sendSignal(newSignal);
+			//	else if(self.hue !== newSignal.color) self.sendSignal(newSignal);
+			//} else if(self.value<0 || self.value>1) self.sendSignal(newSignal);
+			//if(self.value<0) self.value = 0;
+			//if(self.value>1) self.value = 1;
+
+			if(edge.quantitative===0) edge.addSignal(newSignal);
+			if(edge.quantitative===1) quantitativeAcceptingEdges.push(edge);
 		}
+		// Quantitative handling
+
+		if(quantitativeAcceptingEdges.length){
+			let delta;
+			if( (loopy.colorLogic===1 && self.hue !== signal.color)
+				|| (self.value>=self.overflow && self.value<=self.underflow)
+			) delta = signal.delta;
+			if(loopy.colorLogic===0 || self.hue === signal.color){
+				if(self.value>self.overflow) delta = (self.value-self.overflow)*self.size;
+				else if(self.value<self.underflow) delta = (self.value-self.underflow)*self.size;
+				else console.warn(`how can we be here ? value: ${self.value} underflow: ${self.underflow} overflow: ${self.overflow}`);
+			}
+			//console.log(`node.value:${self.value.toPrecision(2)} signal.delta:${signal.delta.toPrecision(2)} computedDelta:${delta.toPrecision(2)}`);
+			signal.delta = delta/quantitativeAcceptingEdges.length;
+			self.value -= delta/self.size;
+			for(let i=0; i<quantitativeAcceptingEdges.length; i++) quantitativeAcceptingEdges[i].addSignal(signal);
+		}
+
+		if(self.value<0) self.value = 0;
+		if(self.value>1) self.value = 1;
 	};
 
 	self.takeSignal = function(signal,fromEdge=undefined){
 		if(loopy.colorLogic && self.foreignColor && signal.color!==self.hue) return; // drop signal
-		//if(loopy.colorLogic && loopy.greenLife && signal.color===3) self.live();
-		//if(loopy.colorLogic && loopy.redKill && signal.color===0) self.die();
+		if(signal.vital && signal.delta>0) return self.live(signal);
+		if(signal.vital && signal.delta<0) return self.die(signal);
 		if(self.died) return;
 		if(loopy.colorLogic && fromEdge && fromEdge.edgeTargetColor===-3) return self.hue = signal.color;
 		if(!self.deltaPool) self.deltaPool=0;
 		if(!self.aggregate) self.aggregate = 0;
+
+		//console.log(`state when received, node.value:${self.value.toPrecision(2)} signal.delta:${signal.delta.toPrecision(2)}`);
 
 		if(self.hue === signal.color || loopy.colorLogic===0){
 			self.value += signal.delta/self.size;
@@ -122,6 +197,18 @@ function Node(model, config){
 			// _offsetVel += 0.08 * (signal.delta/Math.abs(signal.delta));
 			if(signal.delta>0) _offsetVel -= 6 ;
 			if(signal.delta<0) _offsetVel += 6 ;
+
+			// Implode ?
+			if((self.explode === -1 || self.explode === 2) && self.value<0){
+				self.value = 0;
+				return self.die(signal);
+			}
+			// Explode ?
+			if((self.explode === 1 || self.explode === 2) && self.value>1) {
+				self.value = 1;
+				return self.die(signal);
+			}
+
 			if(self.aggregate) return;
 		}
 		self.lastSignalAge = signal.age;
@@ -130,24 +217,21 @@ function Node(model, config){
 		if(loopy.colorLogic===0 || self.hue === signal.color){
 			self.valueBeforeAggregationPool = self.value - signal.delta/self.size;
 		}
-		if(self.hue !== signal.color && loopy.colorLogic===1){
+		if(loopy.colorLogic===1 && self.hue !== signal.color){
 			const newSignal = {delta:signal.delta,age:signal.age,color:signal.color,vital:signal.vital};
-			self.sendSignal(newSignal);
+			return self.sendSignal(newSignal);
 		}
 
 		const signalSpeedRatio = 8 / Math.pow(2,self.loopy.signalSpeed);
 		const aggregateFunc = () => {
 			if(self.loopy.mode===Loopy.MODE_PLAY && !self.reseted){
-				const newSignal = {delta:self.deltaPool*self.size,age:self.lastSignalAge,color:signal.color,vital:signal.vital};
-				// Only propagate beyond threshold
-				if(!self.transmissionBehavior) self.sendSignal(newSignal);
-				else if (self.value < 0 && self.transmissionBehavior===2) self.die();
-				else if(loopy.colorLogic===1){
-					if(self.value<0 || self.value>1) self.sendSignal(newSignal);
-					else if(self.hue !== newSignal.color) self.sendSignal(newSignal);
-				} else if(self.value<0 || self.value>1) self.sendSignal(newSignal);
-				if(self.value<0) self.value = 0;
-				if(self.value>1) self.value = 1;
+				const newSignal = {
+					delta:self.deltaPool*self.size,
+					age:self.lastSignalAge,
+					color:signal.color,
+					vital:signal.vital
+				};
+				self.sendSignal(newSignal);
 			}
 			self.aggregate=false;
 			self.deltaPool=0;
@@ -296,7 +380,7 @@ function Node(model, config){
 			ctx.save();
 			ctx.beginPath();
 			const offset = 2*Math.PI*(r*self.overflow+4) - 2*Math.PI*(r*self.overflow);
-			console.log(offset,r*self.overflow,2*Math.PI*(r*self.overflow),2*Math.PI*(r*self.overflow+4));
+			//console.log(offset,r*self.overflow,2*Math.PI*(r*self.overflow),2*Math.PI*(r*self.overflow+4));
 			ctx.arc(0, 0, r*self.overflow+4, 0, Math.TAU, false);
 			ctx.setLineDash([4, 20+offset/40]);
 			ctx.lineDashOffset = -4;
@@ -392,15 +476,15 @@ function Node(model, config){
 	// NODE DIE //////////////////////////
 	//////////////////////////////////////
 
-	self.die = function(){
-		if(!self.died && loopy.colorLogic && loopy.redKill) self.sendSignal({delta:-.33,color:0});
+	self.die = function(signal){
+		if(!self.died) self.sendSignal({delta:-.33,color:signal?signal.color:self.hue,vital:true});
 		self.died=true;
 		if(self.hue!==6) self.oldhue = self.hue;
 		self.hue=6;
-		//self.value = 0;
 		publish("died",[self]);
 	};
-	self.live = function(){
+	self.live = function(signal){
+		if(signal) self.sendSignal({delta:.33,color:signal?signal.color:self.hue,vital:true});
 		self.died=false;
 		self.hue = typeof self.oldhue !== 'undefined'?self.oldhue:self.hue;
 		publish("live",[self]);

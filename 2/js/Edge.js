@@ -48,21 +48,18 @@ function Edge(model, config){
 	self.signalSpeed = 0;
 	self.addSignal = function(signal){
 
-		// Filter edge
-		if(self.signBehavior===2 && self.strength<0 && signal.delta>0) return;
-		if(self.signBehavior===2 && self.strength>0 && signal.delta<0) return;
-		if(self.edgeFilterColor!== -1 && self.edgeFilterColor !== signal.color) return;
-
-		// choose random color from possible colors
-		if(loopy.colorLogic===1 && self.edgeTargetColor=== -2){
-			let candidateColors = {};
-			const outputEdges = loopy.model.getEdgesByStartNode(self.to);
-			outputEdges.forEach((edge)=>candidateColors[edge.edgeFilterColor]=1);
-			if(candidateColors[-1]) candidateColors = [0,1,2,3,4,5];
-			else candidateColors = Object.keys(candidateColors);
-			signal.finalColor = candidateColors[Math.floor(Math.random()*candidateColors.length)];
-			console.log(signal.finalColor, signal.color, signal);
-		}
+		const edge = self;
+		if(loopy.colorLogic===1){
+			if(edge.edgeTargetColor=== -2) { // choose random color from possible colors
+				let candidateColors = {};
+				const outputEdges = loopy.model.getEdgesByStartNode(edge.to);
+				outputEdges.forEach((toEdge) => candidateColors[toEdge.edgeFilterColor] = 1);
+				if (candidateColors[-1]) candidateColors = [0, 1, 2, 3, 4, 5];
+				else candidateColors = Object.keys(candidateColors).map((v)=>parseInt(v));
+				signal.finalColor = candidateColors[Math.floor(Math.random() * candidateColors.length)];
+			} else if(edge.edgeTargetColor<0)signal.finalColor = signal.color; // keep initial color
+			else signal.finalColor = edge.edgeTargetColor; // change to color
+		} else signal.finalColor = edge.to.hue; // no logic just aesthetic !
 
 		// IF ALREADY TOO MANY, FORGET IT
 		if(Edge.allSignals.length>Edge.MAX_SIGNALS){
@@ -75,21 +72,20 @@ function Edge(model, config){
 		}
 
 		// Re-create signal
-		const delta = signal.delta;
 		let age;
 		if(signal.age===undefined){
 			// age = 13; // cos divisible by 1,2,3,4 + 1
 			age = 1000000; // actually just make signals last "forever".
-		}else{
-			age = signal.age-1;
-		}
+		} else age = signal.age-1;
 		const newSignal = {
-			delta: delta,
+			delta: signal.delta,
 			position: 0,
-			scaleX: Math.abs(delta),
-			scaleY: delta,
+			scaleX: Math.abs(signal.delta),
+			scaleY: signal.vital?Math.abs(signal.delta):signal.delta,
 			color: signal.color,
-			age: age
+			finalColor: signal.finalColor,
+			vital:signal.vital,
+			age: age,
 		};
 
 		// If it's expired, forget it.
@@ -137,14 +133,18 @@ function Edge(model, config){
 		while(lastSignal && lastSignal.position>=1){
 
 			// Actually pass it along
-			if(self.signBehavior===1){
-				if(self.strength<0) lastSignal.delta = -Math.abs(lastSignal.delta);
-				else lastSignal.delta = Math.abs(lastSignal.delta);
-			} else if(self.signBehavior===0){
+			if(loopy.loopyMode===0 && self.signBehavior===0){
 				lastSignal.delta *= self.strength;
+			}else {
+				switch (self.signBehavior) {
+					case 0:break;
+					case 1: lastSignal.delta = - lastSignal.delta;break;
+					case 4: lastSignal.delta = - Math.abs(lastSignal.delta);break;
+					case 5: lastSignal.delta = Math.abs(lastSignal.delta);break;
+				}
 			}
-			if(loopy.colorLogic===1 && self.edgeTargetColor>= 0) lastSignal.color = self.edgeTargetColor;
-			if(loopy.colorLogic===1 && self.edgeTargetColor=== -2) lastSignal.color = typeof lastSignal.finalColor!== "undefined"?lastSignal.finalColor:lastSignal.color;
+
+			lastSignal.color = lastSignal.finalColor;
 			self.to.takeSignal(lastSignal, self);
 
 			// Pop it, move on down
@@ -180,14 +180,15 @@ function Edge(model, config){
 			ctx.scale(size, size);
 
 			// Signal's COLOR, BLENDING
-			let fromColor = Node.COLORS[self.from.hue];
-			let toColor = Node.COLORS[self.to.hue];
-			if(loopy.colorLogic===1){
-				fromColor = Node.COLORS[signal.color];
+			//let fromColor = Node.COLORS[self.from.hue];
+			const fromColor = Node.COLORS[signal.color];
+			//let toColor = Node.COLORS[self.to.hue];
+			const toColor = Node.COLORS[signal.finalColor];
+			/*if(loopy.colorLogic===1){
 				if(self.edgeTargetColor=== -2) toColor = Node.COLORS[typeof signal.finalColor !== "undefined"?signal.finalColor:signal.color];
 				else if(self.edgeTargetColor=== -1 || self.edgeTargetColor=== -3) toColor = Node.COLORS[signal.color];
 				else toColor = Node.COLORS[self.edgeTargetColor];
-			}
+			}*/
 			let blend;
 			const bStart=0.4, bEnd=0.6;
 			if(signal.position<bStart){
