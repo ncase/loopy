@@ -81,29 +81,38 @@ function BitArray(arrayBufferOrBitSize){
         const maxPrevious = Math.min(zc.length,Math.pow(2,refBitSize));
 
         const pushCandidates = [];
+        let partialCandidate = new BitArray(bitSize+1);
+        let srcOffsetPartial = 0;
 
-        outLoop: for (let offset=0;offset<bitSize-minFragmentSize;offset++){
-            for(let patternSize=bitSize-offset;patternSize>minFragmentSize;patternSize--){
+        finish: for (let offset=0;offset<bitSize-minFragmentSize;offset++){
+            outLoop: for(let patternSize=bitSize-offset;patternSize>minFragmentSize;patternSize--){
                 for(let i = 0;i<maxPrevious;i++){
                     if(value.equalSequence(patternSize,offset,zc[zc.length-(1+i)].content,offset)){
                         const candidate =new BitArray(bitSize+1);
-                        candidate.append(1,1);// this line contain references
-                        if(offset){
+                        if(srcOffsetPartial===0) candidate.append(1,1);// this line contain references
+                        candidate.append(partialCandidate.resetOffset(),partialCandidate.maxOffset);
+                        if(offset-srcOffsetPartial){
                             candidate.append(0,1);// unique data area
-                            candidate.append(offset,bitForDataSize); // for this number of bits
-                            candidate.append(value,offset);
+                            candidate.append(offset-srcOffsetPartial,bitForDataSize); // for this number of bits
+                            candidate.append(value.setOffset(srcOffsetPartial),offset-srcOffsetPartial);
                         }
                         candidate.append(1,1);// ref data area
                         candidate.append(patternSize,bitForDataSize); // referred data size
                         candidate.append(i,refBitSize);
                         if(offset+patternSize<bitSize){
+                            srcOffsetPartial = offset+patternSize;
+                            partialCandidate = new BitArray(bitSize+1);
+                            partialCandidate.append(candidate.resetOffset(),candidate.maxOffset);
                             candidate.append(0,1);// unique data area
                             candidate.append(bitSize-(offset+patternSize),bitForDataSize); // for this number of bits
                             candidate.append(value.export(bitSize-(offset+patternSize),offset+patternSize).resetOffset(),bitSize-(offset+patternSize));
-                            //TODO: handle multi reference
+                            pushCandidates.push(candidate);
+                            offset=srcOffsetPartial;
+                            break outLoop;
+                        } else {
+                            pushCandidates.push(candidate);
+                            break finish;
                         }
-                        pushCandidates.push(candidate);
-                        break outLoop;
                     }
                 }
             }

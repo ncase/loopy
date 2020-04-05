@@ -282,6 +282,42 @@ function Node(model, config){
 		ctx.fillStyle = color;
 		ctx.fill();
 
+		if(self.overflow>0){
+			// TODO: show overflow visual
+			ctx.save();
+			ctx.beginPath();
+			ctx.arc(0, 0, r*self.overflow, 0, Math.TAU, false);
+			ctx.setLineDash([4, 4, 4, 12]);
+			ctx.lineWidth = 4;
+			ctx.strokeStyle = Node.COLORS[7];
+			ctx.stroke();
+			ctx.restore();
+
+			ctx.save();
+			ctx.beginPath();
+			const offset = 2*Math.PI*(r*self.overflow+4) - 2*Math.PI*(r*self.overflow);
+			console.log(offset,r*self.overflow,2*Math.PI*(r*self.overflow),2*Math.PI*(r*self.overflow+4));
+			ctx.arc(0, 0, r*self.overflow+4, 0, Math.TAU, false);
+			ctx.setLineDash([4, 20+offset/40]);
+			ctx.lineDashOffset = -4;
+			ctx.lineWidth = 4;
+			ctx.strokeStyle = Node.COLORS[7];
+			ctx.stroke();
+			ctx.restore();
+		}
+		if(self.underflow<1){
+			// show underflow visual
+		}
+		if(self.aggregationLatency>0){
+			// show aggregationLatency visual (and why not animation)
+		}
+		if(self.explode === -1 || self.explode === 2){
+			// show this node can implode
+		}
+		if(self.explode === 1 || self.explode === 2){
+			// show this node can explode
+		}
+
 		// Text!
 		if(self.label){
 			let fontsize = 40;

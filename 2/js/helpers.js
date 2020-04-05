@@ -366,11 +366,12 @@ function entityRefBitSize(){
 	const maxEntities = Object.values(entitiesCount).reduce((acc,cur)=>Math.max(acc,cur),0);
 	return Math.ceil(Math.log2(maxEntities));
 }
-function entitiesSize(){
+function entitiesSize(ceil8=false){
 	const types = get_PERSIST_TYPE_array().map(t=>`${t.name.toLowerCase()}s`);
 	const entities = {};
 	for(let i in PERSIST_MODEL)
-		PERSIST_MODEL.forEach((t,i)=>entities[types[i]]=t.reduce((acc,cur)=>acc+cur.bit||acc,0));
+		PERSIST_MODEL.forEach((t,i)=>entities[types[i]]=t.reduce((acc,cur)=>acc+(typeof cur.bit==="function"?cur.bit():cur.bit)||acc,0));
+	if(ceil8) for(let i in entities)entities[i]=Math.ceil(entities[i]/8)*8;
 	return entities;
 }
 function statArray(arr){

@@ -331,14 +331,31 @@ function Model(loopy){
 		let size = 10+Object.keys(entitiesCount).length*bitToRefAnyEntity+Object.keys(entitiesSizes).length*8+entitiesSizes['loopys'];//+stringArea.length*8;
 		for (let entity in entitiesCount) size+=entitiesCount[entity]*entitiesSizes[entity];
 		console.log(`uncompressed bin size : ${size}b + strArea`);
+
 		const bitArray = new BitArray(size);
 		bitArray.append(0,1);// Version number (This Version Start With 0, on 1bit, to allow evolution starting with 1)
+		bitArray.append(0,1);// 0: withSpecific optimisations 1:padded to Bytes for better LZMA compression
 		bitArray.append(embed?1:0,1);
 		bitArray.append(entitiesKindsCount,4);
 		bitArray.append(bitToRefAnyEntity,4);
 		for (let entity in entitiesCount) bitArray.append(entitiesCount[entity],bitToRefAnyEntity);
 		for (let entity in entitiesSizes) if(entity==="loopys" || entitiesCount[entity]) bitArray.append(entitiesSizes[entity],8);
 		saveToBinary(bitArray,loopy,3,entitiesSizes["loopys"],bitArray.maxOffset);
+
+		const entitiesSizes8 = entitiesSize(true);
+		let size8 = Math.ceil(bitArray.maxOffset/8)*8;
+		console.log(bitArray.maxOffset,size8);
+		for (let entity in entitiesCount) size8+=entitiesCount[entity]*entitiesSizes8[entity];
+		const bin8 =  new BitArray(size8);
+		bin8.append(bitArray.resetOffset(),bitArray.maxOffset);
+		bitArray.set(1,1,1); // 0: withSpecific optimisations 1:padded to Bytes for better LZMA compression
+		const nodesAreaStart8 = bin8.maxOffset;
+		loopy.model.nodes.forEach((n)=>saveToBinary(bin8,n,0,entitiesSizes8["nodes"],nodesAreaStart8,true));
+		const edgesAreaStart8 = bin8.maxOffset;
+		loopy.model.edges.forEach((n)=>saveToBinary(bin8,n,1,entitiesSizes8["edges"],edgesAreaStart8,true));
+		const labelsAreaStart8 = bin8.maxOffset;
+		loopy.model.labels.forEach((n)=>saveToBinary(bin8,n,2,entitiesSizes8["labels"],labelsAreaStart8,true));
+
 		const nodesAreaStart = bitArray.maxOffset;
 		loopy.model.nodes.forEach((n)=>saveToBinary(bitArray,n,0,entitiesSizes["nodes"],nodesAreaStart));
 		const edgesAreaStart = bitArray.maxOffset;
@@ -357,17 +374,31 @@ function Model(loopy){
 
 		const realBytesSize = Math.ceil(bitArray.offset/8);
 		const bin = new Uint8Array(realBytesSize + stringArea.buffer.byteLength);
-		console.log(realBytesSize);
 		bin.set(new Uint8Array(bitArray.rawData.buffer,0,realBytesSize), 0);
 		bin.set(stringArea, realBytesSize);
 
 		const compressedBin = LZMA.compress(bin,9).map((v)=>v<0?v+256:v);
-		console.log(bin.buffer.byteLength,compressedBin.length);
+
+		const realBytesSize8 = Math.ceil(bin8.maxOffset/8);
+		const bin8WithStr = new Uint8Array(realBytesSize8 + stringArea.buffer.byteLength);
+		bin8WithStr.set(new Uint8Array(bin8.rawData.buffer,0,realBytesSize8), 0);
+		bin8WithStr.set(stringArea, realBytesSize8);
+
+		const z8Bin = LZMA.compress(bin8WithStr,9).map((v)=>v<0?v+256:v);
+		console.log(`bin: ${stdB64ToUrl(base64EncArr(bin)).length}, zbin: ${stdB64ToUrl(base64EncArr(compressedBin)).length}, 8bin: ${stdB64ToUrl(base64EncArr(bin8WithStr)).length}, z8bin: ${stdB64ToUrl(base64EncArr(z8Bin)).length}`);
 		if(bin.buffer.byteLength < compressedBin.length) return bin;
 		return compressedBin;
 	};
-	self.serializeToUrl = (embed)=> stdB64ToUrl(base64EncArr(LZMA.compress(self.serializeToJson(embed),9).map((v)=>v<0?v+256:v)));
-	self.serializeToJson = function(embed){
+	self.serializeToUrl = (embed)=> {
+		const bin = stdB64ToUrl(base64EncArr(self.serializeToBinary(embed)));
+		const json = self.serializeToLegacyJson(embed);
+		const compressedJson = stdB64ToUrl(base64EncArr(LZMA.compress(json,9).map((v)=>v<0?v+256:v)));
+		console.log(`json: ${json.length}, zjson: ${compressedJson.length}`);
+		if(json.length<bin.length && json.length<compressedJson.length) return json;
+		if(compressedJson.length<bin.length && compressedJson.length<json.length) return compressedJson;
+		return bin;
+	};
+	self.serializeToLegacyJson = function(embed){
 
 		const data = [];
 		// 0 - nodes

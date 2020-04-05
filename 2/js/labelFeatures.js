@@ -34,3 +34,15 @@ injectProperty("label", "text",{
         textarea:true
     }
 });
+injectProperty("label", "href",{
+    defaultValue:"",
+    persist:{
+        index:5,
+        deserializeFunc:decodeURIComponent
+    },
+    sideBar:{
+        index: 4,
+        label: "Clickable ? Add an Url :",
+        advanced: true
+    }
+});

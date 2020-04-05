@@ -89,15 +89,15 @@ testEqual(`zPush some similar data on 30bit each`,
         return {offset:res.offset,bitView:binView(res.rawData.buffer)};
     });
 testEqual(`zPush some similar data on 100bit each`,
-    {offset:135/*200*/, bitView:'[0:88b] 00101010 00001101 01000000 00011010 10101011 01100000 [0:72b]'},
+    {offset:136/*200*/, bitView:'[0:88b] 00101010 00001101 01000000 00000101 10101101 10111000 [0:72b]'},
     async ()=>{
         const line0 = (new BitArray(100)).set(42,6,90);
         const line1 = (new BitArray(100)).set(42,6,90).set(42,6,40);
         const res = (new BitArray(202)).zPush(line0,100).zPush(line1,100);
         return {offset:res.offset,bitView:binView(res.rawData.buffer)};
     });
-xtestEqual(`zPush some similar data on 100bit each (and don't compress when it's not effective`,
-    {offset:120/*200*/, bitView:'[0:88b] 00101010 00001101 01000000 00011010 1010 1 ????? 000 [0:??b]'},
+testEqual(`zPush some similar data on 100bit each (and don't compress when it's not effective)`,
+    {offset:149/*200*/, bitView:'[0:88b] 00101010 00001101 01000000 00000101 10101101 10010000 00000101 10000000 [0:56b]'},
     async ()=>{
         const line0 = (new BitArray(100)).set(42,6,90);
         const line1 = (new BitArray(100)).set(43,6,90).set(42,6,40);

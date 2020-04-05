@@ -95,7 +95,12 @@ function Label(model, config){
 	//////////////////////////////////////
 
 	self.breakText = function(){
-		return self.text.split(/\n/);
+		const lines = self.text.split(/\n/);
+		if(self.href) lines[0] = `🔗 ${lines[0]}`;
+		if(self.loopy.mode===Loopy.MODE_EDIT && self.loopy.loopyMode){
+			if(!self.visibility) lines.unshift('👁'); // '👁 ⯈'
+		}
+		return lines;
 	};
 
 	self.getBounds = function(){
@@ -124,6 +129,27 @@ function Label(model, config){
 		};
 
 	};
+	subscribe("mouseclick",function(){
+
+		if(self.loopy.mode!==Loopy.MODE_PLAY) return;
+		if(!self.href) return;
+
+		// Did you click on a label? If so, edit THAT label.
+		const clickedLabel = self.isPointInLabel(Mouse.x, Mouse.y);
+		if(clickedLabel){
+			open(self.href,'_blank');
+		}
+	});
+	/*subscribe("mousemove",function(){
+
+		if(self.loopy.mode!==Loopy.MODE_PLAY) return;
+		if(!self.href) return;
+
+		const hoveredLabel = self.isPointInLabel(Mouse.x, Mouse.y);
+		if(hoveredLabel){
+			// TODO: draw a circle centerd on mouse to show it's clickable
+		}
+	});*/
 
 	self.isPointInLabel = function(x, y){
 		return _isPointInBox(x,y, self.getBounds());

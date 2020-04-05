@@ -109,19 +109,22 @@ function injectedDefaultProps(targetConfig,typeIndex) {
         targetConfig[i]=objType.default[i];
     }
 }
-function saveToBinary(bitArray,objToPersist,typeIndex,entityBitSize,zAreaStartOffset){
+function saveToBinary(bitArray,objToPersist,typeIndex,entityBitSize,zAreaStartOffset,pad8=false){
     const toSave = [];
     for(let i in PERSIST_MODEL[typeIndex]) {
         const prop = PERSIST_MODEL[typeIndex][i];
         if(prop.bit) {
+            let bitSize = prop.bit;
+            if(typeof prop.bit === "function") bitSize = prop.bit();
             if(typeof toSave[i] !== "undefined") throw `collision : ${typeIndex} ${prop.name}`;
-            toSave[i] = {value:prop.encode(objToPersist[prop.name]),bit:prop.bit};
+            toSave[i] = {value:prop.encode(objToPersist[prop.name]),bit:bitSize};
         }
     }
     const tmpBitArray = new BitArray(entityBitSize);
     toSave.forEach((e)=>tmpBitArray.append(e.value,e.bit));
     tmpBitArray.offset = 0;
-    bitArray.zPush(tmpBitArray,entityBitSize,zAreaStartOffset);
+    if(pad8) bitArray.append(tmpBitArray,entityBitSize);
+    else bitArray.zPush(tmpBitArray,entityBitSize,zAreaStartOffset);
 }
 function injectedPersistProps(persistArray,objToPersist,typeIndex) {
     for(let i in PERSIST_MODEL[typeIndex]) {
