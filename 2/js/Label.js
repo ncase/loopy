@@ -36,6 +36,9 @@ function Label(model, config){
 	self.draw = function(ctx){
 
 		if(self.visibility===1 && self.loopy.mode===Loopy.MODE_PLAY) return;
+		// cursor: pointer if clickable
+		if(self.loopy.mode===Loopy.MODE_PLAY && self.href && self.isPointInLabel(Mouse.x, Mouse.y)) Mouse.showCursor("pointer");
+
 		// Retina
 		const x = self.x*2;
 		const y = self.y*2;
@@ -140,16 +143,6 @@ function Label(model, config){
 			open(self.href,'_blank');
 		}
 	});
-	/*subscribe("mousemove",function(){
-
-		if(self.loopy.mode!==Loopy.MODE_PLAY) return;
-		if(!self.href) return;
-
-		const hoveredLabel = self.isPointInLabel(Mouse.x, Mouse.y);
-		if(hoveredLabel){
-			// TODO: draw a circle centerd on mouse to show it's clickable
-		}
-	});*/
 
 	self.isPointInLabel = function(x, y){
 		return _isPointInBox(x,y, self.getBounds());
