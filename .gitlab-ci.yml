@@ -38,6 +38,8 @@ OK_publish:
       ~/.ssh/config
   script:
     - rsync -az -e ssh ./public/ gammanu@1000i100.fr:~/lo0p.it
+  only:
+    - tags
 
 Oups_WiP:
   when: manual
@@ -52,3 +54,5 @@ Oups_WiP:
       ~/.ssh/config
   script:
     - rsync -az -e ssh ./public/WiP/ gammanu@1000i100.fr:~/lo0p.it
+  only:
+    - tags

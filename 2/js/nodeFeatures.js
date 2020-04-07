@@ -127,7 +127,7 @@ injectProperty("node", "foreignColor",{
     sideBar:{
         index: 9,
         options: [ 0, 1],
-        labelFunc: (v)=>`Foreign color signal : ${v?'drop':'transmit'}`,
+        labelFunc: (v)=>`Foreign color signal : ${v?'drop':'forward'}`, // delete, deny / transmit
         advanced: true,
         colorLogic:true
     }

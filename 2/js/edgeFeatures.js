@@ -103,7 +103,8 @@ injectProperty("edge", "edgeTargetColor",{
                 return `End color : ${COLORS_NAME[v]}`;
             }
         },
-        advanced: true
+        advanced: true,
+        colorLogic: true
     }
 });
 injectProperty("edge", "customLabel",{

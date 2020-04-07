@@ -49,6 +49,6 @@ Curabitur placerat justo a ultricies rutrum. Praesent mattis tristique sodales. 
 
 <hr id="choice_1"/>
 
-<iframe width="500" height="440" style="border: 0;" src="http://localhost:63342/loopy/v2.0/?embed=1&signal=[1,1]&data=[[[1,718,355,1,%22something%22,4,1,0,0,0,0],[2,720,514,1,%22something%2520else%22,5,1,0,0,0,0]],[[2,1,94,-1,0,0,-1,-1,%22%22,0],[1,2,89,1,0,0,-1,-1,%22%22,0]],[[924,443,%22need%2520ideas%2520on%2520what%2520to%250Asimulate%253F%2520how%2520about%253A%250A%250A%25E3%2583%25BBtechnology%250A%25E3%2583%25BBenvironment%250A%25E3%2583%25BBeconomics%250A%25E3%2583%25BBbusiness%250A%25E3%2583%25BBpolitics%250A%25E3%2583%25BBculture%250A%25E3%2583%25BBpsychology%250A%250Aor%2520better%2520yet%252C%2520a%250A*combination*%2520of%250Athose%2520systems.%250Ahappy%2520modeling!%22,0,-1]],[2,1,0,0,0]%5D"></iframe>
+<iframe width="500" height="440" style="border: 0;" src="?embed=1&signal=[1,1]&data=[[[1,718,355,1,%22something%22,4,1,0,0,0,0],[2,720,514,1,%22something%2520else%22,5,1,0,0,0,0]],[[2,1,94,-1,0,0,-1,-1,%22%22,0],[1,2,89,1,0,0,-1,-1,%22%22,0]],[[924,443,%22need%2520ideas%2520on%2520what%2520to%250Asimulate%253F%2520how%2520about%253A%250A%250A%25E3%2583%25BBtechnology%250A%25E3%2583%25BBenvironment%250A%25E3%2583%25BBeconomics%250A%25E3%2583%25BBbusiness%250A%25E3%2583%25BBpolitics%250A%25E3%2583%25BBculture%250A%25E3%2583%25BBpsychology%250A%250Aor%2520better%2520yet%252C%2520a%250A*combination*%2520of%250Athose%2520systems.%250Ahappy%2520modeling!%22,0,-1]],[2,1,0,0,0]%5D"></iframe>
 
 
