@@ -394,6 +394,24 @@ function Node(model, config){
 		}
 		if(self.aggregationLatency>0){
 			// show aggregationLatency visual (and why not animation)
+			console.log(r,ctx);
+			ctx.save();
+			ctx.beginPath();
+			//ctx.moveTo(-2,0);
+			ctx.lineTo(200,2*r);
+			ctx.moveTo(0,0);
+			/*
+			ctx.lineTo(2,0);
+			ctx.lineTo(1,0);
+			ctx.lineTo(1,2);
+			ctx.lineTo(-1,2);
+			ctx.lineTo(-1,0);
+			*/
+			ctx.lineWidth = 40;
+			ctx.strokeStyle = 'black';//Node.COLORS[7];
+			ctx.stroke();
+			ctx.restore();
+
 		}
 		if(self.explode === -1 || self.explode === 2){
 			// show this node can implode
@@ -477,14 +495,14 @@ function Node(model, config){
 	//////////////////////////////////////
 
 	self.die = function(signal){
-		if(!self.died) self.sendSignal({delta:-.33,color:signal?signal.color:self.hue,vital:true});
+		if(!self.died && self.loopy.mode===Loopy.MODE_PLAY) self.sendSignal({delta:-.33,color:signal?signal.color:self.hue,vital:true});
 		self.died=true;
 		if(self.hue!==6) self.oldhue = self.hue;
 		self.hue=6;
 		publish("died",[self]);
 	};
 	self.live = function(signal){
-		if(signal) self.sendSignal({delta:.33,color:signal?signal.color:self.hue,vital:true});
+		if(self.died && self.loopy.mode===Loopy.MODE_PLAY) self.sendSignal({delta:.33,color:signal?signal.color:self.hue,vital:true});
 		self.died=false;
 		self.hue = typeof self.oldhue !== 'undefined'?self.oldhue:self.hue;
 		publish("live",[self]);

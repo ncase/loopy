@@ -136,7 +136,7 @@ function Edge(model, config){
 			if(loopy.loopyMode===0 && self.signBehavior===0){
 				lastSignal.delta *= self.strength;
 			}else {
-				switch (self.signBehavior) {
+				if(!lastSignal.vital || (self.filter !== 0 && self.filter !== 5)) switch (self.signBehavior) {
 					case 0:break;
 					case 1: lastSignal.delta = - lastSignal.delta;break;
 					case 4: lastSignal.delta = - Math.abs(lastSignal.delta);break;
@@ -199,7 +199,7 @@ function Edge(model, config){
 				blend = 1;
 			}
 			const signalColor = _blendColors(fromColor, toColor, blend);
-
+			let vitalFlip=false;
 			// Also, tween the scaleY, flipping, IF delta change
 			if(
 				(loopy.loopyMode===0 && self.strength<0)
@@ -207,9 +207,13 @@ function Edge(model, config){
 				|| (loopy.loopyMode===1 && self.signBehavior===4 && signal.delta>0)
 				|| (loopy.loopyMode===1 && self.signBehavior===5 && signal.delta<0)
 			){
-				// sin/cos-animate it for niceness.
-				const flip = Math.cos(blend*Math.PI); // (0,1) -> (1,-1)
-				ctx.scale(1, flip);
+				if((self.filter !== 0 && self.filter !== 5) || !signal.vital) {
+					// sin/cos-animate it for niceness.
+					const flip = Math.cos(blend*Math.PI); // (0,1) -> (1,-1)
+					ctx.scale(1, flip);
+					vitalFlip=true;
+					if(signal.vital) ctx.scale(1, flip);
+				}
 			}
 
 			// Signal's age = alpha.
@@ -219,9 +223,15 @@ function Edge(model, config){
 				ctx.globalAlpha = 0.25;
 			}
 
-			if(signal.vital && signal.delta<0) drawDeath(ctx); // draw death
-			else if(signal.vital && signal.delta>0) drawLife(ctx); // draw life
-			else if(!signal.vital && self.quantitative===1) drawAmountArrow(ctx, signalColor); // draw weight
+			if(signal.vital){
+				if( (signal.delta<0 && (!vitalFlip || blend<0.5) )
+				|| (signal.delta>0 && vitalFlip && blend>=0.5)
+				) drawDeath(ctx);
+				else if( (signal.delta>0 && (!vitalFlip || blend<0.5))
+					|| (signal.delta<0 && vitalFlip && blend>=0.5)
+				) drawLife(ctx);
+
+			} else if(self.quantitative===1) drawAmountArrow(ctx, signalColor); // draw weight
 			else drawTendencyArrow(ctx, signalColor);
 
 			// Restore
