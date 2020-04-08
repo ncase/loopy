@@ -4,13 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Planned]
+## Road-map
 - Groups
 - Camera mode 
 - Multi-lang support
+- Write documentation pages and examples
 
-## [Unreleased]
-Upcomming Version [2.0.0-rc0] (by [1000i100])
+
+## [Unreleased] (by [1000i100])
 
 ### Added
 
@@ -18,9 +19,10 @@ Upcomming Version [2.0.0-rc0] (by [1000i100])
 - a **simple mode** to keep loopy as simple as it was to use (easy onboarding or learning curve). Simple mode include only v1 features.
 - an **advanced mode** to unleash the power of creativity with V2 features.
 - add a help shortcut `?` for each features linked to a page with some explanations and use-case examples
-- split features in tabs : behavior and display 
-- compact the edition sidebar on small screen.
 - a global switch between **colorAesthetic**  and **colorLogic** mode to allow the use of color to unambiguous different kind of signals and nodes.
+- added `json export` to export human readable json (`save to file` save a compressed file like `save as link`)
+- added `load from url` to explain how to include in link an external loopy data file.
+- compact the edition sidebar on small screen.
 - combined sliders to be able to change 2 parameters for one main feature
 - alternative image in sliderWidget depending of the selected option (for better understanding the choice effect)
 - dynamic re-labeling feature name depending of selected option
@@ -46,23 +48,15 @@ Upcomming Version [2.0.0-rc0] (by [1000i100])
 - A specific edge can change it end node color : it will **fill node with signal color**
   (signal is destroyed in the process, use an oter arrow to clone an spread it if you want).
 
-##### Node Display features
+##### Node advanced features
 - empty the name field to resize it to a tiny internal-logic node.
-- name it "autoplay" to auto send a signal in play-mode.
-
-##### Node Behaviors features
+- name it "autoplay" to auto send a signal on start in play-mode.
 - 4 node **sizes** with 4 different **storage capacities** (none, normal, x5 and x100)
 - **Overflow threshold** : a node can store signal without forwarding them up to a threshold, and down to an other threshold.
 - **Aggregation latency** : bypass thresholds to store signals for a duration before releasing them merged into one.
 - **Death trigger** : choose if a node implode (die) when empty, or explode (die) when full.
 
-##### Edge/Arrow Display features
-- Change edge color
-- In colorLogic with filter and conversion you can even have gradients (but it impact logics like described in ColorLogic mode mechanics)
-- Optional custom name (replacing it behavior symbols)
-- Display signal timing to go from start node to end node thru this edge.
-
-##### Edge/Arrow Behaviors features
+##### Edge/Arrow advanced features
 - **Valency** Allow you to act on signal valency : preserve, invert, filter to keep only positive or negative signal, convert any signal to positive or to negative.
 - Edge can be set to randomly allow/drop signals
 - Edge can allow classical signal and/or vital change signal (death/life).
@@ -78,6 +72,9 @@ Upcomming Version [2.0.0-rc0] (by [1000i100])
   But, if at least one output arrow is in quantitative mode,
   all the overflow will be split between quantitative arrows, send and deduce from the node stock.
   AND, all tendency (or vital change converter) arrow will get a fixed value signal.
+
+- Optional custom name (replacing it behavior symbols)
+- Display signal timing to go from start node to end node thru this edge.
 
 ##### Text advanced features
 - choose the color for each text message in your model (from 7 choices).

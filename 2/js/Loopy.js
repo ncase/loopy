@@ -186,12 +186,12 @@ function Loopy(config){
 	function importDataFromArrayBuffer(dataInArrayBuffer){
 		const enc = new TextDecoder("utf-8");
 		let content = enc.decode(dataInArrayBuffer);
-		if(content[0]==='[') return self.model.deserializeFromJson(content);
-		self.model.deserializeFromBinary(new Uint8Array(dataInArrayBuffer));
+		if(content[0]==='[') self.model.deserializeFromLegacyJson(content);
+		else if(content[0]==='{') self.model.deserializeFromHumanReadableJson(content);
+		else self.model.deserializeFromBinary(new Uint8Array(dataInArrayBuffer));
 
-		const globalEditPage = self.sidebar.pages[3];
+		const globalEditPage = loopy.sidebar.pages[3];
 		injectPropsLabelInSideBar(globalEditPage,objTypeToTypeIndex("loopy"));
-
 	}
 
 	self.saveToURL = function(embed){
@@ -230,7 +230,7 @@ function Loopy(config){
 			self.model.deserializeFromUrl(data);
 		}
 
-		const globalEditPage = self.sidebar.pages[3];
+		const globalEditPage = loopy.sidebar.pages[3];
 		injectPropsLabelInSideBar(globalEditPage,objTypeToTypeIndex("loopy"));
 
 	}; 

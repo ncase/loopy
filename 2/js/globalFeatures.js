@@ -84,9 +84,9 @@ injectProperty("loopy", "afterAll",{
         </div>
         LOOPY v2 reworked by <a target='_blank' style='font-size:0.90em' href='https://github.com/1000i100'>1000i100</a>
         <br>
-        <br>Discover all the new features :
-        <br>- by exploring advanced mode,
-        <br>- or take a look in the <a target='_blank' href='https://github.com/1000i100/loopy#changelog'>changelog</a>.
+        <br>Discover all the <a target='_blank' href='https://github.com/1000i100/loopy#changelog'>new features</a> :
+        <br>- experiment advanced mode,
+        <br>- click any <a href='javascript:publish("modal",["doc"])'>?</a> for tips & examples.
         <br>
         <br>Unleash your creativity !
         <br>

@@ -451,7 +451,8 @@ function Model(loopy){
 	};
 
 	self.deserializeFromUrl = (dataString)=>{
-		if(dataString[0]==='[') return self.deserializeFromJson(dataString);
+		if(dataString[0]==='[') return self.deserializeFromLegacyJson(dataString);
+		else if(dataString[0]==='{') return self.deserializeFromHumanReadableJson(dataString);
 		else return self.deserializeFromBinary(base64DecToArr(urlToStdB64(dataString)).map((v)=>v>128?v-256:v));
 	};
 	self.deserializeFromBinary = (dataUint8Array)=>{

@@ -173,7 +173,7 @@ function Sidebar(loopy){
 
 			"<hr/><br>"+
 				
-			"<a target='_blank' href='../'>LOOPY</a> is "+
+			"<a target='_blank' href='..'>LOOPY</a> is "+
 			"made by <a target='_blank' href='http://ncase.me'>nicky case</a> "+
 			"with your support <a target='_blank' href='https://www.patreon.com/ncase'>on patreon</a> &lt;3"
 

@@ -135,7 +135,7 @@ function injectedPersistProps(persistArray,objToPersist,typeIndex) {
 function injectedRestoreProps(srcArray,targetConfig,typeIndex) {
     for(let i in PERSIST_MODEL[typeIndex]) {
         //if(typeof targetConfig[PERSIST_MODEL[typeIndex][i].name] !== "undefined" && parseInt(typeIndex)!==3) throw `collision : ${typeIndex} ${PERSIST_MODEL[typeIndex][i].name}`; // except for loopy globals
-        if(typeof srcArray[i] !== "undefined" && srcArray[i] !== null && srcArray[i] !== PERSIST_MODEL[typeIndex][i].defaultValue)
+        if(typeof srcArray[i] !== "undefined" && srcArray[i] !== null)
             targetConfig[PERSIST_MODEL[typeIndex][i].name] = PERSIST_MODEL[typeIndex][i].deserializeFunc( srcArray[i] );
     }
     for(let i in EDIT_MODEL[typeIndex]) {
