@@ -61,46 +61,52 @@ testEqual(`export partial bitArray`,
     '10101000',
     async ()=>binView((new BitArray(16)).append(42,10).export(6,4).rawData.buffer));
 
-
-testEqual(`zGet first identical 30bit`,
-    '[0:24b] 10101000',
-    async ()=>binView((new BitArray(64)).append(42,30).append(parseInt('1111110001111110',2),16).zGet(30,0,0).rawData.buffer));
-testEqual(`zGet 2nd identical 30bit`,
-    '[0:24b] 10101000',
-    async ()=>binView((new BitArray(64)).append(42,30).append(parseInt('1111110001111110',2),16).zGet(30,0,1).rawData.buffer));
-
 testEqual(`equalSequence pass if equal`,
     true,
     async ()=>(new BitArray(15)).append(42,15).equalSequence(6,9,(new BitArray(10)).append(42,9),3));
 testEqual(`equalSequence fail if not equal`,
     false,
     async ()=>(new BitArray(15)).append(43,15).equalSequence(6,9,(new BitArray(10)).append(42,9),3));
+testEqual(`rotateArea 111 000 000 000 became 1000 1000 1000`,
+    '10001000 10000000',
+    async ()=>binView((new BitArray(12)).append(7,3).rotate(3,4,0).rawData.buffer));
 
-testEqual(`zPush some identical data on 30bit each`,
-    {offset:48/*90*/, bitView:'[0:24b] 10101011 11110001 11111000 [0:80b]'},
-    async ()=>{
-        const res = initBitArray(128).zPush(42,30).zPush(42,30).zPush(42,30);
-        return {offset:res.offset,bitView:binView(res.rawData.buffer)};
-    });
-testEqual(`zPush some similar data on 30bit each`,
-    {offset:55/*90*/, bitView:'[0:24b] 10101011 11101000 00001111 11110010 [0:72b]'},
-    async ()=>{
-        const res = initBitArray(128).zPush(42,30).zPush(43,30).zPush(42,30);
-        return {offset:res.offset,bitView:binView(res.rawData.buffer)};
-    });
-testEqual(`zPush some similar data on 100bit each`,
-    {offset:136/*200*/, bitView:'[0:88b] 00101010 00001101 01000000 00000101 10101101 10111000 [0:72b]'},
-    async ()=>{
-        const line0 = (new BitArray(100)).set(42,6,90);
-        const line1 = (new BitArray(100)).set(42,6,90).set(42,6,40);
-        const res = (new BitArray(202)).zPush(line0,100).zPush(line1,100);
-        return {offset:res.offset,bitView:binView(res.rawData.buffer)};
-    });
-testEqual(`zPush some similar data on 100bit each (and don't compress when it's not effective)`,
-    {offset:149/*200*/, bitView:'[0:88b] 00101010 00001101 01000000 00000101 10101101 10010000 00000101 10000000 [0:56b]'},
-    async ()=>{
-        const line0 = (new BitArray(100)).set(42,6,90);
-        const line1 = (new BitArray(100)).set(43,6,90).set(42,6,40);
-        const res = (new BitArray(202)).zPush(line0,100).zPush(line1,100);
-        return {offset:res.offset,bitView:binView(res.rawData.buffer)};
-    });
+
+{
+    testEqual(`zGet first identical 30bit`,
+        '[0:24b] 10101000',
+        async ()=>binView((new BitArray(64)).append(42,30).append(parseInt('1111110001111110',2),16).zGet(30,0,0).rawData.buffer));
+    testEqual(`zGet 2nd identical 30bit`,
+        '[0:24b] 10101000',
+        async ()=>binView((new BitArray(64)).append(42,30).append(parseInt('1111110001111110',2),16).zGet(30,0,1).rawData.buffer));
+
+
+    testEqual(`zPush some identical data on 30bit each`,
+        {offset:48/*90*/, bitView:'[0:24b] 10101011 11110001 11111000 [0:80b]'},
+        async ()=>{
+            const res = initBitArray(128).zPush(42,30).zPush(42,30).zPush(42,30);
+            return {offset:res.offset,bitView:binView(res.rawData.buffer)};
+        });
+    testEqual(`zPush some similar data on 30bit each`,
+        {offset:55/*90*/, bitView:'[0:24b] 10101011 11101000 00001111 11110010 [0:72b]'},
+        async ()=>{
+            const res = initBitArray(128).zPush(42,30).zPush(43,30).zPush(42,30);
+            return {offset:res.offset,bitView:binView(res.rawData.buffer)};
+        });
+    testEqual(`zPush some similar data on 100bit each`,
+        {offset:136/*200*/, bitView:'[0:88b] 00101010 00001101 01000000 00000101 10101101 10111000 [0:72b]'},
+        async ()=>{
+            const line0 = (new BitArray(100)).set(42,6,90);
+            const line1 = (new BitArray(100)).set(42,6,90).set(42,6,40);
+            const res = (new BitArray(202)).zPush(line0,100).zPush(line1,100);
+            return {offset:res.offset,bitView:binView(res.rawData.buffer)};
+        });
+    testEqual(`zPush some similar data on 100bit each (and don't compress when it's not effective)`,
+        {offset:149/*200*/, bitView:'[0:88b] 00101010 00001101 01000000 00000101 10101101 10010000 00000101 10000000 [0:56b]'},
+        async ()=>{
+            const line0 = (new BitArray(100)).set(42,6,90);
+            const line1 = (new BitArray(100)).set(43,6,90).set(42,6,40);
+            const res = (new BitArray(202)).zPush(line0,100).zPush(line1,100);
+            return {offset:res.offset,bitView:binView(res.rawData.buffer)};
+        });
+}

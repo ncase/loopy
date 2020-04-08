@@ -1,9 +1,9 @@
 // Edge features
-const bitForNodeRef = ()=>Math.ceil(Math.log2(loopy.model.nodes.length));
+const bitForNodeRef = ()=>Math.ceil(Math.log2(loopy.model.nodes.length||1));
 injectProperty("edge", "from",{persist:{index:0,binFunc:{bit:bitForNodeRef,encode:(v)=>v.id,decode:(v)=>v},serializeFunc:(v)=>v.id}});
 injectProperty("edge", "to",{persist:{index:1,binFunc:{bit:bitForNodeRef,encode:(v)=>v.id,decode:(v)=>v},serializeFunc:(v)=>v.id}});
-injectProperty("edge", "arc",{persist:{index:2,binFunc:factoryRatio(11,2048,true),serializeFunc:v=>Math.round(v)}});
-injectProperty("edge", "rotation",{persist:{index:4,binFunc:factoryRatio(8,360),serializeFunc:v=>Math.round(v)}});
+injectProperty("edge", "arc",{persist:{index:2,binFunc:factoryRatio(10,2048,true),serializeFunc:v=>Math.round(v)}});
+injectProperty("edge", "rotation",{persist:{index:4,binFunc:factoryRatio(4,360),serializeFunc:v=>Math.round(v)}});
 injectProperty("edge", "strength",{
     defaultValue:1,
     persist:3,

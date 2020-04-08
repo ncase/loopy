@@ -363,7 +363,7 @@ function countEntities(){
 }
 function entityRefBitSize(){
 	const entitiesCount = countEntities();
-	const maxEntities = Object.values(entitiesCount).reduce((acc,cur)=>Math.max(acc,cur),0);
+	const maxEntities = Object.values(entitiesCount).reduce((acc,cur)=>Math.max(acc,cur),1);
 	return Math.ceil(Math.log2(maxEntities));
 }
 function entitiesSize(ceil8=false){

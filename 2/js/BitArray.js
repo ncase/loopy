@@ -270,5 +270,20 @@ function BitArray(arrayBufferOrBitSize){
         }
 
     };
+    self.rotate = (bitByLine, lineCount, startOffset= -1)=>{
+        if( !bitByLine || !lineCount) return self;
+        if(startOffset === -1){
+            startOffset = self.offset;
+            self.setOffset(self.offset+bitByLine*lineCount);
+        }
+        const workSpace = new BitArray(bitByLine*lineCount);
+        for(let b=0 ; b<bitByLine;b++){
+            for (let l=0;l<lineCount;l++){
+                workSpace.append(self.get(1,startOffset+l*bitByLine+b),1);
+            }
+        }
+        self.set(workSpace.resetOffset(),bitByLine*lineCount,startOffset);
+        return self;
+    }
     return self;
 }

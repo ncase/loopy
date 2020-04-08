@@ -1,3 +1,10 @@
+# git tag reminder :
+# version tag look like : v1.0.0-rc0
+# add a tag locally : git tag tagName
+# push it : git push origin tagName
+# remove a tag locally : git tag -d tagName
+# remove it on remote : git push --delete origin tagName
+
 name: Deploy
 on:
   push:
