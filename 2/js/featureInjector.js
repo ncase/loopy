@@ -161,7 +161,9 @@ function objTypeToTypeIndex(objType) {
             objType===i
             || objType===PERSIST_TYPE[i]
             || objType===PERSIST_TYPE[i].name
+            || objType===PERSIST_TYPE[i].name+'s'
             || objType===PERSIST_TYPE[i].name.toLowerCase()
+            || objType===PERSIST_TYPE[i].name.toLowerCase()+'s'
         ) return i;
     }
     return 3; // default : Loopy global state

@@ -326,15 +326,15 @@ function Model(loopy){
 		const entitiesKindsCount = 4; // nodes, edges, labels, loopys //, groups, groupPairs
 		const entitiesCount = countEntities();
 		const bitToRefAnyEntity = entityRefBitSize();
-		const entitiesSizes = entitiesSize();
+		const entitiesSizes = entitiesSize(true);
 
 		let size = 10+Object.keys(entitiesCount).length*bitToRefAnyEntity+Object.keys(entitiesSizes).length*8+entitiesSizes['loopys'];//+stringArea.length*8;
-		for (let entity in entitiesCount) size+=entitiesCount[entity]*entitiesSizes[entity];
-		console.log(`uncompressed bin size : ${size}b + strArea`);
+		size = Math.ceil(size/8)*8;
+		for (let entity in entitiesCount) size+=Math.ceil(entitiesCount[entity]/8)*8*entitiesSizes[entity];
 
 		const bitArray = new BitArray(size);
 		bitArray.append(0,1);// Version number (This Version Start With 0, on 1bit, to allow evolution starting with 1)
-		bitArray.append(0,1);// 0: withSpecific optimisations 1:padded to Bytes for better LZMA compression
+		bitArray.append(1,1);// 0: withSpecific optimisations 1:padded to Bytes for better LZMA compression
 		bitArray.append(embed?1:0,1);
 		bitArray.append(entitiesKindsCount,4);
 		bitArray.append(bitToRefAnyEntity,4);
@@ -342,76 +342,34 @@ function Model(loopy){
 		for (let entity in entitiesSizes) if(entity==="loopys" || entitiesCount[entity]) bitArray.append(entitiesSizes[entity],8);
 		saveToBinary(bitArray,loopy,3,entitiesSizes["loopys"],bitArray.maxOffset);
 
-		const entitiesSizes8 = entitiesSize(true);
-		let size8 = Math.ceil(bitArray.maxOffset/8)*8;
-		for (let entity in entitiesCount) size8+=entitiesCount[entity]*entitiesSizes8[entity];
-		const bin8 =  new BitArray(size8);
-		let size8x8 = size8;
-		for (let entity in entitiesCount) size8x8+=Math.ceil(entitiesCount[entity]/8)*8*entitiesSizes8[entity];
-		const bin8x8 =  new BitArray(size8x8);
-		console.log(size,size8, size8x8);
-		bin8.append(bitArray.resetOffset(),bitArray.maxOffset);
-		bin8.set(1,1,1); // 0: withSpecific optimisations 1:padded to Bytes for better LZMA compression
-		bin8x8.append(bin8.resetOffset(),bin8.maxOffset);
-		const nodesAreaStart8 = bin8.maxOffset;
-		loopy.model.nodes.forEach((n)=>saveToBinary(bin8,n,0,entitiesSizes8["nodes"],nodesAreaStart8,true));
-		const nodesAreaStart8x8 = bin8x8.maxOffset;
-		bin8x8.append(bin8.setOffset(nodesAreaStart8),bin8.maxOffset-nodesAreaStart8);
-		bin8x8.rotate(entitiesSizes8["nodes"],Math.ceil(entitiesCount["nodes"]/8)*8,nodesAreaStart8x8);
-		const edgesAreaStart8 = bin8.maxOffset;
-		loopy.model.edges.forEach((n)=>saveToBinary(bin8,n,1,entitiesSizes8["edges"],edgesAreaStart8,true));
-		const edgesAreaStart8x8 = bin8x8.maxOffset;
-		bin8x8.append(bin8.setOffset(edgesAreaStart8),bin8.maxOffset-edgesAreaStart8);
-		bin8x8.rotate(entitiesSizes8["edges"],Math.ceil(entitiesCount["edges"]/8)*8,edgesAreaStart8x8);
-		const labelsAreaStart8 = bin8.maxOffset;
-		loopy.model.labels.forEach((n)=>saveToBinary(bin8,n,2,entitiesSizes8["labels"],labelsAreaStart8,true));
-		const labelsAreaStart8x8 = bin8x8.maxOffset;
-		bin8x8.append(bin8.setOffset(labelsAreaStart8),bin8.maxOffset-labelsAreaStart8);
-		bin8x8.rotate(entitiesSizes8["labels"],Math.ceil(entitiesCount["labels"]/8)*8,labelsAreaStart8x8);
+		const appendArea = (bitArray,typeStr,entitiesSizes)=>{
+			const areaStart = Math.ceil(bitArray.maxOffset/8)*8;
+			bitArray.setOffset(areaStart);
+			loopy.model[typeStr].forEach((n)=>saveToBinary(bitArray,n,objTypeToTypeIndex(typeStr),entitiesSizes[typeStr],areaStart,true));
+			bitArray.rotate(entitiesSizes[typeStr],Math.ceil(loopy.model[typeStr].length/8)*8,areaStart);
+		}
+		appendArea(bitArray,"nodes",entitiesSizes);
+		appendArea(bitArray,"edges",entitiesSizes);
+		appendArea(bitArray,"labels",entitiesSizes);
+		//appendArea(bitArray,"groups",entitiesSizes);
+		//appendArea(bitArray,"groupPairs",entitiesSizes);
 
-		const nodesAreaStart = bitArray.maxOffset;
-		loopy.model.nodes.forEach((n)=>saveToBinary(bitArray,n,0,entitiesSizes["nodes"],nodesAreaStart));
-		const edgesAreaStart = bitArray.maxOffset;
-		loopy.model.edges.forEach((n)=>saveToBinary(bitArray,n,1,entitiesSizes["edges"],edgesAreaStart));
-		const labelsAreaStart = bitArray.maxOffset;
-		loopy.model.labels.forEach((n)=>saveToBinary(bitArray,n,2,entitiesSizes["labels"],labelsAreaStart));
-		//const groupsAreaStart = bitArray.maxOffset;
-		//loopy.model.groups.forEach((n)=>saveToBinary(bitArray,n,4,entitiesSizes["groups"],groupsAreaStart));
-		//const groupPairsAreaStart = bitArray.maxOffset;
-		//loopy.model.groupPairs.forEach((n)=>saveToBinary(bitArray,n,5,entitiesSizes["groupPairs"],groupPairsAreaStart));
-
-		console.log(`pre-compressed bin size : ${bitArray.maxOffset}b + strArea`);
+		//console.log(`pre-compressed bin size : ${bitArray.maxOffset}b + strArea`);
 		const stringArea = externalizeStrings();
-		console.log(`strArea bin size : ${stringArea.buffer.byteLength*8}b`);
+		//console.log(`strArea bin size : ${stringArea.buffer.byteLength*8}b`);
 		//console.log("stringArea char stats : ",Object.values(statArray(stringArea)).sort((a,b)=>a<b));
 
-		const realBytesSize = Math.ceil(bitArray.offset/8);
+		const realBytesSize = Math.ceil(bitArray.maxOffset/8);
 		const bin = new Uint8Array(realBytesSize + stringArea.buffer.byteLength);
 		bin.set(new Uint8Array(bitArray.rawData.buffer,0,realBytesSize), 0);
 		bin.set(stringArea, realBytesSize);
 
 		const compressedBin = LZMA.compress(bin,9).map((v)=>v<0?v+256:v);
 
-		const realBytesSize8 = Math.ceil(bin8.maxOffset/8);
-		const bin8WithStr = new Uint8Array(realBytesSize8 + stringArea.buffer.byteLength);
-		bin8WithStr.set(new Uint8Array(bin8.rawData.buffer,0,realBytesSize8), 0);
-		bin8WithStr.set(stringArea, realBytesSize8);
-
-		const realBytesSize8x8 = Math.ceil(bin8x8.maxOffset/8);
-		const bin8x8WithStr = new Uint8Array(realBytesSize8x8 + stringArea.buffer.byteLength);
-		bin8x8WithStr.set(new Uint8Array(bin8x8.rawData.buffer,0,realBytesSize8x8), 0);
-		bin8x8WithStr.set(stringArea, realBytesSize8x8);
-		const z8x8Bin = LZMA.compress(bin8x8WithStr,9).map((v)=>v<0?v+256:v);
-
-		const z8Bin = LZMA.compress(bin8WithStr,9).map((v)=>v<0?v+256:v);
 		function b64l(bArr){return stdB64ToUrl(base64EncArr(bArr)).length;}
-		console.log(`
-		bin: ${b64l(bin)}, zbin: ${b64l(compressedBin)},
-		8bin: ${b64l(bin8WithStr)}, z8bin: ${b64l(z8Bin)},
-		8x8bin: ${b64l(bin8x8WithStr)}, z8x8bin: ${b64l(z8x8Bin)},
-		`);
-		if(bin.buffer.byteLength < z8x8Bin.length) return bin;
-		return z8x8Bin;
+		console.log(`bin: ${b64l(bin)}, zbin: ${b64l(compressedBin)},`);
+		if(bin.buffer.byteLength < compressedBin.length) return bin;
+		return compressedBin;
 	};
 	self.serializeToUrl = (embed)=> {
 		const bin = stdB64ToUrl(base64EncArr(self.serializeToBinary(embed)));
@@ -481,10 +439,7 @@ function Model(loopy){
 	};
 	self.deserializeFromBinary = (dataUint8Array)=>{
 		//FIXME: implement binary deserializer
-		return self.deserializeFromJson(LZMA.decompress(dataUint8Array));
-	};
-		self.deserializeFromJson = function(dataString){
-		return self.deserializeFromLegacyJson(dataString);
+		return self.deserializeFromLegacyJson(LZMA.decompress(dataUint8Array));
 	};
 	self.deserializeFromHumanReadableJson = (dataString)=>{
 		//TODO: deserializeFromHumanReadableJson
