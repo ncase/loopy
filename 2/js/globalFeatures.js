@@ -1,5 +1,5 @@
 // Loopy global features
-/*injectProperty("loopy", "Node._UID",{
+/*injectProperty("loopy", "LoopyNode._UID",{
     defaultValue:0, // bool
     persist:0, // reserved
 });*/

@@ -13,6 +13,7 @@ Group.COLORS = {
 	5: "#664488", // purple
 };
 Group.FONTSIZE = 40;
+Group._CLASS_ = "Group";
 
 function Group(model, config){
 

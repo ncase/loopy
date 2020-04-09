@@ -26,28 +26,27 @@ function Model(loopy){
 
 	// Nodes
 	self.nodes = [];
-	self.nodeByID = {};
 	self.getNode = function(id){
-		return self.nodeByID[id];
+		return self.nodes[id];
 	};
 
-	// Remove Node
+	// Remove LoopyNode
 	self.addNode = function(config){
 
 		// Model's been changed!
 		publish("model/changed");
 
-		// Add Node
-		//noinspection all
-		const node = new Node(self,config);
-		self.nodeByID[node.id] = node;
+		// Add LoopyNode
+		const node = new LoopyNode(self,config);
 		self.nodes.push(node);
+		if(!node.id || node.id !== self.nodes.length-1) node.id = self.nodes.length-1;
+		applyInitialPropEffects(node);
 		self.update();
 		return node;
 
 	};
 
-	// Remove Node
+	// Remove LoopyNode
 	self.removeNode = function(node){
 
 		// Model's been changed!
@@ -55,9 +54,6 @@ function Model(loopy){
 
 		// Remove from array
 		self.nodes.splice(self.nodes.indexOf(node),1);
-
-		// Remove from object
-		delete self.nodeByID[node.id];
 
 		// Remove all associated TO and FROM edges
 		for(let i=0; i<self.edges.length; i++){
@@ -87,6 +83,7 @@ function Model(loopy){
 		// Add Edge
 		const edge = new Edge(self,config);
 		self.edges.push(edge);
+		applyInitialPropEffects(edge);
 		self.update();
 		return edge;
 	};
@@ -134,6 +131,7 @@ function Model(loopy){
 		// Add label
 		const label = new Label(self,config);
 		self.labels.push(label);
+		applyInitialPropEffects(label);
 		self.update();
 		return label;
 	};
@@ -169,6 +167,7 @@ function Model(loopy){
 		// Add label
 		const group = new Group(self,config);
 		self.groups.push(group);
+		applyInitialPropEffects(group);
 		self.update();
 		return group;
 	};
@@ -287,9 +286,6 @@ function Model(loopy){
 	//////////////////////////////
 	// SERIALIZE & DE-SERIALIZE //
 	//////////////////////////////
-	function appendBinary(bytesArray,offset,data,bitNumber){
-
-	}
 	function externalizeStrings(){
 		// for each type (nodes, edges, labels, groups), list strings fields
 		// for each element of each type and for each string fields, store stringData as key with length as value.
@@ -314,7 +310,7 @@ function Model(loopy){
 
 		const strings = [];
 		for(let stringField of stringFields){
-			const typeName = get_PERSIST_TYPE_array()[stringField["type"]].name.toLowerCase();
+			const typeName = get_PERSIST_TYPE_array()[stringField["type"]]._CLASS_.toLowerCase();
 			loopy.model[`${typeName}s`].forEach((item)=>strings.push(item[stringField["fieldName"]]));
 		}
 		const utf8string = strings.join('`');
@@ -381,55 +377,27 @@ function Model(loopy){
 		return bin;
 	};
 	self.serializeToLegacyJson = function(embed){
-
 		const data = [];
 		// 0 - nodes
 		// 1 - edges
 		// 2 - labels
 		// 3 - globalState (including UID)
-
-		// Nodes
-		const nodes = [];
-		for(let i=0;i<self.nodes.length;i++){
-			const node = self.nodes[i];
-			const persist = [];
-			injectedPersistProps(persist, node, objTypeToTypeIndex("node"));
-			nodes.push(persist);
-		}
-		data.push(nodes);
-
-		// Edges
-		const edges = [];
-		for(let i=0;i<self.edges.length;i++){
-			const edge = self.edges[i];
-			const dataEdge = [];
-			injectedPersistProps(dataEdge, edge, objTypeToTypeIndex("edge"));
-			edges.push(dataEdge);
-		}
-		data.push(edges);
-
-		// Labels
-		const labels = [];
-		for(let i=0;i<self.labels.length;i++){
-			const label = self.labels[i];
-			const persist = [];
-			injectedPersistProps(persist, label, objTypeToTypeIndex("label"));
-			labels.push(persist);
-		}
-		data.push(labels);
-
-		// META.
-		const persist = [
-			Node._UID,
-			undefined,
-			undefined,
-			embed?1:0,
-		];
-		injectedPersistProps(persist, loopy, objTypeToTypeIndex("loopy"));
-		data.push(persist);
-
+		data.push(self.nodes.map(n=>legacyJsonPersistProps(n)));
+		data.push(self.edges.map(n=>legacyJsonPersistProps(n)));
+		data.push(self.labels.map(n=>legacyJsonPersistProps(n)));
+		data.push(legacyJsonPersistProps(loopy));
 		// Return as string!
 		return JSON.stringify(data);
+	};
+	self.serializeToHumanReadableJson = function(embed){
+		const json = {
+			globals:humanReadableJsonPersistProps(loopy),
+			nodes:self.nodes.map(n=>humanReadableJsonPersistProps(n)),
+			edges:self.edges.map(n=>humanReadableJsonPersistProps(n)),
+			labels:self.labels.map(n=>humanReadableJsonPersistProps(n))
+		};
+		if(embed) json.globals.embed=true;
+		return JSON.stringify(json);
 	};
 
 	self.deserializeFromUrl = (dataString)=>{
@@ -438,47 +406,65 @@ function Model(loopy){
 		else return self.deserializeFromBinary(base64DecToArr(urlToStdB64(dataString)).map((v)=>v>128?v-256:v));
 	};
 	self.deserializeFromBinary = (dataUint8Array)=>{
+		let bin = dataUint8Array;
+		if(bin[0]===93) bin = LZMA.decompress(dataUint8Array);
+
 		//FIXME: implement binary deserializer
 		return self.deserializeFromLegacyJson(LZMA.decompress(dataUint8Array));
 	};
 	self.deserializeFromHumanReadableJson = (dataString)=>{
-		//TODO: deserializeFromHumanReadableJson
+		const data = JSON.parse(dataString);
+		self.importModel(data);
 	};
+	self.importModel = (newModel)=>{
+		self.clear();
+		for(let key in newModel.globals)loopy[key] = newModel.globals[key];
+		if(loopy.embed) loopy.embedded = 1;
+		applyInitialPropEffects(loopy);
+		// refresh sidebar
+		const globalEditPage = loopy.sidebar.pages[3];
+		injectPropsLabelInSideBar(globalEditPage,objTypeToTypeIndex("loopy"));
+
+		// import entities data.
+		newModel.nodes.forEach((n,i)=>self.addNode(n));
+		newModel.edges.forEach((n,i)=>self.addEdge(n));
+		newModel.labels.forEach((n,i)=>self.addLabel(n));
+		//newModel.groups.forEach((n,i)=>self.addGroup(n));
+	}
 	self.deserializeFromLegacyJson = (dataString)=>{
 		self.clear();
 		const data = JSON.parse(dataString);
+		const newModel = {globals:{},nodes:[],edges:[],labels:[]};
 		// Get from array!
 		const nodes = data[0];
 		const edges = data[1];
 		const labels = data[2];
 		const globalState = data[3];
-		// Nodes
-		for(let i=0;i<nodes.length;i++){
-			const node = nodes[i];
-			const config = {};
-			injectedRestoreProps(node,config,objTypeToTypeIndex("node"));
-			self.addNode(config);
-		}
-		// Edges
-		for(let i=0;i<edges.length;i++){
-			const edge = edges[i];
-			const edgeConfig = {};
-			injectedRestoreProps(edge,edgeConfig,objTypeToTypeIndex("edge"));
-			self.addEdge(edgeConfig);
-		}
-		// Labels
-		for(let i=0;i<labels.length;i++){
-			const label = labels[i];
-			const config = {};
-			injectedRestoreProps(label,config,objTypeToTypeIndex("label"));
-			self.addLabel(config);
-		}
+		for(let i=0;i<nodes.length;i++) newModel.nodes.push(injectedRestoreProps(nodes[i],{},objTypeToTypeIndex("node")));
+		for(let i=0;i<edges.length;i++) newModel.edges.push(injectedRestoreProps(edges[i],{},objTypeToTypeIndex("edge")));
+		for(let i=0;i<labels.length;i++) newModel.labels.push(injectedRestoreProps(labels[i],{},objTypeToTypeIndex("label")));
 		// META.
 		const importArray = typeof globalState === "object"?globalState:[globalState];
-		Node._UID = importArray[0];
-		loopy.embedded = loopy.embedded?1:importArray[3];
-		injectedRestoreProps(importArray,loopy,objTypeToTypeIndex("loopy"));
+		newModel.globals.embedded = loopy.embedded?1:importArray[3];
+		newModel.globals = injectedRestoreProps(importArray,newModel.globals,objTypeToTypeIndex("loopy"));
+
+		//LoopyNode._UID = importArray[0];
+		legacyIdFix(newModel);
+		self.importModel(newModel);
 	};
+	function legacyIdFix(newModel){
+		newModel.nodes.forEach((n,i)=>{
+			if(n.id && n.id !== i){
+				const oldId = n.id;
+				const newId = i;
+				n.id = newId;
+				newModel.edges.forEach(edge=>{
+					if(edge.from===oldId) edge.from=newId;
+					if(edge.to===oldId) edge.to=newId;
+				});
+			}
+		});
+	}
 
 	self.clear = function(){
 

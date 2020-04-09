@@ -328,7 +328,12 @@ function urlToStdB64 (urlStr) {
 	const parts = urlStr.split("/");
 	if(parts.length===2){
 		b64 = RECURRENT_LZMA_SCHEME;
-		for(let i = 0; i< parts[0].length;i+=2) b64 = setCharAt(b64,parseInt(parts[0][i]),parts[0][i+1]);
+		let lastDifferencePos = 0;
+		for(let i = 0; i< parts[0].length;i+=2) {
+			const position = parseInt(parts[0][i])+lastDifferencePos;
+			b64 = setCharAt(b64,position,parts[0][i+1]);
+			lastDifferencePos=position;
+		}
 		b64 += parts[1];
 	}
 	return b64.split('_').join('+').split('-').join('/').split('.').join('=');
@@ -336,8 +341,22 @@ function urlToStdB64 (urlStr) {
 function stdB64ToUrl (b64){
 	b64 = b64.split('+').join('_').split('/').join('-').split('=').join('.').replace(/[^-_.a-zA-Z0-9]/g,'');
 	let start = '';
+	let lastDifferencePos = 0;
 	for(let i =0; i<RECURRENT_LZMA_SCHEME.length; i++){
-		if(b64[i]!==RECURRENT_LZMA_SCHEME[i]) start+=`${i}${b64[i]}`;
+		if(b64[i]!==RECURRENT_LZMA_SCHEME[i]){
+			let pos = i-lastDifferencePos;
+			if(pos<10){
+				lastDifferencePos = i;
+				start+=`${pos}${b64[i]}`;
+			} else if(pos-9<10){
+				console.log(pos);
+				start+=`${pos-9}${b64[i-9]}`;
+				lastDifferencePos = i-9;
+				pos = i-lastDifferencePos;
+				lastDifferencePos = i;
+				start+=`${pos}${b64[i]}`;
+			} else start+=RECURRENT_LZMA_SCHEME+RECURRENT_LZMA_SCHEME; // will be too long so discarded
+		}
 	}
 	const diffStartVersion =`${start}/${b64.substr(RECURRENT_LZMA_SCHEME.length)}`;
 	if(diffStartVersion.length<b64.length) return diffStartVersion;
@@ -356,7 +375,7 @@ function factoryRatio(bitNumber,ratioRef,signed=false){
 		};
 }
 function countEntities(){
-	const types = get_PERSIST_TYPE_array().map(t=>`${t.name.toLowerCase()}s`);
+	const types = get_PERSIST_TYPE_array().map(t=>`${t._CLASS_.toLowerCase()}s`);
 	const entities = {};
 	types.filter(t=>loopy.model[t]).forEach(t=>entities[t]=loopy.model[t].length);
 	return entities;
@@ -367,7 +386,7 @@ function entityRefBitSize(){
 	return Math.ceil(Math.log2(maxEntities));
 }
 function entitiesSize(ceil8=false){
-	const types = get_PERSIST_TYPE_array().map(t=>`${t.name.toLowerCase()}s`);
+	const types = get_PERSIST_TYPE_array().map(t=>`${t._CLASS_.toLowerCase()}s`);
 	const entities = {};
 	for(let i in PERSIST_MODEL)
 		PERSIST_MODEL.forEach((t,i)=>entities[types[i]]=t.reduce((acc,cur)=>acc+(typeof cur.bit==="function"?cur.bit():cur.bit)||acc,0));

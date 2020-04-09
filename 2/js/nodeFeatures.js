@@ -1,12 +1,12 @@
-// Node features
+// LoopyNode features
 function updateNodeSize (self,v){
-    // Node size
+    // LoopyNode size
     const selectedNode = self.page.target;
-    if(selectedNode.size===5) selectedNode.radius=1.2*Node.DEFAULT_RADIUS;
-    if(selectedNode.size===100) selectedNode.radius=1.5*Node.DEFAULT_RADIUS;
-    if(selectedNode.size===1) selectedNode.radius=Node.DEFAULT_RADIUS;
-    if(selectedNode.size<1) selectedNode.radius=0.5*Node.DEFAULT_RADIUS;
-    if(!selectedNode.label) selectedNode.radius=0.1*Node.DEFAULT_RADIUS;
+    if(selectedNode.size===5) selectedNode.radius=1.2*LoopyNode.DEFAULT_RADIUS;
+    if(selectedNode.size===100) selectedNode.radius=1.5*LoopyNode.DEFAULT_RADIUS;
+    if(selectedNode.size===1) selectedNode.radius=LoopyNode.DEFAULT_RADIUS;
+    if(selectedNode.size<1) selectedNode.radius=0.5*LoopyNode.DEFAULT_RADIUS;
+    if(!selectedNode.label) selectedNode.radius=0.1*LoopyNode.DEFAULT_RADIUS;
 }
 injectProperty("node", "id",{persist:{index:0,jsonOnly:true}});
 injectProperty("node", "x",{persist:{index:1,binFunc:factoryRatio(10,innerWidth),serializeFunc:v=>Math.round(v)}});

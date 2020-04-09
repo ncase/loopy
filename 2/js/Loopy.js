@@ -12,6 +12,7 @@ Loopy.TOOL_INK = 0;
 Loopy.TOOL_DRAG = 1;
 Loopy.TOOL_ERASE = 2;
 Loopy.TOOL_LABEL = 3;
+Loopy._CLASS_ = "Loopy"
 
 function Loopy(config){
 
@@ -160,7 +161,7 @@ function Loopy(config){
 	});
 	subscribe("export/json", function(){
 		const element = document.createElement('a');
-		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + self.model.serializeToLegacyJson());
+		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + self.model.serializeToHumanReadableJson());
 		element.setAttribute('download', "system_model.loopy.json");
 
 		element.style.display = 'none';

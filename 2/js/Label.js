@@ -13,6 +13,7 @@ Label.COLORS = {
 	5: "#664488", // purple
 };
 Label.FONTSIZE = 40;
+Label._CLASS_ = "Label";
 
 function Label(model, config){
 

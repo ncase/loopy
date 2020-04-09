@@ -4,7 +4,7 @@ NODE!
 
 **********************************/
 
-Node.COLORS = {
+LoopyNode.COLORS = {
 	0: "#EA3E3E", // red
 	1: "#EA9D51", // orange
 	2: "#FEEE43", // yellow
@@ -16,9 +16,10 @@ Node.COLORS = {
 };
 
 
-Node.DEFAULT_RADIUS = 60;
+LoopyNode.DEFAULT_RADIUS = 60;
+LoopyNode._CLASS_ = "Node";
 
-function Node(model, config){
+function LoopyNode(model, config){
 
 	const self = this;
 	self._CLASS_ = "Node";
@@ -30,10 +31,9 @@ function Node(model, config){
 
 	// Default values...
 	const defaultProperties = {
-		radius: Node.DEFAULT_RADIUS,
+		radius: LoopyNode.DEFAULT_RADIUS,
 	};
 	injectedDefaultProps(defaultProperties,objTypeToTypeIndex("node"));
-	defaultProperties["id"]=Node._getUID;
 	_configureProperties(self, config, defaultProperties);
 	// Value: from 0 to 1
 	self.value = self.init;
@@ -298,7 +298,7 @@ function Node(model, config){
 		const x = self.x*2;
 		const y = self.y*2;
 		const r = self.radius*2;
-		const color = Node.COLORS[self.hue];
+		const color = LoopyNode.COLORS[self.hue];
 
 		// Translate!
 		ctx.save();
@@ -373,7 +373,7 @@ function Node(model, config){
 			ctx.arc(0, 0, r*self.overflow, 0, Math.TAU, false);
 			ctx.setLineDash([4, 4, 4, 12]);
 			ctx.lineWidth = 4;
-			ctx.strokeStyle = Node.COLORS[7];
+			ctx.strokeStyle = LoopyNode.COLORS[7];
 			ctx.stroke();
 			ctx.restore();
 
@@ -385,7 +385,7 @@ function Node(model, config){
 			ctx.setLineDash([4, 20+offset/40]);
 			ctx.lineDashOffset = -4;
 			ctx.lineWidth = 4;
-			ctx.strokeStyle = Node.COLORS[7];
+			ctx.strokeStyle = LoopyNode.COLORS[7];
 			ctx.stroke();
 			ctx.restore();
 		}
@@ -408,7 +408,7 @@ function Node(model, config){
 			ctx.lineTo(-1,0);
 			*/
 			ctx.lineWidth = 40;
-			ctx.strokeStyle = 'black';//Node.COLORS[7];
+			ctx.strokeStyle = 'black';//LoopyNode.COLORS[7];
 			ctx.stroke();
 			ctx.restore();
 
@@ -532,8 +532,8 @@ function Node(model, config){
 // Unique ID identifiers! //
 ////////////////////////////
 
-Node._UID = 0;
-Node._getUID = function(){
-	Node._UID++;
-	return Node._UID;
+LoopyNode._UID = 0;
+LoopyNode._getUID = function(){
+	LoopyNode._UID++;
+	return LoopyNode._UID;
 };

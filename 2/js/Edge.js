@@ -18,6 +18,7 @@ Edge.COLORS = {
 Edge.allSignals = [];
 Edge.MAX_SIGNALS = 100;
 Edge.MAX_SIGNALS_PER_EDGE = 10;
+Edge._CLASS_ = "Edge";
 
 function Edge(model, config){
 
@@ -180,14 +181,14 @@ function Edge(model, config){
 			ctx.scale(size, size);
 
 			// Signal's COLOR, BLENDING
-			//let fromColor = Node.COLORS[self.from.hue];
-			const fromColor = Node.COLORS[signal.color];
-			//let toColor = Node.COLORS[self.to.hue];
-			const toColor = Node.COLORS[signal.finalColor];
+			//let fromColor = LoopyNode.COLORS[self.from.hue];
+			const fromColor = LoopyNode.COLORS[signal.color];
+			//let toColor = LoopyNode.COLORS[self.to.hue];
+			const toColor = LoopyNode.COLORS[signal.finalColor];
 			/*if(loopy.colorLogic===1){
-				if(self.edgeTargetColor=== -2) toColor = Node.COLORS[typeof signal.finalColor !== "undefined"?signal.finalColor:signal.color];
-				else if(self.edgeTargetColor=== -1 || self.edgeTargetColor=== -3) toColor = Node.COLORS[signal.color];
-				else toColor = Node.COLORS[self.edgeTargetColor];
+				if(self.edgeTargetColor=== -2) toColor = LoopyNode.COLORS[typeof signal.finalColor !== "undefined"?signal.finalColor:signal.color];
+				else if(self.edgeTargetColor=== -1 || self.edgeTargetColor=== -3) toColor = LoopyNode.COLORS[signal.color];
+				else toColor = LoopyNode.COLORS[self.edgeTargetColor];
 			}*/
 			let blend;
 			const bStart=0.4, bEnd=0.6;

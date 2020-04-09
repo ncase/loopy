@@ -12,7 +12,7 @@ onPlayReset
 
 /**
  *
- * @param objType : Object class like Node, Edge or Loopy
+ * @param objType : Object class like LoopyNode, Edge or Loopy
  * @param propertyName: String, name of the property
  * @param config : Object with optional : defaultValue, immutableDefault, persist*1, sideBar*2
  * *1 : if no persist Object given => don't persist this property
@@ -97,7 +97,7 @@ function injectPropsLabelInSideBar(page,typeIndex){
         }
 
         if(parseInt(typeIndex)===0){ //if node, set BG Color
-            component.setBGColor(Node.COLORS[page.target.hue]);
+            component.setBGColor(LoopyNode.COLORS[page.target.hue]);
         }
         if(feat.labelFunc) component.dom.querySelector('.component_label').innerHTML = feat.labelFunc(page.target[feat.name],page.target);
     }
@@ -126,27 +126,38 @@ function saveToBinary(bitArray,objToPersist,typeIndex,entityBitSize,zAreaStartOf
     if(pad8) bitArray.append(tmpBitArray,entityBitSize);
     else bitArray.zPush(tmpBitArray,entityBitSize,zAreaStartOffset);
 }
-function injectedPersistProps(persistArray,objToPersist,typeIndex) {
-    for(let i in PERSIST_MODEL[typeIndex]) {
-        if(typeof persistArray[i] !== "undefined") throw `collision : ${typeIndex} ${PERSIST_MODEL[typeIndex][i].name}`;
-        persistArray[i] = PERSIST_MODEL[typeIndex][i].serializeFunc( objToPersist[PERSIST_MODEL[typeIndex][i].name])
-    }
+function legacyJsonPersistProps(objToPersist) {
+    const typeIndex = objTypeToTypeIndex(objToPersist);
+    const persistArray = [];
+    for(let i in PERSIST_MODEL[typeIndex]) persistArray[i] = PERSIST_MODEL[typeIndex][i].serializeFunc( objToPersist[PERSIST_MODEL[typeIndex][i].name]);
+    return persistArray;
+}
+function humanReadableJsonPersistProps(objToPersist) {
+    const typeIndex = objTypeToTypeIndex(objToPersist);
+    const persist = {};
+    for(let i in PERSIST_MODEL[typeIndex]) persist[PERSIST_MODEL[typeIndex][i].name] = PERSIST_MODEL[typeIndex][i].serializeFunc( objToPersist[PERSIST_MODEL[typeIndex][i].name]);
+    return persist;
 }
 function injectedRestoreProps(srcArray,targetConfig,typeIndex) {
+    // include in targetConfig
     for(let i in PERSIST_MODEL[typeIndex]) {
         //if(typeof targetConfig[PERSIST_MODEL[typeIndex][i].name] !== "undefined" && parseInt(typeIndex)!==3) throw `collision : ${typeIndex} ${PERSIST_MODEL[typeIndex][i].name}`; // except for loopy globals
         if(typeof srcArray[i] !== "undefined" && srcArray[i] !== null)
             targetConfig[PERSIST_MODEL[typeIndex][i].name] = PERSIST_MODEL[typeIndex][i].deserializeFunc( srcArray[i] );
     }
+    return targetConfig;
+}
+function applyInitialPropEffects(element) {
+    const typeIndex = objTypeToTypeIndex(element);
     for(let i in EDIT_MODEL[typeIndex]) {
-        if(EDIT_MODEL[typeIndex][i].oninput) EDIT_MODEL[typeIndex][i].oninput({page:{target:targetConfig}},targetConfig[i]);
+        if(EDIT_MODEL[typeIndex][i].oninput) EDIT_MODEL[typeIndex][i].oninput({page:{target:element}},element[i]);
     }
 }
 const PERSIST_MODEL = [];
 const EDIT_MODEL = [];
 function get_PERSIST_TYPE_array() {
     return [
-        Node,
+        LoopyNode,
         Edge,
         Label,
         Loopy,
@@ -155,6 +166,7 @@ function get_PERSIST_TYPE_array() {
     ];
 }
 function objTypeToTypeIndex(objType) {
+    if(typeof objType === "object") objType = objType._CLASS_;
     const PERSIST_TYPE = get_PERSIST_TYPE_array();
     for(let i in PERSIST_TYPE) if(PERSIST_TYPE.hasOwnProperty(i)){
         if(
@@ -164,6 +176,10 @@ function objTypeToTypeIndex(objType) {
             || objType===PERSIST_TYPE[i].name+'s'
             || objType===PERSIST_TYPE[i].name.toLowerCase()
             || objType===PERSIST_TYPE[i].name.toLowerCase()+'s'
+            || objType===PERSIST_TYPE[i]._CLASS_
+            || objType===PERSIST_TYPE[i]._CLASS_+'s'
+            || objType===PERSIST_TYPE[i]._CLASS_.toLowerCase()
+            || objType===PERSIST_TYPE[i]._CLASS_.toLowerCase()+'s'
         ) return i;
     }
     return 3; // default : Loopy global state
