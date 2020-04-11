@@ -7,18 +7,19 @@ that I couldn't be arsed to put into separate classes
 
 Math.TAU = Math.PI*2;
 
-window.HIGHLIGHT_COLOR = "rgba(193, 220, 255, 0.6)";
+HIGHLIGHT_COLOR = "rgba(193, 220, 255, 0.6)";
 
+if(typeof navigator === "undefined") navigator = {platform:""};
 const isMacLike = !!navigator.platform.match(/(Mac|iPhone|iPod|iPad)/i);
 
 const _PADDING = 25;
 let _PADDING_BOTTOM = 110;
 
-window.onresize = function(){
+onresize = function(){
 	publish("resize");
 };
 
-window.onbeforeunload = function(e) {
+onbeforeunload = function(e) {
 	if(loopy.dirty){
 		const dialogText = "Are you sure you want to leave without saving your changes?";
 		e.returnValue = dialogText;
@@ -278,7 +279,7 @@ function _makeErrorFunc(msg){
 }
 
 function _getParameterByName(name){
-	const url = window.location.href;
+	const url = location.href;
 	name = name.replace(/[\[\]]/g, "\\$&");
 	const regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
 	results = regex.exec(url);
@@ -323,7 +324,7 @@ function setCharAt(str,index,chr) {
 	if(index > str.length-1) return str;
 	return str.substr(0,index) + chr + str.substr(index+1);
 }
-function urlToStdB64 (urlStr) {
+function urlToStdB64(urlStr) {
 	let b64 = urlStr;
 	const parts = urlStr.split("/");
 	if(parts.length===2){
@@ -338,24 +339,20 @@ function urlToStdB64 (urlStr) {
 	}
 	return b64.split('_').join('+').split('-').join('/').split('.').join('=');
 }
-function stdB64ToUrl (b64){
+function stdB64ToUrl(b64){
 	b64 = b64.split('+').join('_').split('/').join('-').split('=').join('.').replace(/[^-_.a-zA-Z0-9]/g,'');
 	let start = '';
 	let lastDifferencePos = 0;
 	for(let i =0; i<RECURRENT_LZMA_SCHEME.length; i++){
 		if(b64[i]!==RECURRENT_LZMA_SCHEME[i]){
 			let pos = i-lastDifferencePos;
-			if(pos<10){
-				lastDifferencePos = i;
-				start+=`${pos}${b64[i]}`;
-			} else if(pos-9<10){
-				console.log(pos);
-				start+=`${pos-9}${b64[i-9]}`;
-				lastDifferencePos = i-9;
+			while(pos>9){
+				start+=`${9}${b64[lastDifferencePos+9]}`;
+				lastDifferencePos += 9;
 				pos = i-lastDifferencePos;
-				lastDifferencePos = i;
-				start+=`${pos}${b64[i]}`;
-			} else start+=RECURRENT_LZMA_SCHEME+RECURRENT_LZMA_SCHEME; // will be too long so discarded
+			}
+			lastDifferencePos = i;
+			start+=`${pos}${b64[i]}`;
 		}
 	}
 	const diffStartVersion =`${start}/${b64.substr(RECURRENT_LZMA_SCHEME.length)}`;
@@ -365,12 +362,12 @@ function stdB64ToUrl (b64){
 function factoryRatio(bitNumber,ratioRef,signed=false){
 	if (signed) return {
 			bit: bitNumber,
-			encode: (v) => Math.round(Math.pow(2, bitNumber) * v / ratioRef) + Math.pow(2, bitNumber - 1) % Math.pow(2, bitNumber),
-			decode: (v) => Math.round(v * ratioRef / Math.pow(2, bitNumber)) - Math.pow(2, bitNumber - 1) % Math.pow(2, bitNumber)
+			encode: (v) => Math.min(Math.pow(2, bitNumber)-1, Math.max(0, Math.round(Math.pow(2, bitNumber-1) * v / ratioRef) + Math.pow(2, bitNumber-1))),
+			decode: (v) => Math.round((v - Math.pow(2, bitNumber-1)) * ratioRef / Math.pow(2, bitNumber-1))
 		};
 	else return {
 			bit: bitNumber,
-			encode: (v) => Math.round(Math.pow(2, bitNumber) * v / ratioRef),
+			encode: (v) => Math.min(Math.pow(2, bitNumber)-1, Math.max(0, Math.round(Math.pow(2, bitNumber) * v / ratioRef))),
 			decode: (v) => Math.round(v * ratioRef / Math.pow(2, bitNumber))
 		};
 }

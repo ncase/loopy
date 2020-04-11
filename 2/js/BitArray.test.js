@@ -35,7 +35,7 @@ function binView(buffer,compactness=true){
 function log(bitArray){
     console.log(bitArray.maxOffset,binView(bitArray.rawData.buffer));
 }
-log(initBitArray());
+//log(initBitArray());
 
 testEqual(`get 0 for the first 4bit`, 0, async ()=>initBitArray().get(4,0));
 testEqual(`get 14 for the first 8bit`, 14, async ()=>initBitArray().get(8,0));
