@@ -16,52 +16,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ##### Edit mode user interface
-- a **simple mode** to keep loopy as simple as it was to use (easy onboarding or learning curve). Simple mode include only v1 features.
+- a **simple mode** to keep loopy as simple as it used to be (easy onboarding or learning curve). Simple mode include only v1.* features.
 - an **advanced mode** to unleash the power of creativity with V2 features.
 - add a help shortcut `?` for each features linked to a page with some explanations and use-case examples
 - a global switch between **colorAesthetic**  and **colorLogic** mode to allow the use of color to unambiguous different kind of signals and nodes.
-- added `json export` to export human readable json (`save to file` save a compressed file like `save as link`)
-- added `load from url` to explain how to include in link an external loopy data file.
-- compact the edition sidebar on small screen.
-- combined sliders to be able to change 2 parameters for one main feature
-- alternative image in sliderWidget depending of the selected option (for better understanding the choice effect)
-- dynamic re-labeling feature name depending of selected option
-- keep advanced selected setting in simple mode but display warning in the UI
-- keep colorLogic selected setting in colorAesthetic mode but display warning in the UI
 
 ##### Death / Life mechanics
-- nodes can now die and reborn (by receiving vital change propagation signal or by explosition threshold settings).
-- when a node die, it send (propagate) a death signal to all arrows allowing it.
-- when a dead node receive any signal except reborn, it's dropped.
-- when a dead node reborn, it send (propagate) a reborn/life signal to all arrows allowing it.
-- when an alive node receive a reborn signal, it's dropped.
-- when a dead node receive a death signal, it's dropped.
-
-##### ColorLogic mode mechanics
-- When global colorLogic switch is enable, color become significant, and extra features are unlocked.
-- A node stock is only updated by color matching signals.
-- All nodes behaviors (threshold, latency, death) are only triggered matching color signals.
-- Signals reaching a node with a foreign color will be forwarded except if **Foreign color** is set to drop them.
-- Edges can **filter signals by color** to only allow some specific colors.
-- Edges can also **convert a signal color** from one to an other.
-- Edges can even convert to a **random color** from the ones allowed by arrows starting from random arrow end node.
-- A specific edge can change it end node color : it will **fill node with signal color**
-  (signal is destroyed in the process, use an oter arrow to clone an spread it if you want).
+- nodes can now die and reborn (by receiving vital change propagation signal or by explosion threshold settings).
+- when a node die, it sends (propagate) a death signal to all arrows allowing it.
+- when a dead node receives any signal except reborn, it's dropped.
+- when a dead node reborn, it sends (propagate) a reborn/life signal to all arrows allowing it.
+- when an alive node receives a reborn signal, it's dropped.
+- when a dead node receives a death signal, it's dropped.
 
 ##### Node advanced features
 - empty the name field to resize it to a tiny internal-logic node.
 - name it "autoplay" to auto send a signal on start in play-mode.
 - 4 node **sizes** with 4 different **storage capacities** (none, normal, x5 and x100)
-- **Overflow threshold** : a node can store signal without forwarding them up to a threshold, and down to an other threshold.
+- **Overflow threshold** : a node can store signals without forwarding them up to a threshold, and down to another threshold (store signals within a threshold window, forward them outside the window).
 - **Aggregation latency** : bypass thresholds to store signals for a duration before releasing them merged into one.
 - **Death trigger** : choose if a node implode (die) when empty, or explode (die) when full.
 
 ##### Edge/Arrow advanced features
-- **Valency** Allow you to act on signal valency : preserve, invert, filter to keep only positive or negative signal, convert any signal to positive or to negative.
-- Edge can be set to randomly allow/drop signals
-- Edge can allow classical signal and/or vital change signal (death/life).
-- Edge can convert signal to vital change signal
-- Edge can handle signal as tendency (legacy default) or quantity (new)
+- **Valency** allows you to act on the signal valency : preserve, invert, filter to keep only positive or negative signal, convert any signal to positive or to negative.
+- Arrow can be set to randomly allow/drop signals
+- Arrow can allow classical signal and/or vital change signal (death/life).
+- Arrow can convert signal to vital change signal
+- Arrow can handle signal as tendency (legacy default) or quantity (new)
 
   **Tendency mechanics**
   nothing new here : when a signal reach a node it add it valency to the node stock and the node forward it
@@ -80,6 +61,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - choose the color for each text message in your model (from 7 choices).
 - switch text visibility : you can hide some text in play mode to keep them only as reminder for edition.
 - link field : bind your text to a web link to make it clickable.
+
+##### ColorLogic mode mechanics
+- When global colorLogic switch is enable, color become significant, and extra features are unlocked.
+- A node stock is only updated by color matching signals.
+- All nodes behaviors (threshold, latency, death) are only triggered matching color signals.
+- Signals reaching a node with a foreign color will be forwarded except if **Foreign color** is set to drop them.
+- Arrow can **filter signals by color** to only allow a specific color.
+- Arrow can also **convert a signal color** from one to another.
+- Arrow can even convert to a **random color** from the ones allowed by arrows starting from end node.
+- A specific arrow can change its end node color : it will **fill node with signal color**
+  (signal is destroyed in the process, use another arrow to clone and spread it if you want).
+
+##### Misc ergonomic / under the hood changes
+- compact the edition sidebar on small screen.
+- combined sliders to be able to change 2 parameters for one main feature (used for nodes thresholds)
+- alternative image in sliderWidget depending of the selected option (for better understanding the choice effect)
+- dynamic re-labeling feature name depending of selected option
+- keep advanced selected setting in simple mode but display warning in the UI
+- keep colorLogic selected setting in colorAesthetic mode but display warning in the UI
+- added `json export` to export human readable json (old `save to file` now save a compressed file like `save as link` does now)
+- added `load from url` to explain how to include in link an external loopy data file.
 
 ### Changed
 - **save as link** now store data in binary with lzma compression then base64 conversion.
@@ -112,29 +114,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - use ink or hand tool to select any part of your model and edit it
 - a sidebar to view and edit any entity option and display some tips
 - in sidebar for nodes, edit name, color and start amount
-- in sidebar for edges, switch between positive effect preservation and negative inverted effect
+- in sidebar for edges, switch between positive effect (signal preservation) and negative effect (sgnial inverted)
 - in sidebar for texts, edit content text
 - in sidebar welcome page: an intro, somes links and import/export features
 - save as link, to store your work (system model) in the url and share it easily
 - embed in your website, to include the live demo directly in your website
 - a play button to switch in play mode
 
-##### Play mode UI features
+##### Play mode user interface
 - a play mode to explore system reactions with moving signals.
 - a stop/remix button to switch back in edit mode
 - a reset button to start again your simulation from the beginning
-- a full screen mode with no sidebar for embed use
+- in embed/embedded mode : full screen mode with no sidebar
 - a no-UI mode for tiny embed use-case
 - an autoplay/autoSendSignal url parameter to start with a moving signal without user action
 - a replay mode to discover how to build a system model with loopy just by watching a ghost replay of it.
-- auto resize the play scene in full screen mode
+- auto resize the play scene in full screen / embed mode
 - a speed slider to run the simulation (signal speed) slower or faster.
 
 ##### Play mode signals features
 - as user, by a click, send positive or negative signal from a node
-- signal follow arrows to reach next nodes
-- signal add/remove it value to the node value then bounce thru arrows
-- arrow length change time need for signal to go from a node to an other
+- signals follow arrows to reach next nodes (and change their color to match nodes color)
+- signals add/remove theirs values to the node amount then bounce thru arrows
+- arrow length changes the delay for a signal to go from a node to another
 
 ##### And...
 - all other stuff i miss to mention here.
