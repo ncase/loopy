@@ -4,38 +4,6 @@ function initBitArray(size=8*8){
     data.setUint32(0,242_424_242,false);
     return new BitArray(data);
 }
-function binView(buffer,compactness=true){
-    const view = new Uint8Array(buffer);
-    let str = "";
-    for(let i in view){
-        const bin = view[i].toString(2);
-        let pad = '';
-        for (let i=8;i>bin.length;i--) pad = `0${pad}`;
-        str = `${str}${pad}${bin} `;
-    }
-    // compactView
-    if(!compactness) return str.trim();
-    else {
-        let compactStr = '';
-        const emptyBytes = str.split('00000000 ');
-        let empty = 0;
-        let i=0;
-        for(i in emptyBytes){
-            if(i>0) empty+=8;
-            if(emptyBytes[i]!==''){
-                if(empty>0) compactStr=`${compactStr}[0:${empty}b] ${emptyBytes[i]}`;
-                else compactStr=`${compactStr}${emptyBytes[i]}`;
-                empty=0;
-            }
-        }
-        if(empty>0) compactStr=`${compactStr}[0:${empty}b] ${emptyBytes[i]}`;
-        return compactStr.trim();
-    }
-}
-function log(bitArray){
-    console.log(bitArray.maxOffset,binView(bitArray.rawData.buffer));
-}
-//log(initBitArray());
 
 testEqual(`get 0 for the first 4bit`, 0, async ()=>initBitArray().get(4,0));
 testEqual(`get 14 for the first 8bit`, 14, async ()=>initBitArray().get(8,0));
@@ -70,6 +38,9 @@ testEqual(`equalSequence fail if not equal`,
 testEqual(`rotateArea 111 000 000 000 became 1000 1000 1000`,
     '10001000 10000000',
     async ()=>binView((new BitArray(12)).append(7,3).rotate(3,4,0).rawData.buffer));
+testEqual(`rotate and rotate back give same as with no rotate at all`,
+    '11100000 [0:8b]',
+    async ()=>binView((new BitArray(12)).append(7,3).rotate(3,4,0).rotate(4,3,0).rawData.buffer));
 
 
 {

@@ -1,4 +1,6 @@
 // A loopy implementation of SOLID Open–closed principle
+const PERSIST_MODEL = [];
+const EDIT_MODEL = [];
 
 /*
 onNodeInit
@@ -86,7 +88,6 @@ function injectPropsUpdateDefault(component, value){
         if(feat.name === component.propName && feat.updateDefault) feat.updateDefault(value)
     }
 }
-
 function injectPropsLabelInSideBar(page,typeIndex){
     for(let i in EDIT_MODEL[typeIndex]) if(EDIT_MODEL[typeIndex].hasOwnProperty(i)){
         const feat = EDIT_MODEL[typeIndex][i];
@@ -102,59 +103,19 @@ function injectPropsLabelInSideBar(page,typeIndex){
         if(feat.labelFunc) component.dom.querySelector('.component_label').innerHTML = feat.labelFunc(page.target[feat.name],page.target);
     }
 }
-
 function injectedDefaultProps(targetConfig,typeIndex) {
     const objType = get_PERSIST_TYPE_array()[typeIndex];
     for(let i in objType.default) if(objType.default.hasOwnProperty(i)){
         targetConfig[i]=objType.default[i];
     }
 }
-function saveToBinary(bitArray,objToPersist,typeIndex,entityBitSize,zAreaStartOffset,pad8=false){
-    const toSave = [];
-    for(let i in PERSIST_MODEL[typeIndex]) {
-        const prop = PERSIST_MODEL[typeIndex][i];
-        if(prop.bit) {
-            let bitSize = prop.bit;
-            if(typeof prop.bit === "function") bitSize = prop.bit();
-            if(typeof toSave[i] !== "undefined") throw `collision : ${typeIndex} ${prop.name}`;
-            toSave[i] = {value:prop.encode(objToPersist[prop.name]),bit:bitSize};
-        }
-    }
-    const tmpBitArray = new BitArray(entityBitSize);
-    toSave.forEach((e)=>tmpBitArray.append(e.value,e.bit));
-    tmpBitArray.offset = 0;
-    if(pad8) bitArray.append(tmpBitArray,entityBitSize);
-    else bitArray.zPush(tmpBitArray,entityBitSize,zAreaStartOffset);
-}
-function legacyJsonPersistProps(objToPersist) {
-    const typeIndex = objTypeToTypeIndex(objToPersist);
-    const persistArray = [];
-    for(let i in PERSIST_MODEL[typeIndex]) persistArray[i] = PERSIST_MODEL[typeIndex][i].serializeFunc( objToPersist[PERSIST_MODEL[typeIndex][i].name]);
-    return persistArray;
-}
-function humanReadableJsonPersistProps(objToPersist) {
-    const typeIndex = objTypeToTypeIndex(objToPersist);
-    const persist = {};
-    for(let i in PERSIST_MODEL[typeIndex]) persist[PERSIST_MODEL[typeIndex][i].name] = PERSIST_MODEL[typeIndex][i].serializeFunc( objToPersist[PERSIST_MODEL[typeIndex][i].name]);
-    return persist;
-}
-function injectedRestoreProps(srcArray,targetConfig,typeIndex) {
-    // include in targetConfig
-    for(let i in PERSIST_MODEL[typeIndex]) {
-        //if(typeof targetConfig[PERSIST_MODEL[typeIndex][i].name] !== "undefined" && parseInt(typeIndex)!==3) throw `collision : ${typeIndex} ${PERSIST_MODEL[typeIndex][i].name}`; // except for loopy globals
-        if(typeof srcArray[i] !== "undefined" && srcArray[i] !== null)
-            targetConfig[PERSIST_MODEL[typeIndex][i].name] = PERSIST_MODEL[typeIndex][i].deserializeFunc( srcArray[i] );
-    }
-    return targetConfig;
-}
+
 function applyInitialPropEffects(element) {
     const typeIndex = objTypeToTypeIndex(element);
     for(let i in EDIT_MODEL[typeIndex]) {
         if(EDIT_MODEL[typeIndex][i].oninput) EDIT_MODEL[typeIndex][i].oninput({page:{target:element}},element[i]);
     }
 }
-const PERSIST_MODEL = [];
-const EDIT_MODEL = [];
 function get_PERSIST_TYPE_array() {
     return [
         LoopyNode,
@@ -180,7 +141,7 @@ function objTypeToTypeIndex(objType) {
             || objType===PERSIST_TYPE[i]._CLASS_+'s'
             || objType===PERSIST_TYPE[i]._CLASS_.toLowerCase()
             || objType===PERSIST_TYPE[i]._CLASS_.toLowerCase()+'s'
-        ) return i;
+        ) return parseInt(i);
     }
     return 3; // default : Loopy global state
     //throw `${objType} unknown`;

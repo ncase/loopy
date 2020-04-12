@@ -149,7 +149,7 @@ function Loopy(config){
 
 	subscribe("export/file", function(){
 		const element = document.createElement('a');
-		element.setAttribute('href', 'data:application/octet-stream;base64,' + base64EncArr(self.model.serializeToBinary()));
+		element.setAttribute('href', 'data:application/octet-stream;base64,' + base64EncArr(serializeToBinary()));
 		element.setAttribute('download', "system_model.loopy");
 
 		element.style.display = 'none';
@@ -161,7 +161,7 @@ function Loopy(config){
 	});
 	subscribe("export/json", function(){
 		const element = document.createElement('a');
-		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + self.model.serializeToHumanReadableJson());
+		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + serializeToHumanReadableJson());
 		element.setAttribute('download', "system_model.loopy.json");
 
 		element.style.display = 'none';
@@ -180,25 +180,15 @@ function Loopy(config){
 			const file = e.target.files[0];
 			const reader = new FileReader();
 			reader.readAsArrayBuffer(file);
-			reader.onload = readerEvent => importDataFromArrayBuffer(readerEvent.target.result);
+			reader.onload = readerEvent => loopy.model.importModel(deserializeFromArrayBuffer(readerEvent.target.result));
 		};
 		input.click();
 	});
-	function importDataFromArrayBuffer(dataInArrayBuffer){
-		const enc = new TextDecoder("utf-8");
-		let content = enc.decode(dataInArrayBuffer);
-		if(content[0]==='[') self.model.deserializeFromLegacyJson(content);
-		else if(content[0]==='{') self.model.deserializeFromHumanReadableJson(content);
-		else self.model.deserializeFromBinary(new Uint8Array(dataInArrayBuffer));
-
-		const globalEditPage = loopy.sidebar.pages[3];
-		injectPropsLabelInSideBar(globalEditPage,objTypeToTypeIndex("loopy"));
-	}
 
 	self.saveToURL = function(embed){
 
 		// Create link
-		const uri = self.model.serializeToUrl(embed);
+		const uri = serializeToUrl(embed);
 		const base = window.location.origin + window.location.pathname;
 		let historyLink = base+"?"+uri;
 
@@ -222,13 +212,13 @@ function Loopy(config){
 	self.loadFromURL = function(){
 		let remoteDataUrl = _getParameterByName("url");
 		if(remoteDataUrl){
-			fetch(remoteDataUrl).then(r=>r.arrayBuffer()).then(ab=>importDataFromArrayBuffer(ab));
+			fetch(remoteDataUrl).then(r=>r.arrayBuffer()).then(aB=>loopy.model.importModel(deserializeFromArrayBuffer(aB)));
 		} else {
 			let data = _getParameterByName("data");
 			if(!data) data=location.href.split("?")[1];
 			if(!data) data=location.href.split("#")[1];
 			if(!data) data=decodeURIComponent(_blankData);
-			self.model.deserializeFromUrl(data);
+			loopy.model.importModel(deserializeFromUrl(data));
 		}
 
 		const globalEditPage = loopy.sidebar.pages[3];

@@ -394,7 +394,7 @@ function LoopyNode(model, config){
 		}
 		if(self.aggregationLatency>0){
 			// show aggregationLatency visual (and why not animation)
-			console.log(r,ctx);
+			//console.log(r,ctx);
 			ctx.save();
 			ctx.beginPath();
 			//ctx.moveTo(-2,0);
@@ -525,15 +525,4 @@ function LoopyNode(model, config){
 			bottom: self.y + self.radius
 		};
 	};
-
 }
-
-////////////////////////////
-// Unique ID identifiers! //
-////////////////////////////
-
-LoopyNode._UID = 0;
-LoopyNode._getUID = function(){
-	LoopyNode._UID++;
-	return LoopyNode._UID;
-};

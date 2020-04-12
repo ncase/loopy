@@ -54,6 +54,7 @@ function Model(loopy){
 
 		// Remove from array
 		self.nodes.splice(self.nodes.indexOf(node),1);
+		self.nodes.forEach((n,i)=>n.id = i);
 
 		// Remove all associated TO and FROM edges
 		for(let i=0; i<self.edges.length; i++){
@@ -283,139 +284,11 @@ function Model(loopy){
 
 
 
-	//////////////////////////////
-	// SERIALIZE & DE-SERIALIZE //
-	//////////////////////////////
-	function externalizeStrings(){
-		// for each type (nodes, edges, labels, groups), list strings fields
-		// for each element of each type and for each string fields, store stringData as key with length as value.
-		// sort by length (and alphabetically if length is equal)
-		// replace length by order index
-		// for each element of each type and for each string fields, add element.stringFieldNameIndex = the string index
-		// export the string array
+	//////////////////
+	// import Model //
+	//////////////////
 
-		// concatenate all strings map all characters used, choose an other as separator
-		// concatenate them again with the separator between each
-		// BWT transform them // or BWT BWFT ZRL BWBT EC SFE MTF JBE EJBE
-		// index symbols and reduce bit by symbols if the result is smaller than original
 
-		// OR JUST concatenate them with ` as separator and hope LZMA will do the job.
-
-		const stringFields = [];
-		for(let typeIndex in EDIT_MODEL) if(EDIT_MODEL.hasOwnProperty(typeIndex))
-			for(let i in EDIT_MODEL[typeIndex]) if(EDIT_MODEL[typeIndex].hasOwnProperty(i)) {
-			const field = EDIT_MODEL[typeIndex][i];
-			if(!field.options && !field.html) stringFields.push({type:typeIndex,fieldName:field.name});
-		}
-
-		const strings = [];
-		for(let stringField of stringFields){
-			const typeName = get_PERSIST_TYPE_array()[stringField["type"]]._CLASS_.toLowerCase();
-			loopy.model[`${typeName}s`].forEach((item)=>strings.push(item[stringField["fieldName"]]));
-		}
-		const utf8string = strings.join('`');
-		const stringUint8Array = (new StringView(utf8string)).rawData;
-		//console.log(utf8string.length,stringUint8Array.length);
-		return stringUint8Array;
-	}
-	self.serializeToBinary = function(embed) {
-		const entitiesKindsCount = 4; // nodes, edges, labels, loopys //, groups, groupPairs
-		const entitiesCount = countEntities();
-		const bitToRefAnyEntity = entityRefBitSize();
-		const entitiesSizes = entitiesSize(true);
-
-		let size = 10+Object.keys(entitiesCount).length*bitToRefAnyEntity+Object.keys(entitiesSizes).length*8+entitiesSizes['loopys'];//+stringArea.length*8;
-		size = Math.ceil(size/8)*8;
-		for (let entity in entitiesCount) size+=Math.ceil(entitiesCount[entity]/8)*8*entitiesSizes[entity];
-
-		const bitArray = new BitArray(size);
-		bitArray.append(0,1);// Version number (This Version Start With 0, on 1bit, to allow evolution starting with 1)
-		bitArray.append(1,1);// 0: withSpecific optimisations 1:padded to Bytes for better LZMA compression
-		bitArray.append(embed?1:0,1);
-		bitArray.append(entitiesKindsCount,4);
-		bitArray.append(bitToRefAnyEntity,4);
-		for (let entity in entitiesCount) bitArray.append(entitiesCount[entity],bitToRefAnyEntity);
-		for (let entity in entitiesSizes) if(entity==="loopys" || entitiesCount[entity]) bitArray.append(entitiesSizes[entity],8);
-		saveToBinary(bitArray,loopy,3,entitiesSizes["loopys"],bitArray.maxOffset);
-
-		const appendArea = (bitArray,typeStr,entitiesSizes)=>{
-			const areaStart = Math.ceil(bitArray.maxOffset/8)*8;
-			bitArray.setOffset(areaStart);
-			loopy.model[typeStr].forEach((n)=>saveToBinary(bitArray,n,objTypeToTypeIndex(typeStr),entitiesSizes[typeStr],areaStart,true));
-			bitArray.rotate(entitiesSizes[typeStr],Math.ceil(loopy.model[typeStr].length/8)*8,areaStart);
-		}
-		appendArea(bitArray,"nodes",entitiesSizes);
-		appendArea(bitArray,"edges",entitiesSizes);
-		appendArea(bitArray,"labels",entitiesSizes);
-		//appendArea(bitArray,"groups",entitiesSizes);
-		//appendArea(bitArray,"groupPairs",entitiesSizes);
-
-		//console.log(`pre-compressed bin size : ${bitArray.maxOffset}b + strArea`);
-		const stringArea = externalizeStrings();
-		//console.log(`strArea bin size : ${stringArea.buffer.byteLength*8}b`);
-		//console.log("stringArea char stats : ",Object.values(statArray(stringArea)).sort((a,b)=>a<b));
-
-		const realBytesSize = Math.ceil(bitArray.maxOffset/8);
-		const bin = new Uint8Array(realBytesSize + stringArea.buffer.byteLength);
-		bin.set(new Uint8Array(bitArray.rawData.buffer,0,realBytesSize), 0);
-		bin.set(stringArea, realBytesSize);
-
-		const compressedBin = LZMA.compress(bin,9).map((v)=>v<0?v+256:v);
-
-		function b64l(bArr){return stdB64ToUrl(base64EncArr(bArr)).length;}
-		console.log(`bin: ${b64l(bin)}, zbin: ${b64l(compressedBin)},`);
-		if(bin.buffer.byteLength < compressedBin.length) return bin;
-		return compressedBin;
-	};
-	self.serializeToUrl = (embed)=> {
-		const bin = stdB64ToUrl(base64EncArr(self.serializeToBinary(embed)));
-		const json = self.serializeToLegacyJson(embed);
-		const compressedJson = stdB64ToUrl(base64EncArr(LZMA.compress(json,9).map((v)=>v<0?v+256:v)));
-		console.log(`json: ${json.length}, zjson: ${compressedJson.length}`);
-		if(json.length<bin.length && json.length<compressedJson.length) return json;
-		if(compressedJson.length<bin.length && compressedJson.length<json.length) return compressedJson;
-		return bin;
-	};
-	self.serializeToLegacyJson = function(embed){
-		const data = [];
-		// 0 - nodes
-		// 1 - edges
-		// 2 - labels
-		// 3 - globalState (including UID)
-		data.push(self.nodes.map(n=>legacyJsonPersistProps(n)));
-		data.push(self.edges.map(n=>legacyJsonPersistProps(n)));
-		data.push(self.labels.map(n=>legacyJsonPersistProps(n)));
-		data.push(legacyJsonPersistProps(loopy));
-		// Return as string!
-		return JSON.stringify(data);
-	};
-	self.serializeToHumanReadableJson = function(embed){
-		const json = {
-			globals:humanReadableJsonPersistProps(loopy),
-			nodes:self.nodes.map(n=>humanReadableJsonPersistProps(n)),
-			edges:self.edges.map(n=>humanReadableJsonPersistProps(n)),
-			labels:self.labels.map(n=>humanReadableJsonPersistProps(n))
-		};
-		if(embed) json.globals.embed=true;
-		return JSON.stringify(json);
-	};
-
-	self.deserializeFromUrl = (dataString)=>{
-		if(dataString[0]==='[') return self.deserializeFromLegacyJson(dataString);
-		else if(dataString[0]==='{') return self.deserializeFromHumanReadableJson(dataString);
-		else return self.deserializeFromBinary(base64DecToArr(urlToStdB64(dataString)).map((v)=>v>128?v-256:v));
-	};
-	self.deserializeFromBinary = (dataUint8Array)=>{
-		let bin = dataUint8Array;
-		if(bin[0]===93) bin = LZMA.decompress(dataUint8Array);
-
-		//FIXME: implement binary deserializer
-		return self.deserializeFromLegacyJson(LZMA.decompress(dataUint8Array));
-	};
-	self.deserializeFromHumanReadableJson = (dataString)=>{
-		const data = JSON.parse(dataString);
-		self.importModel(data);
-	};
 	self.importModel = (newModel)=>{
 		self.clear();
 		for(let key in newModel.globals)loopy[key] = newModel.globals[key];
@@ -431,40 +304,6 @@ function Model(loopy){
 		newModel.labels.forEach((n,i)=>self.addLabel(n));
 		//newModel.groups.forEach((n,i)=>self.addGroup(n));
 	}
-	self.deserializeFromLegacyJson = (dataString)=>{
-		self.clear();
-		const data = JSON.parse(dataString);
-		const newModel = {globals:{},nodes:[],edges:[],labels:[]};
-		// Get from array!
-		const nodes = data[0];
-		const edges = data[1];
-		const labels = data[2];
-		const globalState = data[3];
-		for(let i=0;i<nodes.length;i++) newModel.nodes.push(injectedRestoreProps(nodes[i],{},objTypeToTypeIndex("node")));
-		for(let i=0;i<edges.length;i++) newModel.edges.push(injectedRestoreProps(edges[i],{},objTypeToTypeIndex("edge")));
-		for(let i=0;i<labels.length;i++) newModel.labels.push(injectedRestoreProps(labels[i],{},objTypeToTypeIndex("label")));
-		// META.
-		const importArray = typeof globalState === "object"?globalState:[globalState];
-		newModel.globals.embedded = loopy.embedded?1:importArray[3];
-		newModel.globals = injectedRestoreProps(importArray,newModel.globals,objTypeToTypeIndex("loopy"));
-
-		//LoopyNode._UID = importArray[0];
-		legacyIdFix(newModel);
-		self.importModel(newModel);
-	};
-	function legacyIdFix(newModel){
-		newModel.nodes.forEach((n,i)=>{
-			if(n.id && n.id !== i){
-				const oldId = n.id;
-				const newId = i;
-				n.id = newId;
-				newModel.edges.forEach(edge=>{
-					if(edge.from===oldId) edge.from=newId;
-					if(edge.to===oldId) edge.to=newId;
-				});
-			}
-		});
-	}
 
 	self.clear = function(){
 
@@ -478,7 +317,6 @@ function Model(loopy){
 			self.labels[0].kill();
 		}
 	};
-
 
 
 	////////////////////

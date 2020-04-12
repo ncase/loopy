@@ -324,74 +324,36 @@ function setCharAt(str,index,chr) {
 	if(index > str.length-1) return str;
 	return str.substr(0,index) + chr + str.substr(index+1);
 }
-function urlToStdB64(urlStr) {
-	let b64 = urlStr;
-	const parts = urlStr.split("/");
-	if(parts.length===2){
-		b64 = RECURRENT_LZMA_SCHEME;
-		let lastDifferencePos = 0;
-		for(let i = 0; i< parts[0].length;i+=2) {
-			const position = parseInt(parts[0][i])+lastDifferencePos;
-			b64 = setCharAt(b64,position,parts[0][i+1]);
-			lastDifferencePos=position;
-		}
-		b64 += parts[1];
-	}
-	return b64.split('_').join('+').split('-').join('/').split('.').join('=');
-}
-function stdB64ToUrl(b64){
-	b64 = b64.split('+').join('_').split('/').join('-').split('=').join('.').replace(/[^-_.a-zA-Z0-9]/g,'');
-	let start = '';
-	let lastDifferencePos = 0;
-	for(let i =0; i<RECURRENT_LZMA_SCHEME.length; i++){
-		if(b64[i]!==RECURRENT_LZMA_SCHEME[i]){
-			let pos = i-lastDifferencePos;
-			while(pos>9){
-				start+=`${9}${b64[lastDifferencePos+9]}`;
-				lastDifferencePos += 9;
-				pos = i-lastDifferencePos;
-			}
-			lastDifferencePos = i;
-			start+=`${pos}${b64[i]}`;
-		}
-	}
-	const diffStartVersion =`${start}/${b64.substr(RECURRENT_LZMA_SCHEME.length)}`;
-	if(diffStartVersion.length<b64.length) return diffStartVersion;
-	else return b64;
-}
-function factoryRatio(bitNumber,ratioRef,signed=false){
-	if (signed) return {
-			bit: bitNumber,
-			encode: (v) => Math.min(Math.pow(2, bitNumber)-1, Math.max(0, Math.round(Math.pow(2, bitNumber-1) * v / ratioRef) + Math.pow(2, bitNumber-1))),
-			decode: (v) => Math.round((v - Math.pow(2, bitNumber-1)) * ratioRef / Math.pow(2, bitNumber-1))
-		};
-	else return {
-			bit: bitNumber,
-			encode: (v) => Math.min(Math.pow(2, bitNumber)-1, Math.max(0, Math.round(Math.pow(2, bitNumber) * v / ratioRef))),
-			decode: (v) => Math.round(v * ratioRef / Math.pow(2, bitNumber))
-		};
-}
-function countEntities(){
-	const types = get_PERSIST_TYPE_array().map(t=>`${t._CLASS_.toLowerCase()}s`);
-	const entities = {};
-	types.filter(t=>loopy.model[t]).forEach(t=>entities[t]=loopy.model[t].length);
-	return entities;
-}
-function entityRefBitSize(){
-	const entitiesCount = countEntities();
-	const maxEntities = Object.values(entitiesCount).reduce((acc,cur)=>Math.max(acc,cur),1);
-	return Math.ceil(Math.log2(maxEntities));
-}
-function entitiesSize(ceil8=false){
-	const types = get_PERSIST_TYPE_array().map(t=>`${t._CLASS_.toLowerCase()}s`);
-	const entities = {};
-	for(let i in PERSIST_MODEL)
-		PERSIST_MODEL.forEach((t,i)=>entities[types[i]]=t.reduce((acc,cur)=>acc+(typeof cur.bit==="function"?cur.bit():cur.bit)||acc,0));
-	if(ceil8) for(let i in entities)entities[i]=Math.ceil(entities[i]/8)*8;
-	return entities;
-}
 function statArray(arr){
 	const stat = {};
 	arr.forEach(e=>stat[e]?stat[e]++:stat[e]=1);
 	return stat;
 }
+/*
+function MonitoredStruct(inertStruct, eventNameSuffix, topAncestor) {
+	this.topAncestor = topAncestor ? topAncestor : this;
+	const closuredTopAncestor = this.topAncestor;
+	const handler = {
+		'set': (obj, key, value) => {
+			if(JSON.stringify(obj[key]) === JSON.stringify(value) ) return true;
+			if (typeof value === 'object') obj[key] = new MonitoredStruct(value, eventNameSuffix+'.'+key, closuredTopAncestor);
+			else obj[key] = value;
+			throw ['monitoredStruct', 'change', eventNameSuffix+'.'+key,closuredTopAncestor.smartObj];
+			return true;
+		},
+		'deleteProperty': function (obj, key) {
+			throw ['monitoredStruct', 'delete', eventNameSuffix+'.'+key,closuredTopAncestor.smartObj];
+			return delete obj[key];
+		}
+	};
+	let goSmart = JSON.parse(JSON.stringify(inertStruct));
+	for (let key in inertStruct) {
+		if (typeof inertStruct[key] === 'object') {
+			goSmart[key] = new MonitoredStruct(inertStruct[key], eventNameSuffix+'.'+key, this.topAncestor);
+		} else goSmart[key] = inertStruct[key];
+	}
+	if(typeof goSmart === 'object' && goSmart !== null) this.smartObj = new Proxy(goSmart, handler);
+	else this.smartObj = goSmart;
+	return this.smartObj;
+}
+*/
