@@ -70,23 +70,12 @@ function legacyIdFix(newModel){
 
 function serializeToUrl (embed){
     const alternatives = []
-    console.log('tiny');
     alternatives.push(stdB64ToUrl(binToB64(serializeToBinary(embed,false,false))));
-    console.log('size8');
     alternatives.push(stdB64ToUrl(binToB64(serializeToBinary(embed,true,false))));
-    console.log('count8');
     alternatives.push(stdB64ToUrl(binToB64(serializeToBinary(embed,false,true))));
-    console.log('8x8');
     alternatives.push(stdB64ToUrl(binToB64(serializeToBinary(embed,true,true))));
-    alternatives.push(serializeToLegacyJson(embed));
-    alternatives.push(stdB64ToUrl(binToB64(LZMA.compress(serializeToLegacyJson(embed),9).map((v)=>v<0?v+256:v))));
 
-    const json = serializeToLegacyJson(embed);
-    const compressedJson = stdB64ToUrl(binToB64(LZMA.compress(json,9).map((v)=>v<0?v+256:v)));
-    console.log(`json: ${json.length}, zjson: ${compressedJson.length}`);
-    console.log(`hrJson: ${serializeToHumanReadableJson(embed).length}, zhrJson: ${stdB64ToUrl(binToB64(LZMA.compress(serializeToHumanReadableJson(embed),9).map((v)=>v<0?v+256:v))).length}`);
     const minSized = alternatives.reduce((acc,cur)=>{return cur.length>acc.size?acc:{size:cur.length,content:cur};},{size:+Infinity,content:''});
-    console.log(`selected size : ${minSized.size}`);
     return minSized.content;
 }
 function deserializeFromUrl (dataString){
