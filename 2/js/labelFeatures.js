@@ -1,7 +1,7 @@
 
 // Label features
-injectProperty("label", "x",{persist:{index:0,binFunc:factoryRatio(10,innerWidth+innerHeight),serializeFunc:v=>Math.round(v)}});
-injectProperty("label", "y",{persist:{index:1,binFunc:factoryRatio(10,innerWidth+innerHeight),serializeFunc:v=>Math.round(v)}});
+injectProperty("label", "x",{persist:{index:0,binFunc:factoryRatio(10,1024),serializeFunc:v=>Math.round(v)}});
+injectProperty("label", "y",{persist:{index:1,binFunc:factoryRatio(10,1024),serializeFunc:v=>Math.round(v)}});
 injectProperty("label", "textColor",{
     defaultValue:-1,
     persist:4,
