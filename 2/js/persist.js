@@ -1,7 +1,7 @@
 function log(bitArray) {
     console.log(bitArray.maxOffset,binView(bitArray.rawData.buffer));
 }
-function saveToBinary(bitArray,objToPersist,typeIndex,entityBitSize,zAreaStartOffset){
+function saveToBinary(bitArray,objToPersist,typeIndex,entityBitSize){
     const toSave = [];
     for(let i in PERSIST_MODEL[typeIndex]) {
         const prop = PERSIST_MODEL[typeIndex][i];
@@ -9,7 +9,8 @@ function saveToBinary(bitArray,objToPersist,typeIndex,entityBitSize,zAreaStartOf
             let bitSize = prop.bit;
             if(typeof prop.bit === "function") bitSize = prop.bit();
             if(typeof toSave[i] !== "undefined") throw `collision : ${typeIndex} ${prop.name}`;
-            console.log(prop.name,objToPersist[prop.name],prop.encode(objToPersist[prop.name]),Math.ceil(Math.log2(prop.encode(objToPersist[prop.name])))<=bitSize);
+            //console.log(prop.name,objToPersist[prop.name],prop.encode(objToPersist[prop.name]),Math.ceil(Math.log2(prop.encode(objToPersist[prop.name])))<=bitSize);
+            //if(prop.name === "x" || prop.name === "y") console.log(`${prop.name} encoded : ${prop.encode(objToPersist[prop.name])}, raw : ${objToPersist[prop.name]}`);
             toSave[i] = {value:prop.encode(objToPersist[prop.name]),bit:bitSize};
         }
     }
@@ -18,11 +19,10 @@ function saveToBinary(bitArray,objToPersist,typeIndex,entityBitSize,zAreaStartOf
     tmpBitArray.offset = 0;
     bitArray.append(tmpBitArray,entityBitSize);
 }
-function loadFromBinary(bitArray,typeStr,bitSize,entitiesCount) {
+function loadFromBinary(bitArray,typeIndex,bitSize,entitiesCount) {
     const entity = {};
     const startOffset = bitArray.offset;
-    log(bitArray.export(bitSize,startOffset));
-    const typeIndex = objTypeToTypeIndex(typeStr);
+    //log(bitArray.export(bitSize,startOffset));
     for(let i in PERSIST_MODEL[typeIndex]) {
         const prop = PERSIST_MODEL[typeIndex][i];
         if(prop.bit) {
@@ -31,24 +31,24 @@ function loadFromBinary(bitArray,typeStr,bitSize,entitiesCount) {
             if(bitArray.offset+propBitSize>startOffset+bitSize) break;
             const rawValue = bitArray.get(propBitSize)
             entity[prop.name] = prop.decode(rawValue);
-            console.log(prop.name, rawValue, entity[prop.name]);
+            //if(prop.name === "x" || prop.name === "y") console.log(`${prop.name} raw/encoded : ${rawValue}, decoded : ${prop.decode(rawValue)}`);
         }
     }
     bitArray.setOffset(startOffset+bitSize);
-    console.log("entity",entity);
+    //console.log("entity",entity);
     return entity;
-}
-function legacyJsonPersistProps(objToPersist) {
-    const typeIndex = objTypeToTypeIndex(objToPersist);
-    const persistArray = [];
-    for(let i in PERSIST_MODEL[typeIndex]) persistArray[i] = PERSIST_MODEL[typeIndex][i].serializeFunc( objToPersist[PERSIST_MODEL[typeIndex][i].name]);
-    return persistArray;
 }
 function humanReadableJsonPersistProps(objToPersist) {
     const typeIndex = objTypeToTypeIndex(objToPersist);
     const persist = {};
     for(let i in PERSIST_MODEL[typeIndex]) persist[PERSIST_MODEL[typeIndex][i].name] = PERSIST_MODEL[typeIndex][i].serializeFunc( objToPersist[PERSIST_MODEL[typeIndex][i].name]);
     return persist;
+}
+function legacyJsonPersistProps(objToPersist) {
+    const typeIndex = objTypeToTypeIndex(objToPersist);
+    const persistArray = [];
+    for(let i in PERSIST_MODEL[typeIndex]) persistArray[i] = PERSIST_MODEL[typeIndex][i].serializeFunc( objToPersist[PERSIST_MODEL[typeIndex][i].name]);
+    return persistArray;
 }
 function legacyJsonRestoreProps(srcArray, targetConfig, typeIndex) {
     // include in targetConfig
@@ -96,37 +96,67 @@ function deserializeFromArrayBuffer(dataInArrayBuffer){
     return deserializeFromBinary(new Uint8Array(dataInArrayBuffer));
 }
 
-function externalizeStrings(){
-    // for each type (nodes, edges, labels, groups), list strings fields
-    // for each element of each type and for each string fields, store stringData as key with length as value.
-    // sort by length (and alphabetically if length is equal)
-    // replace length by order index
-    // for each element of each type and for each string fields, add element.stringFieldNameIndex = the string index
-    // export the string array
-
-    // concatenate all strings map all characters used, choose an other as separator
-    // concatenate them again with the separator between each
-    // BWT transform them // or BWT BWFT ZRL BWBT EC SFE MTF JBE EJBE
-    // index symbols and reduce bit by symbols if the result is smaller than original
-
-    // OR JUST concatenate them with ` as separator and hope LZMA will do the job.
-
+function listStringFields() {
     const stringFields = [];
     for(let typeIndex in EDIT_MODEL) if(EDIT_MODEL.hasOwnProperty(typeIndex))
         for(let i in EDIT_MODEL[typeIndex]) if(EDIT_MODEL[typeIndex].hasOwnProperty(i)) {
             const field = EDIT_MODEL[typeIndex][i];
             if(!field.options && !field.html) stringFields.push({type:typeIndex,fieldName:field.name});
         }
-
+    return stringFields;
+}
+function externalizeStrings(){
+    const stringFields = listStringFields();
     const strings = [];
     for(let stringField of stringFields){
         const typeName = get_PERSIST_TYPE_array()[stringField["type"]]._CLASS_.toLowerCase();
         loopy.model[`${typeName}s`].forEach((item)=>strings.push(item[stringField["fieldName"]]));
     }
     const utf8string = strings.join('`');
+    //console.log(utf8string);
     const stringUint8Array = (new StringView(utf8string)).rawData;
-    //console.log(utf8string.length,stringUint8Array.length);
     return stringUint8Array;
+}
+function restoreStrings(bitArray, newModel) {
+    const areaStart = bitArray.offset/8;
+    const areaEnd = bitArray.rawData.buffer.byteLength;
+    //console.log(areaStart,areaEnd);
+    const bin = new Uint8Array(areaEnd-areaStart);
+    bin.set(new Uint8Array(bitArray.rawData.buffer,areaStart,areaEnd-areaStart), 0);
+    const utf8string = (new StringView(bin)).toString();
+    //console.log(utf8string);
+    const strings = utf8string.split('`');
+    const stringFields = listStringFields();
+    for(let stringField of stringFields){
+        const typeName = get_PERSIST_TYPE_array()[stringField["type"]]._CLASS_.toLowerCase();
+        newModel[`${typeName}s`].forEach((item)=>item[stringField["fieldName"]] = strings.shift());
+    }
+}
+function appendArea (bitArray,typeStr,entitiesSizes){
+    const areaStart = Math.ceil(bitArray.maxOffset/8)*8;
+    bitArray.setOffset(areaStart);
+    //console.log(`${typeStr} start offset : ${bitArray.maxOffset}`);
+    loopy.model[typeStr].forEach((n)=>saveToBinary(bitArray,n,objTypeToTypeIndex(typeStr),entitiesSizes[typeStr]));
+    //console.log(bitArray.offset,bitArray.maxOffset);
+    //log(bitArray);
+    //console.log(entitiesSizes[typeStr],Math.ceil(loopy.model[typeStr].length/8)*8,areaStart);
+    bitArray.setOffset(areaStart);
+    bitArray.rotate(entitiesSizes[typeStr],Math.ceil(loopy.model[typeStr].length/8)*8);
+    //console.log(bitArray.offset,bitArray.maxOffset);
+    //log(bitArray);
+}
+function extractArea (bitArray,typeStr,entitiesSizes,entitiesCount){
+    const areaStart = Math.ceil(bitArray.maxOffset/8)*8;
+    bitArray.setOffset(areaStart);
+    //console.log(`${typeStr} start offset : ${bitArray.maxOffset}`);
+    const typeIndex = objTypeToTypeIndex(typeStr);
+    if(!entitiesCount[typeIndex]) return [];
+    bitArray.rotate(Math.ceil(entitiesCount[typeIndex]/8)*8,entitiesSizes[typeIndex],areaStart);
+    bitArray.setOffset(areaStart);
+    const entities = [];
+    for(let i=0;i<entitiesCount[typeIndex];i++) entities.push(loadFromBinary(bitArray,typeIndex,entitiesSizes[typeIndex],entitiesCount));
+    bitArray.setOffset(areaStart+Math.ceil(entitiesCount[typeIndex]/8)*8 * entitiesSizes[typeIndex]);
+    return entities;
 }
 function serializeToBinary(embed) {
     const entitiesKindsCount = 4; // nodes, edges, labels, loopys //, groups, groupPairs
@@ -134,12 +164,14 @@ function serializeToBinary(embed) {
     const bitToRefAnyEntity = entityRefBitSize();
     const entitiesSizes = entitiesSize(true);
 
-    let size = 10+Object.keys(entitiesCount).length*bitToRefAnyEntity+Object.keys(entitiesSizes).length*8+entitiesSizes['loopys'];//+stringArea.length*8;
+    let size = 11;
+    size+=Object.keys(entitiesCount).length*(bitToRefAnyEntity+1);
+    size+=Object.keys(entitiesSizes).length*8+entitiesSizes['loopys'];//+stringArea.length*8;
     size = Math.ceil(size/8)*8;
     for (let entity in entitiesCount) size+=Math.ceil(entitiesCount[entity]/8)*8*entitiesSizes[entity];
 
     console.log("serializeToBinary");
-    console.log(entitiesCount,entitiesSizes,entitiesKindsCount,bitToRefAnyEntity);
+    //console.log(entitiesCount,entitiesSizes,entitiesKindsCount,bitToRefAnyEntity);
 
     const bitArray = new BitArray(size);
     bitArray.append(0,1);// Version number (This Version Start With 0, on 1bit, to allow evolution starting with 1)
@@ -147,20 +179,13 @@ function serializeToBinary(embed) {
     bitArray.append(embed?1:0,1);
     bitArray.append(entitiesKindsCount,4); // include loopy globals type
     bitArray.append(bitToRefAnyEntity,4);
-    console.log(`entitiesCount start offset : ${bitArray.maxOffset}`);
+    //console.log(`entitiesCount start offset : ${bitArray.maxOffset}`);
     for (let entity in entitiesCount) bitArray.append(entitiesCount[entity],bitToRefAnyEntity+1); // exclude loopy globals type
-    console.log(`entitiesSizes start offset : ${bitArray.maxOffset}`);
+    //console.log(`entitiesSizes start offset : ${bitArray.maxOffset}`);
     for (let entity in entitiesSizes) if(entity==="loopys" || entitiesCount[entity]) bitArray.append(entitiesSizes[entity],8);
-    console.log(`globals start offset : ${bitArray.maxOffset}`);
+    //console.log(`globals start offset : ${bitArray.maxOffset}`);
     saveToBinary(bitArray,loopy,3,entitiesSizes["loopys"],bitArray.maxOffset);
 
-    const appendArea = (bitArray,typeStr,entitiesSizes)=>{
-        const areaStart = Math.ceil(bitArray.maxOffset/8)*8;
-        bitArray.setOffset(areaStart);
-        console.log(`${typeStr} start offset : ${bitArray.maxOffset}`);
-        loopy.model[typeStr].forEach((n)=>saveToBinary(bitArray,n,objTypeToTypeIndex(typeStr),entitiesSizes[typeStr],areaStart,true));
-        bitArray.rotate(entitiesSizes[typeStr],Math.ceil(loopy.model[typeStr].length/8)*8,areaStart);
-    }
     appendArea(bitArray,"nodes",entitiesSizes);
     appendArea(bitArray,"edges",entitiesSizes);
     appendArea(bitArray,"labels",entitiesSizes);
@@ -173,7 +198,7 @@ function serializeToBinary(embed) {
     //console.log("stringArea char stats : ",Object.values(statArray(stringArea)).sort((a,b)=>a<b));
 
     const realBytesSize = Math.ceil(bitArray.maxOffset/8);
-    console.log(`stringArea start offset : ${realBytesSize*8}`);
+    //console.log(`stringArea start offset : ${realBytesSize*8}`);
     const bin = new Uint8Array(realBytesSize + stringArea.buffer.byteLength);
     bin.set(new Uint8Array(bitArray.rawData.buffer,0,realBytesSize), 0);
     bin.set(stringArea, realBytesSize);
@@ -191,53 +216,44 @@ function deserializeFromBinary (dataUint8Array){
     let bin = dataUint8Array;
     if(bin[0]===93) bin = LZMA.decompress(dataUint8Array);
     bin = new BitArray(bin);
-    if(bin.get(1)!==0) console.warn("hasardous unknown version"); // Version number (This Version Start With 0, on 1bit, to allow evolution starting with 1)
-    if(bin.get(1)!==1) console.warn("hasardous unsupported specific optimisation"); // 0: withSpecific optimisations 1:padded to Bytes for better LZMA compression
+    if(bin.get(1)!==0) console.warn("hazardous unknown version"); // Version number (This Version Start With 0, on 1bit, to allow evolution starting with 1)
+    if(bin.get(1)!==1) console.warn("hazardous unsupported specific optimisation"); // 0: withSpecific optimisations 1:padded to Bytes for better LZMA compression
     const embed = bin.get(1);
     const entitiesKindsCount = bin.get(4);
     const bitToRefAnyEntity = bin.get(4);
     const knownEntities = get_PERSIST_TYPE_array().map(e=>e._CLASS_.toLowerCase()+'s');
-    console.log(`entitiesCount start offset : ${bin.maxOffset}`);
+    //console.log(`entitiesCount start offset : ${bin.maxOffset}`);
     const entitiesCount = [];
     for(let i=0;i<entitiesKindsCount;i++) {
         if(i===objTypeToTypeIndex('loopy')) entitiesCount[i] = 0;
         else entitiesCount[i] = bin.get(bitToRefAnyEntity+1);
-        console.log(i,bin.maxOffset,objTypeToTypeIndex('loopy'));
+        //console.log(i,bin.maxOffset,objTypeToTypeIndex('loopy'));
     }
-    console.log(`entitiesSizes start offset : ${bin.maxOffset}`);
+    //console.log(`entitiesSizes start offset : ${bin.maxOffset}`);
     const entitiesSizes = [];
     for (let i=0;i<entitiesKindsCount;i++) if(knownEntities[i]==="loopys" || entitiesCount[i]) entitiesSizes[i] = bin.get(8);
 
-    console.log(entitiesCount,entitiesSizes,entitiesKindsCount,bitToRefAnyEntity);
+    //console.log(entitiesCount,entitiesSizes,entitiesKindsCount,bitToRefAnyEntity);
 
-    console.log(`globals start offset : ${bin.maxOffset}`);
-    newModel.globals = loadFromBinary(bin,"loopy",entitiesSizes[3],entitiesCount);
+    //console.log(`globals start offset : ${bin.maxOffset}`);
+    newModel.globals = loadFromBinary(bin,objTypeToTypeIndex("loopy"),entitiesSizes[3],entitiesCount);
     newModel.globals.embed = embed;
 
-    const extractArea = (bitArray,typeStr,entitiesSizes,entitiesCount)=>{
-        const areaStart = Math.ceil(bitArray.maxOffset/8)*8;
-        bitArray.setOffset(areaStart);
-        console.log(`${typeStr} start offset : ${bitArray.maxOffset}`);
-        const typeIndex = objTypeToTypeIndex(typeStr);
-        bitArray.rotate(Math.ceil(entitiesCount[typeIndex]/8)*8,entitiesSizes[typeIndex],areaStart);
-        bitArray.setOffset(areaStart);
-        const entities = [];
-        for(let i=0;i<entitiesCount[typeIndex];i++) entities.push(loadFromBinary(bitArray,typeStr,entitiesSizes[typeIndex],entitiesCount));
-        newModel[typeStr] = entities;
-    }
-    extractArea(bin,"nodes",entitiesSizes,entitiesCount);
-    extractArea(bin,"edges",entitiesSizes,entitiesCount);
-    extractArea(bin,"labels",entitiesSizes,entitiesCount);
+    newModel.nodes = extractArea(bin,"nodes",entitiesSizes,entitiesCount);
+    newModel.edges = extractArea(bin,"edges",entitiesSizes,entitiesCount);
+    newModel.labels = extractArea(bin,"labels",entitiesSizes,entitiesCount);
     //extractArea(bin,"groups",entitiesSizes,entitiesCount);
     //extractArea(bin,"groupPairs",entitiesSizes,entitiesCount);
 
-
-    let size = 10+entitiesKindsCount*bitToRefAnyEntity+Object.keys(entitiesSizes).length*8+entitiesSizes[objTypeToTypeIndex('loopys')];
+/*
+    let size = 11+entitiesKindsCount*(bitToRefAnyEntity+1)+Object.keys(entitiesSizes).length*8+entitiesSizes[objTypeToTypeIndex('loopys')];
     size = Math.ceil(size/8)*8;
     for (let entity in entitiesCount) size+=Math.ceil(entitiesCount[entity]/8)*8*entitiesSizes[entity];
     const strAreaStart = Math.ceil(size/8)*8;
-    console.log(`stringArea start offset : ${strAreaStart}`);
-
+    console.log(`stringArea start offset : ${strAreaStart}, ${bin.offset}`);
+ */
+    console.log(`stringArea start offset : ${bin.offset}`);
+    restoreStrings(bin, newModel);
     console.log(newModel);
 
     return newModel;
@@ -286,6 +302,11 @@ function deserializeFromHumanReadableJson (dataString){
 }
 
 
+const RECURRENT_LZMA_SCHEME = "XQAAAAISAAAAAAAAAAAt";
+function setCharAt(str,index,chr) {
+    if(index > str.length-1) return str;
+    return str.substr(0,index) + chr + str.substr(index+1);
+}
 function urlToStdB64(urlStr) {
     let b64 = urlStr;
     const parts = urlStr.split("/");

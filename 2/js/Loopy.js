@@ -220,11 +220,7 @@ function Loopy(config){
 			if(!data) data=decodeURIComponent(_blankData);
 			loopy.model.importModel(deserializeFromUrl(data));
 		}
-
-		const globalEditPage = loopy.sidebar.pages[3];
-		injectPropsLabelInSideBar(globalEditPage,objTypeToTypeIndex("loopy"));
-
-	}; 
+	};
 
 
 	///////////////////////////

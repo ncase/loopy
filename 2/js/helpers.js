@@ -318,12 +318,6 @@ function _shiftArray(array, shiftIndex){
 	const moveThisAround = array.splice(-shiftIndex);
 	return moveThisAround.concat(array);
 }
-
-const RECURRENT_LZMA_SCHEME = "XQAAAAISAAAAAAAAAAAt";
-function setCharAt(str,index,chr) {
-	if(index > str.length-1) return str;
-	return str.substr(0,index) + chr + str.substr(index+1);
-}
 function statArray(arr){
 	const stat = {};
 	arr.forEach(e=>stat[e]?stat[e]++:stat[e]=1);

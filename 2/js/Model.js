@@ -299,9 +299,9 @@ function Model(loopy){
 		injectPropsLabelInSideBar(globalEditPage,objTypeToTypeIndex("loopy"));
 
 		// import entities data.
-		newModel.nodes.forEach((n,i)=>self.addNode(n));
-		newModel.edges.forEach((n,i)=>self.addEdge(n));
-		newModel.labels.forEach((n,i)=>self.addLabel(n));
+		newModel.nodes.forEach((n)=>self.addNode(n));
+		newModel.edges.forEach((n)=>self.addEdge(n));
+		newModel.labels.forEach((n)=>self.addLabel(n));
 		//newModel.groups.forEach((n,i)=>self.addGroup(n));
 	}
 
