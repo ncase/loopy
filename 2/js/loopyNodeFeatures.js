@@ -9,8 +9,8 @@ function updateNodeSize (self,v){
     if(!selectedNode.label) selectedNode.radius=0.1*LoopyNode.DEFAULT_RADIUS;
 }
 injectProperty("node", "id",{persist:{index:0,jsonOnly:true}});
-injectProperty("node", "x",{persist:{index:1,binFunc:factoryRatio(10,innerWidth),serializeFunc:v=>Math.round(v)}});
-injectProperty("node", "y",{persist:{index:2,binFunc:factoryRatio(10,innerHeight),serializeFunc:v=>Math.round(v)}});
+injectProperty("node", "x",{persist:{index:1,binFunc:factoryRatio(10,innerWidth+innerHeight),serializeFunc:v=>Math.round(v)}});
+injectProperty("node", "y",{persist:{index:2,binFunc:factoryRatio(10,innerWidth+innerHeight),serializeFunc:v=>Math.round(v)}});
 /**
  * toggleable visibility in play mode (visible, hidden in play mode, hidden when dead)
  *
