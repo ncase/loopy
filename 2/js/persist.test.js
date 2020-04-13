@@ -36,7 +36,6 @@ testEqual(`factoryRatio encode decode like it should ?`, 223, async ()=>{
     return f.decode((new BitArray(bits)).append(f.encode(data),bits).get(bits,0));
 } );
 }
-
 /** saveToBinary and loadFromBinary */{
     function initPersist(){
         PERSIST_MODEL[0] = [];
@@ -95,7 +94,7 @@ testEqual(`factoryRatio encode decode like it should ?`, 223, async ()=>{
         async ()=>{
             extraInitPersist();
             const bitArray = new BitArray(12*8+1);
-            appendArea(bitArray,"nodes",{nodes:12});
+            appendArea(bitArray,"nodes",{nodes:12},{nodes:8});
             bitArray.append(1,2);
             return binView(bitArray.rawData.buffer);
         } );
@@ -107,7 +106,7 @@ testEqual(`factoryRatio encode decode like it should ?`, 223, async ()=>{
         async ()=>{
             extraInitPersist();
             const bitArray = new BitArray(16*8+1);
-            appendArea(bitArray,"nodes",{nodes:16});
+            appendArea(bitArray,"nodes",{nodes:16},{nodes:8});
             bitArray.append(1,2);
             return binView(bitArray.rawData.buffer);
         } );
@@ -115,7 +114,7 @@ testEqual(`factoryRatio encode decode like it should ?`, 223, async ()=>{
         async ()=>{
             extraInitPersist();
             const writeBitArray = new BitArray(12*8+1);
-            appendArea(writeBitArray,"nodes",{nodes:12});
+            appendArea(writeBitArray,"nodes",{nodes:12},{nodes:8});
             writeBitArray.append(1,2);
             const readBitArray = new BitArray(writeBitArray.rawData.buffer);
             const res = extractArea(readBitArray,"nodes",[12],[2]);
@@ -125,7 +124,7 @@ testEqual(`factoryRatio encode decode like it should ?`, 223, async ()=>{
         async ()=>{
             extraInitPersist();
             const writeBitArray = new BitArray(16*8+1);
-            appendArea(writeBitArray,"nodes",{nodes:16});
+            appendArea(writeBitArray,"nodes",{nodes:16},{nodes:8});
             writeBitArray.append(1,2);
             const readBitArray = new BitArray(writeBitArray.rawData.buffer);
             const res = extractArea(readBitArray,"nodes",[16],[2]);

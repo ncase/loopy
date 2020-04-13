@@ -149,7 +149,7 @@ function Loopy(config){
 
 	subscribe("export/file", function(){
 		const element = document.createElement('a');
-		element.setAttribute('href', 'data:application/octet-stream;base64,' + base64EncArr(serializeToBinary()));
+		element.setAttribute('href', 'data:application/octet-stream;base64,' + binToB64(serializeToBinary()));
 		element.setAttribute('download', "system_model.loopy");
 
 		element.style.display = 'none';
