@@ -382,21 +382,26 @@ function LoopyNode(model, config){
 		}
 		if(self.aggregationLatency>0){
 			// show aggregationLatency visual (and why not animation)
-			//console.log(r,ctx);
+			const directions = {
+				0.1:Math.PI*-0.44,
+				0.2:Math.PI*-0.33,
+				0.4:Math.PI*-0.11,
+				0.8:Math.PI*0.11,
+				1.6:Math.PI*0.33,
+				3.2:Math.PI*0.7,
+				6.4:Math.PI*1.25,
+			};
+
 			ctx.save();
 			ctx.beginPath();
-			//ctx.moveTo(-2,0);
-			ctx.lineTo(200,2*r);
-			ctx.moveTo(0,0);
-			/*
-			ctx.lineTo(2,0);
-			ctx.lineTo(1,0);
-			ctx.lineTo(1,2);
-			ctx.lineTo(-1,2);
-			ctx.lineTo(-1,0);
-			*/
-			ctx.lineWidth = 40;
-			ctx.strokeStyle = 'black';//LoopyNode.COLORS[7];
+			ctx.moveTo(0,-r*2/3);
+			ctx.lineTo(0,0);
+			const clockHandLength = r*4/5;
+			const clockHandAngle = directions[self.aggregationLatency];
+			ctx.lineTo(Math.cos(clockHandAngle)*clockHandLength,Math.sin(clockHandAngle)*clockHandLength);
+
+			ctx.lineWidth = 6;
+			ctx.strokeStyle = LoopyNode.COLORS[7];
 			ctx.stroke();
 			ctx.restore();
 

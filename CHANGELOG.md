@@ -65,7 +65,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ##### ColorLogic mode mechanics
 - When global colorLogic switch is enable, color become significant, and extra features are unlocked.
 - A node stock is only updated by color matching signals.
-- All nodes behaviors (threshold, latency, death) are only triggered matching color signals.
+- All nodes behaviors (threshold, latency, death) are only triggered by matching color signals.
 - Signals reaching a node with a foreign color will be forwarded except if **Foreign color** is set to drop them.
 - Arrow can **filter signals by color** to only allow a specific color.
 - Arrow can also **convert a signal color** from one to another.
