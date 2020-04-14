@@ -144,6 +144,8 @@ function extractArea (bitArray,typeStr,entitiesSizes,entitiesCount,entitiesCount
     return entities;
 }
 function serializeToBinary(embed, bytesSize=true,bytesEntitiesCount=true,bytesAlignSection=true) {
+    loopy.model.fitBounds(SCENE_SIZE);
+    loopy.model.center(false);
     const entitiesKindsCount = 4; // nodes, edges, labels, loopys //, groups, groupPairs
     const entitiesCount = countEntities();
     const entitiesCountVolume = countEntities(bytesEntitiesCount);

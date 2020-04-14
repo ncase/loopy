@@ -178,8 +178,6 @@ function LoopyNode(model, config){
 		if(!self.deltaPool) self.deltaPool=0;
 		if(!self.aggregate) self.aggregate = 0;
 
-		//console.log(`state when received, node.value:${self.value.toPrecision(2)} signal.delta:${signal.delta.toPrecision(2)}`);
-
 		if(self.hue === signal.color || loopy.colorLogic===0){
 			self.value += signal.delta/self.size;
 			self.deltaPool += signal.delta/self.size;

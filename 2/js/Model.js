@@ -303,6 +303,12 @@ function Model(loopy){
 		newModel.edges.forEach((n)=>self.addEdge(n));
 		newModel.labels.forEach((n)=>self.addLabel(n));
 		//newModel.groups.forEach((n,i)=>self.addGroup(n));
+		setTimeout(()=>{
+			const need = self.getBounds();
+			const available = document.getElementById("canvasses");
+			if(need.left<0 || need.top<0 || need.right>available.clientWidth || need.bottom>available.clientHeight) self.center(true);
+			else self.center(false);
+		},0); // do it when loopy is fully load, else it's sheety
 	}
 
 	self.clear = function(){
@@ -423,7 +429,25 @@ function Model(loopy){
 			right:right,
 			bottom:bottom
 		};
-
+	};
+	self.fitBounds = function(size){
+		const bounds = self.getBounds();
+		let addX = 0;
+		let addY = 0;
+		let ratio = 1;
+		if(bounds.left<0) addX -= bounds.left;
+		if(bounds.top<0) addY -= bounds.top;
+		if(bounds.right>size || bounds.right-bounds.left>size){
+			addX -= bounds.left;
+			ratio = Math.min(ratio,size/(bounds.right-bounds.left));
+		}
+		if(bounds.bottom>size || bounds.bottom-bounds.top>size){
+			addY -= bounds.top;
+			ratio = Math.min(ratio,size/(bounds.top-bounds.bottom));
+		}
+		self.nodes.forEach(n=>{n.x = (n.x+addX)*ratio;n.y = (n.y+addY)*ratio});
+		self.labels.forEach(n=>{n.x = (n.x+addX)*ratio;n.y = (n.y+addY)*ratio});
+		//self.groups.forEach(n=>{n.x = (n.x+addX)*ratio;n.y = (n.y+addY)*ratio});
 	};
 	self.center = function(andScale){
 
