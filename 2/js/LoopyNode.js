@@ -138,21 +138,12 @@ function LoopyNode(model, config){
 			if(loopy.colorLogic===1 && self.hue !== signal.color) {
 				if(edge.quantitative===0) edge.addSignal(newSignal);
 				if(edge.quantitative===1) quantitativeAcceptingEdges.push(edge);
+				continue;
 			}
 
 			// Threshold filtering
 			if(self.value<self.overflow && signal.delta>0) continue;
 			if(self.value>self.underflow && signal.delta<0) continue;
-
-			// Only propagate beyond threshold
-			//if(!self.transmissionBehavior) self.sendSignal(newSignal);
-			//else if (self.value < 0 && self.transmissionBehavior===2) self.die();
-			//else if(loopy.colorLogic===1){
-			//	if(self.value<0 || self.value>1) self.sendSignal(newSignal);
-			//	else if(self.hue !== newSignal.color) self.sendSignal(newSignal);
-			//} else if(self.value<0 || self.value>1) self.sendSignal(newSignal);
-			//if(self.value<0) self.value = 0;
-			//if(self.value>1) self.value = 1;
 
 			if(edge.quantitative===0) edge.addSignal(newSignal);
 			if(edge.quantitative===1) quantitativeAcceptingEdges.push(edge);
@@ -168,10 +159,9 @@ function LoopyNode(model, config){
 				if(self.value>self.overflow) delta = (self.value-self.overflow)*self.size;
 				else if(self.value<self.underflow) delta = (self.value-self.underflow)*self.size;
 				else console.warn(`how can we be here ? value: ${self.value} underflow: ${self.underflow} overflow: ${self.overflow}`);
+				self.value -= delta/self.size;
 			}
-			//console.log(`node.value:${self.value.toPrecision(2)} signal.delta:${signal.delta.toPrecision(2)} computedDelta:${delta.toPrecision(2)}`);
 			signal.delta = delta/quantitativeAcceptingEdges.length;
-			self.value -= delta/self.size;
 			for(let i=0; i<quantitativeAcceptingEdges.length; i++) quantitativeAcceptingEdges[i].addSignal(signal);
 		}
 
