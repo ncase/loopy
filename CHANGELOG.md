@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Camera mode 
 - Multi-lang support
 - Write documentation pages and examples
+- Show hide nodes
 
 
 ## [Unreleased] (by [1000i100])
@@ -37,7 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Aggregation latency** : bypass thresholds to store signals for a duration before releasing them merged into one.
 - **Death trigger** : choose if a node implode (die) when empty, or explode (die) when full.
 
-##### Edge/Arrow advanced features
+##### Arrow advanced features (previously named Edge)
 - **Valency** allows you to act on the signal valency : preserve, invert, filter to keep only positive or negative signal, convert any signal to positive or to negative.
 - Arrow can be set to randomly allow/drop signals
 - Arrow can allow classical signal and/or vital change signal (death/life).
@@ -55,14 +56,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   AND, all tendency (or vital change converter) arrow will get a fixed value signal.
 
 - Optional custom name (replacing it behavior symbols)
-- Display signal timing to go from start node to end node thru this edge.
+- Display signal timing to go from start node to end node thru this arrow.
 
 ##### Text advanced features
 - choose the color for each text message in your model (from 7 choices).
 - switch text visibility : you can hide some text in play mode to keep them only as reminder for edition.
 - link field : bind your text to a web link to make it clickable.
 
-##### ColorLogic mode mechanics
+##### ColorLogic mechanics
 - When global colorLogic switch is enable, color become significant, and extra features are unlocked.
 - A node stock is only updated by color matching signals.
 - All nodes behaviors (threshold, latency, death) are only triggered by matching color signals.
@@ -86,7 +87,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - **save as link** now store data in binary with lzma compression then base64 conversion.
 - **load from file** (or from url) understand the legacy json format and the new compressed one (and the new human readable json format).
-- edges polarity + / - are ignored in advanced mode to let space for the more complete sign Behavior features.
+- arrows polarity + / - are ignored in advanced mode to let space for the more complete sign Behavior features.
 
 ## [Version 1.1] - 2017-04-11 (by [Nicky Case])
 ### Added

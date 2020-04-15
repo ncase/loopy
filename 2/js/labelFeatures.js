@@ -24,6 +24,7 @@ injectProperty("label", "visibility",{
 });
 injectProperty("label", "text",{
     defaultValue:"...",
+    immutableDefault:true,
     persist:{
         index:2,
         deserializeFunc:decodeURIComponent
@@ -36,6 +37,7 @@ injectProperty("label", "text",{
 });
 injectProperty("label", "href",{
     defaultValue:"",
+    immutableDefault:true,
     persist:{
         index:5,
         deserializeFunc:decodeURIComponent

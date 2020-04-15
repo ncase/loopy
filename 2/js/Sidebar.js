@@ -230,6 +230,8 @@ function ComponentInput(config){
 	input.oninput = function(){
 		self.setValue(input.value);
 		updateClassActiveDefault(self,config.defaultValue);
+		injectPropsUpdateDefault(self,self.getValue());
+		// Callback! (if any)
 		if(config.oninput){
 			config.oninput(self,self.getValue());
 		}
