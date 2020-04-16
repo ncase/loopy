@@ -443,7 +443,7 @@ function Model(loopy){
 		}
 		if(bounds.bottom>size || bounds.bottom-bounds.top>size){
 			addY -= bounds.top;
-			ratio = Math.min(ratio,size/(bounds.top-bounds.bottom));
+			ratio = Math.min(ratio,size/(bounds.bottom-bounds.top));
 		}
 		self.nodes.forEach(n=>{n.x = (n.x+addX)*ratio;n.y = (n.y+addY)*ratio});
 		self.labels.forEach(n=>{n.x = (n.x+addX)*ratio;n.y = (n.y+addY)*ratio});

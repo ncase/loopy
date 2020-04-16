@@ -1,13 +1,13 @@
 function log(bitArray) {
     console.log(bitArray.maxOffset,binView(bitArray.rawData.buffer));
 }
-function saveToBinary(bitArray,objToPersist,typeIndex,entityBitSize){
+function saveToBinary(bitArray,objToPersist,typeIndex,entityBitSize,bitToRefAnyEntity){
     const toSave = [];
     for(let i in PERSIST_MODEL[typeIndex]) {
         const prop = PERSIST_MODEL[typeIndex][i];
         if(prop.bit) {
             let bitSize = prop.bit;
-            if(typeof prop.bit === "function") bitSize = prop.bit();
+            if(typeof prop.bit === "function") bitSize = prop.bit(bitToRefAnyEntity);
             if(typeof toSave[i] !== "undefined") throw `collision : ${typeIndex} ${prop.name}`;
             toSave[i] = {value:prop.encode(objToPersist[prop.name]),bit:bitSize};
         }
@@ -17,14 +17,14 @@ function saveToBinary(bitArray,objToPersist,typeIndex,entityBitSize){
     tmpBitArray.offset = 0;
     bitArray.append(tmpBitArray,entityBitSize);
 }
-function loadFromBinary(bitArray,typeIndex,bitSize,entitiesCount) {
+function loadFromBinary(bitArray,typeIndex,bitSize,entitiesCount,bitToRefAnyEntity) {
     const entity = {};
     const startOffset = bitArray.offset;
     for(let i in PERSIST_MODEL[typeIndex]) {
         const prop = PERSIST_MODEL[typeIndex][i];
         if(prop.bit) {
             let propBitSize = prop.bit;
-            if(typeof prop.bit === "function") propBitSize = Math.ceil(Math.log2(entitiesCount[0]));//FIXME: prop.bit();
+            if(typeof prop.bit === "function") propBitSize = prop.bit(bitToRefAnyEntity);
             if(bitArray.offset+propBitSize>startOffset+bitSize) break;
             const rawValue = bitArray.get(propBitSize)
             entity[prop.name] = prop.decode(rawValue);
@@ -124,14 +124,14 @@ function restoreStrings(bitArray, newModel) {
         newModel[`${typeName}s`].forEach((item)=>item[stringField["fieldName"]] = strings.shift());
     }
 }
-function appendArea (bitArray,typeStr,entitiesSizes,entitiesCountVolume,bytesAlignSection=true){
+function appendArea (bitArray,typeStr,entitiesSizes,entitiesCountVolume,bitToRefAnyEntity,bytesAlignSection=true){
     const areaStart = bytesAlignSection?Math.ceil(bitArray.maxOffset/8)*8:bitArray.maxOffset;
     bitArray.setOffset(areaStart);
-    loopy.model[typeStr].forEach((n)=>saveToBinary(bitArray,n,objTypeToTypeIndex(typeStr),entitiesSizes[typeStr]));
+    loopy.model[typeStr].forEach((n)=>saveToBinary(bitArray,n,objTypeToTypeIndex(typeStr),entitiesSizes[typeStr],bitToRefAnyEntity));
     bitArray.setOffset(areaStart);
     bitArray.rotate(entitiesSizes[typeStr],entitiesCountVolume[typeStr]);
 }
-function extractArea (bitArray,typeStr,entitiesSizes,entitiesCount,entitiesCountVolume,bytesAlignSection=true){
+function extractArea (bitArray,typeStr,entitiesSizes,entitiesCount,entitiesCountVolume,bitToRefAnyEntity,bytesAlignSection=true){
     const areaStart = bytesAlignSection?Math.ceil(bitArray.maxOffset/8)*8:bitArray.maxOffset;
     bitArray.setOffset(areaStart);
     const typeIndex = objTypeToTypeIndex(typeStr);
@@ -139,18 +139,18 @@ function extractArea (bitArray,typeStr,entitiesSizes,entitiesCount,entitiesCount
     bitArray.rotate(entitiesCountVolume[typeIndex],entitiesSizes[typeIndex],areaStart);
     bitArray.setOffset(areaStart);
     const entities = [];
-    for(let i=0;i<entitiesCount[typeIndex];i++) entities.push(loadFromBinary(bitArray,typeIndex,entitiesSizes[typeIndex],entitiesCount));
+    for(let i=0;i<entitiesCount[typeIndex];i++) entities.push(loadFromBinary(bitArray,typeIndex,entitiesSizes[typeIndex],entitiesCount,bitToRefAnyEntity));
     bitArray.setOffset(areaStart + entitiesCountVolume[typeIndex] * entitiesSizes[typeIndex]);
     return entities;
 }
 function serializeToBinary(embed, bytesSize=true,bytesEntitiesCount=true,bytesAlignSection=true) {
-    loopy.model.fitBounds(SCENE_SIZE);
-    loopy.model.center(false);
     const entitiesKindsCount = 4; // nodes, edges, labels, loopys //, groups, groupPairs
     const entitiesCount = countEntities();
     const entitiesCountVolume = countEntities(bytesEntitiesCount);
     const bitToRefAnyEntity = entityRefBitSize();
-    const entitiesSizes = entitiesSize(bytesSize);
+    loopy.model.fitBounds(getSceneSize(getBitForXY(bitToRefAnyEntity)));
+    loopy.model.center(false);
+    const entitiesSizes = entitiesSize(bitToRefAnyEntity,bytesSize);
 
     let size = 11;
     size+=Object.keys(entitiesCount).length*(bitToRefAnyEntity+1);
@@ -166,11 +166,11 @@ function serializeToBinary(embed, bytesSize=true,bytesEntitiesCount=true,bytesAl
     bitArray.append(bitToRefAnyEntity,4);
     for (let entity in entitiesCount) bitArray.append(entitiesCount[entity],bitToRefAnyEntity+1); // exclude loopy globals type
     for (let entity in entitiesSizes) if(entity==="loopys" || entitiesCount[entity]) bitArray.append(entitiesSizes[entity],8);
-    saveToBinary(bitArray,loopy,3,entitiesSizes["loopys"],bitArray.maxOffset);
+    saveToBinary(bitArray,loopy,3,entitiesSizes["loopys"],bitToRefAnyEntity);
 
-    appendArea(bitArray,"nodes",entitiesSizes,entitiesCountVolume,bytesAlignSection);
-    appendArea(bitArray,"edges",entitiesSizes,entitiesCountVolume,bytesAlignSection);
-    appendArea(bitArray,"labels",entitiesSizes,entitiesCountVolume,bytesAlignSection);
+    appendArea(bitArray,"nodes",entitiesSizes,entitiesCountVolume,bitToRefAnyEntity,bytesAlignSection);
+    appendArea(bitArray,"edges",entitiesSizes,entitiesCountVolume,bitToRefAnyEntity,bytesAlignSection);
+    appendArea(bitArray,"labels",entitiesSizes,entitiesCountVolume,bitToRefAnyEntity,bytesAlignSection);
     //appendArea(bitArray,"groups",entitiesSizes);
     //appendArea(bitArray,"groupPairs",entitiesSizes);
 
@@ -209,9 +209,9 @@ function deserializeFromBinary (dataUint8Array){
     newModel.globals = loadFromBinary(bin,objTypeToTypeIndex("loopy"),entitiesSizes[3],entitiesCount);
     newModel.globals.embed = embed;
 
-    newModel.nodes = extractArea(bin,"nodes",entitiesSizes,entitiesCount,entitiesCountVolume);
-    newModel.edges = extractArea(bin,"edges",entitiesSizes,entitiesCount,entitiesCountVolume);
-    newModel.labels = extractArea(bin,"labels",entitiesSizes,entitiesCount,entitiesCountVolume);
+    newModel.nodes = extractArea(bin,"nodes",entitiesSizes,entitiesCount,entitiesCountVolume,bitToRefAnyEntity);
+    newModel.edges = extractArea(bin,"edges",entitiesSizes,entitiesCount,entitiesCountVolume,bitToRefAnyEntity);
+    newModel.labels = extractArea(bin,"labels",entitiesSizes,entitiesCount,entitiesCountVolume,bitToRefAnyEntity);
     //extractArea(bin,"groups",entitiesSizes,entitiesCount);
     //extractArea(bin,"groupPairs",entitiesSizes,entitiesCount);
 
@@ -320,6 +320,19 @@ function factoryRatio(bitNumber,ratioRef,signed=false){
         decode: (v) => Math.round(v * ratioRef / Math.pow(2, bitNumber))
     };
 }
+function factoryRatioForXY(){
+    let bitNumber;
+    let ratioRef;
+    return {
+        bit: (refBitSize)=>{
+            bitNumber = getBitForXY(refBitSize);
+            ratioRef = getSceneSize(bitNumber);
+            return bitNumber;
+        },
+        encode: (v) => Math.min(Math.pow(2, bitNumber) - 1, Math.max(0, Math.round(Math.pow(2, bitNumber) * v / ratioRef))),
+        decode: (v) => Math.round(v * ratioRef / Math.pow(2, bitNumber))
+    }
+}
 function countEntities(ceil8=false){
     const types = get_PERSIST_TYPE_array().map(t=>`${t._CLASS_.toLowerCase()}s`);
     const entities = {};
@@ -332,11 +345,11 @@ function entityRefBitSize(){
     const maxEntities = Object.values(entitiesCount).reduce((acc,cur)=>Math.max(acc,cur),1);
     return Math.ceil(Math.log2(maxEntities));
 }
-function entitiesSize(ceil8=false){
+function entitiesSize(bitToRefAnyEntity,ceil8=false){
     const types = get_PERSIST_TYPE_array().map(t=>`${t._CLASS_.toLowerCase()}s`);
     const entities = {};
     for(let i in PERSIST_MODEL)
-        PERSIST_MODEL.forEach((t,i)=>entities[types[i]]=t.reduce((acc,cur)=>acc+(typeof cur.bit==="function"?cur.bit():cur.bit)||acc,0));
+        PERSIST_MODEL.forEach((t,i)=>entities[types[i]]=t.reduce((acc,cur)=>acc+(typeof cur.bit==="function"?cur.bit(bitToRefAnyEntity):cur.bit)||acc,0));
     if(ceil8) for(let i in entities)entities[i]=Math.ceil(entities[i]/8)*8;
     return entities;
 }
@@ -367,4 +380,10 @@ function binView(buffer,compactness=true){
         if(empty>0) compactStr=`${compactStr}[0:${empty}b] ${emptyBytes[i]}`;
         return compactStr.trim();
     }
+}
+function getBitForXY(refBitSize){
+    return Math.ceil(refBitSize)+4;
+}
+function getSceneSize(bitForXY) {
+    return Math.pow(2,4+bitForXY);
 }
