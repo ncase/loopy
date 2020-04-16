@@ -204,7 +204,7 @@ function Model(loopy){
 	};
 
 	// SHOULD WE DRAW?
-	const drawCountdownFull = 60; // two-second buffer!
+	const drawCountdownFull = 7*60; // two-second buffer!
 	let drawCountdown = drawCountdownFull;
 	
 	// ONLY IF MOUSE MOVE / CLICK

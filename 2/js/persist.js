@@ -156,7 +156,7 @@ function serializeToBinary(embed, bytesSize=true,bytesEntitiesCount=true,bytesAl
     size+=Object.keys(entitiesCount).length*(bitToRefAnyEntity+1);
     size+=Object.keys(entitiesSizes).length*8+entitiesSizes['loopys'];//+stringArea.length*8;
     if(bytesAlignSection) size = Math.ceil(size/8)*8;
-    for (let entity in entitiesCount) size+=entitiesCountVolume[entity]*entitiesSizes[entity];
+    for (let entity in entitiesCount) size+=entitiesCountVolume[entity]*entitiesSizes[entity]+8;
 
     const bitArray = new BitArray(size);
     bitArray.append(0,1);// Version number (This Version Start With 0, on 1bit, to allow evolution starting with 1)
@@ -177,6 +177,7 @@ function serializeToBinary(embed, bytesSize=true,bytesEntitiesCount=true,bytesAl
     const stringArea = externalizeStrings();
 
     const realBytesSize = Math.ceil(bitArray.maxOffset/8);
+    console.log(realBytesSize,Math.ceil(size/8), entitiesSizes);
     const bin = new Uint8Array(realBytesSize + stringArea.buffer.byteLength);
     bin.set(new Uint8Array(bitArray.rawData.buffer,0,realBytesSize), 0);
     bin.set(stringArea, realBytesSize);

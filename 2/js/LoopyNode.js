@@ -12,7 +12,7 @@ LoopyNode.COLORS = {
 	4: "#7FD4FF", // blue
 	5: "#A97FFF", // purple
 	6: "#DDDDDD",  // light grey -> died
-	7: "#AAAAAA"  // node settings
+	7: "rgba(0,0,0,.3)"  // node settings
 };
 
 
@@ -227,6 +227,7 @@ function LoopyNode(model, config){
 
 		if(self.aggregationLatency){
 			self.aggregate = setTimeout( aggregateFunc,1000 * self.aggregationLatency * signalSpeedRatio);
+			self.aggregateStartTime = Date.now();
 		} else aggregateFunc();
 	};
 
@@ -355,33 +356,80 @@ function LoopyNode(model, config){
 		ctx.fill();
 
 		if(self.overflow>0){
-			// TODO: show overflow visual
-			ctx.save();
-			ctx.beginPath();
-			ctx.arc(0, 0, r*self.overflow, 0, Math.TAU, false);
-			ctx.setLineDash([4, 4, 4, 12]);
-			ctx.lineWidth = 4;
-			ctx.strokeStyle = LoopyNode.COLORS[7];
-			ctx.stroke();
-			ctx.restore();
-
-			ctx.save();
-			ctx.beginPath();
-			const offset = 2*Math.PI*(r*self.overflow+4) - 2*Math.PI*(r*self.overflow);
-			//console.log(offset,r*self.overflow,2*Math.PI*(r*self.overflow),2*Math.PI*(r*self.overflow+4));
-			ctx.arc(0, 0, r*self.overflow+4, 0, Math.TAU, false);
-			ctx.setLineDash([4, 20+offset/40]);
-			ctx.lineDashOffset = -4;
-			ctx.lineWidth = 4;
-			ctx.strokeStyle = LoopyNode.COLORS[7];
-			ctx.stroke();
-			ctx.restore();
+			const arrow = (angle)=>{
+				ctx.save();
+				ctx.beginPath();
+				const oR = r*self.overflow;
+				const size = 1;
+				radialMove(ctx,angle,oR,size,-0.05,0);
+				radialLine(ctx,angle,oR,size,0,0.05);
+				radialLine(ctx,angle,oR,size,0.05,0);
+				ctx.lineWidth = 2;
+				ctx.strokeStyle = Label.COLORS[self.hue];//LoopyNode.COLORS[7];
+				ctx.stroke();
+				ctx.restore();
+			}
+			for(let a = 0; a < 2*Math.PI;a+=Math.PI*0.125) arrow(a);
 		}
 		if(self.underflow<1){
-			// show underflow visual
+			const arrow = (angle)=>{
+				ctx.save();
+				ctx.beginPath();
+				const oR = r*self.underflow;
+				const size = 1;
+				radialMove(ctx,angle,oR,size,-0.05,0);
+				radialLine(ctx,angle,oR,size,0,-0.05);
+				radialLine(ctx,angle,oR,size,0.05,0);
+				ctx.lineWidth = 2;
+				ctx.strokeStyle = Label.COLORS[self.hue];//LoopyNode.COLORS[7];
+				ctx.stroke();
+				ctx.restore();
+			}
+			for(let a = -Math.PI*0.125/2; a < 2*Math.PI;a+=Math.PI*0.125) arrow(a);
 		}
 		if(self.aggregationLatency>0){
-			// show aggregationLatency visual (and why not animation)
+			// show aggregationLatency visual
+			ctx.save();
+			ctx.beginPath();
+			const size = 1.8;
+			ctx.moveTo(0,-r);
+			ctx.lineTo(-0.05*r*size,-r*(1-0.01*size));
+			ctx.lineTo(-0.05*r*size,-r*(1+0.05*size));
+			ctx.lineTo(-0.1*r*size,-r*(1+0.05*size));
+			ctx.lineTo(-0.1*r*size,-r*(1+0.1*size));
+			ctx.lineTo(0.1*r*size,-r*(1+0.1*size));
+			ctx.lineTo(0.1*r*size,-r*(1+0.05*size));
+			ctx.lineTo(0.05*r*size,-r*(1+0.05*size));
+			ctx.lineTo(0.05*r*size,-r*(1-0.01*size));
+			ctx.fillStyle = color;
+			ctx.fill();
+
+			const chronoPart = (baseAngle,size)=>{
+				ctx.beginPath();
+				const line = (rx,ry)=>radialLine(ctx,baseAngle,r,size,rx,ry);
+				ctx.moveTo(Math.cos(baseAngle)*r,Math.sin(baseAngle)*r);
+				const xMax = .075;
+				line(-xMax,0)
+				line(-xMax,.05)
+				line(-(xMax-.025),.075)
+				line((xMax-.025),.075)
+				line(xMax,.05)
+				line(xMax,0)
+				ctx.fillStyle = color;
+				ctx.fill();
+			}
+			chronoPart(Math.PI*-0.25,size*0.75);
+			chronoPart(Math.PI*-0.75,size*0.75);
+
+			ctx.beginPath();
+			// actual aggregation timer
+			const signalSpeedRatio = 8 / Math.pow(2,self.loopy.signalSpeed);
+			const timerLength = r*4/5;
+			const timeRatio = self.aggregate?(Date.now()-self.aggregateStartTime)/(1000 * self.aggregationLatency * signalSpeedRatio):0;
+			const timerAngle = Math.PI*(-0.5+2*timeRatio);
+			ctx.moveTo(Math.cos(timerAngle)*timerLength,Math.sin(timerAngle)*timerLength);
+			ctx.lineTo(0,0);
+			// config aggregation
 			const directions = {
 				0.1:Math.PI*-0.44,
 				0.2:Math.PI*-0.33,
@@ -391,26 +439,45 @@ function LoopyNode(model, config){
 				3.2:Math.PI*0.7,
 				6.4:Math.PI*1.25,
 			};
-
-			ctx.save();
-			ctx.beginPath();
-			ctx.moveTo(0,-r*2/3);
-			ctx.lineTo(0,0);
-			const clockHandLength = r*4/5;
+			const clockHandLength = r*2/3;
 			const clockHandAngle = directions[self.aggregationLatency];
 			ctx.lineTo(Math.cos(clockHandAngle)*clockHandLength,Math.sin(clockHandAngle)*clockHandLength);
 
 			ctx.lineWidth = 6;
-			ctx.strokeStyle = LoopyNode.COLORS[7];
+			ctx.strokeStyle = Label.COLORS[self.hue];//LoopyNode.COLORS[7];
 			ctx.stroke();
 			ctx.restore();
 
 		}
 		if(self.explode === -1 || self.explode === 2){
 			// show this node can implode
+			const line = (angle)=>{
+				ctx.save();
+				ctx.beginPath();
+				const size = 1;
+				radialMove(ctx,angle,r*0.1,size,0,0);
+				radialLine(ctx,angle,r*0.33,size,0,0);
+				ctx.lineWidth = 16;
+				ctx.strokeStyle = Label.COLORS[self.hue];//LoopyNode.COLORS[7];
+				ctx.stroke();
+				ctx.restore();
+			}
+			for(let a = 0; a < 2*Math.PI;a+=Math.PI*0.5) line(a);
 		}
 		if(self.explode === 1 || self.explode === 2){
 			// show this node can explode
+			const line = (angle)=>{
+				ctx.save();
+				ctx.beginPath();
+				const size = 1;
+				radialMove(ctx,angle,r*1.25,size,0,0);
+				radialLine(ctx,angle,r*1.5,size,0,0);
+				ctx.lineWidth = 8;
+				ctx.strokeStyle = Label.COLORS[self.hue];//LoopyNode.COLORS[7];
+				ctx.stroke();
+				ctx.restore();
+			}
+			for(let a = 0; a < 2*Math.PI;a+=Math.PI*0.25) line(a);
 		}
 
 		// Text!
@@ -427,6 +494,10 @@ function LoopyNode(model, config){
 				ctx.font = "normal "+fontsize+"px sans-serif";
 				width = ctx.measureText(self.label).width;
 			}
+			ctx.fillStyle = "rgba(100%,100%,100%,.15)";
+			const padding = 3;
+			for(let x=-padding;x<=padding;x++)for(let y=-padding;y<=padding;y++) ctx.fillText(self.label, x, y);
+			ctx.fillStyle = "#000";
 			ctx.fillText(self.label, 0, 0);
 		}
 
@@ -518,4 +589,10 @@ function LoopyNode(model, config){
 			bottom: self.y + self.radius
 		};
 	};
+}
+function radialLine (ctx,baseAngle,baseR,size,rx,ry){
+	ctx.lineTo(Math.cos(baseAngle+rx*size)*baseR*(1+ry*size),Math.sin(baseAngle+rx*size)*baseR*(1+ry*size));
+}
+function radialMove (ctx,baseAngle,baseR,size,rx,ry){
+	ctx.moveTo(Math.cos(baseAngle+rx*size)*baseR*(1+ry*size),Math.sin(baseAngle+rx*size)*baseR*(1+ry*size));
 }
