@@ -49,6 +49,8 @@ function Edge(model, config){
 	self.signalSpeed = 0;
 	self.addSignal = function(signal){
 
+		if(self.to.died && !canTransmitLife(self)) return;
+
 		const edge = self;
 		if(loopy.colorLogic===1){
 			if(edge.edgeTargetColor=== -2) { // choose random color from possible colors
@@ -137,7 +139,7 @@ function Edge(model, config){
 			if(loopy.loopyMode===0 && self.signBehavior===0){
 				lastSignal.delta *= self.strength;
 			}else {
-				if(!lastSignal.vital || (self.filter !== 0 && self.filter !== 5)) switch (self.signBehavior) {
+				if(!lastSignal.vital || (self.filter !== 0 && self.filter !== 5) || self.quantitative===2) switch (self.signBehavior) {
 					case 0:break;
 					case 1: lastSignal.delta = - lastSignal.delta;break;
 					case 4: lastSignal.delta = - Math.abs(lastSignal.delta);break;
@@ -208,7 +210,7 @@ function Edge(model, config){
 				|| (loopy.loopyMode===1 && self.signBehavior===4 && signal.delta>0)
 				|| (loopy.loopyMode===1 && self.signBehavior===5 && signal.delta<0)
 			){
-				if((self.filter !== 0 && self.filter !== 5) || !signal.vital) {
+				if((self.filter !== 0 && self.filter !== 5) || !signal.vital || self.quantitative===2) {
 					// sin/cos-animate it for niceness.
 					const flip = Math.cos(blend*Math.PI); // (0,1) -> (1,-1)
 					ctx.scale(1, flip);
@@ -444,15 +446,17 @@ function Edge(model, config){
 		else gradient.addColorStop(1,Edge.COLORS[self.edgeTargetColor]);
 		ctx.strokeStyle = gradient;
 
-			// Translate & Rotate!
-			ctx.save();
-			ctx.translate(fx, fy);
-			ctx.rotate(a);
+		// Translate & Rotate!
+		ctx.save();
+		ctx.translate(fx, fy);
+		ctx.rotate(a);
 
-		if(self.loopy.mode!==Loopy.MODE_PLAY || (
-			self.from.label !== "autoplay"
-			&& !self.from.died && !self.to.died
-		)){
+		let drawMe = true;
+		if(self.loopy.mode===Loopy.MODE_PLAY && self.from.label === "autoplay") drawMe = false;
+		if(self.from.died && self.filter === 1) drawMe = false;
+		if(self.to.died && !canTransmitLife(self)) drawMe = false;
+
+		if(drawMe){
 			// Highlight!
 			if(self.loopy.sidebar.currentPage.target === self){
 				ctx.save();
@@ -692,4 +696,11 @@ function drawArrow(ctx,arrowLength, dir=1,offset=0,size=1){
 	ctx.moveTo((-dir*arrowLength +offset) * size, -arrowLength * size);
 	ctx.lineTo(offset,0);
 	ctx.lineTo((-dir*arrowLength +offset) * size, arrowLength * size);
+}
+function canTransmitLife(edge){
+	if((edge.signBehavior===2 || edge.signBehavior===4) && !(edge.filter===0 || edge.filter===5)) return false;
+	if(edge.quantitative===2 && (edge.signBehavior===2 || edge.signBehavior===4)) return false;
+	if(edge.quantitative===2) return true;
+	if(edge.filter===0 || edge.filter===5) return true;
+	return false;
 }

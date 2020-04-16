@@ -100,6 +100,7 @@ function LoopyNode(model, config){
 	//////////////////////////////////////
 
 	self.sendSignal = function(signal){
+		if(self.died && !signal.vital) return;
 		let myEdges = self.model.getEdgesByStartNode(self);
 
 		const quantitativeAcceptingEdges = [];
@@ -119,7 +120,7 @@ function LoopyNode(model, config){
 			if(edge.filter===2 && !signal.vital) continue;
 			if(edge.filter===2 && signal.delta>0) continue;
 			if(edge.filter===3 && !signal.vital) continue;
-			if(edge.filter===2 && signal.delta<0) continue;
+			if(edge.filter===3 && signal.delta<0) continue;
 			if(edge.filter===4 && !signal.vital) continue;
 			if(edge.filter>=2 && edge.filter<=4) newSignal.vital = false;
 			// vital emitting
@@ -128,6 +129,7 @@ function LoopyNode(model, config){
 				edge.addSignal(newSignal);
 				continue;
 			}
+			if(edge.to.died) continue;
 
 			// Sign constraint filtering
 			if(edge.signBehavior===2 && signal.delta>0) continue;

@@ -28,7 +28,6 @@ injectProperty("edge", "signBehavior",{
             "allow only positive",
             "convert to negative", // remove (invert can do it)
             "convert to positive",
-            // random 50% filter
         ][v]}`,
         advanced: true
     }
