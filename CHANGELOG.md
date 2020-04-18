@@ -88,6 +88,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **save as link** now store data in binary with lzma compression then base64 conversion.
 - **load from file** (or from url) understand the legacy json format and the new compressed one (and the new human readable json format).
 - arrows polarity + / - are ignored in advanced mode to let space for the more complete sign Behavior features.
+- node text now have a white halo to improve readability.
+
 
 ## [Version 1.1] - 2017-04-11 (by [Nicky Case])
 ### Added
