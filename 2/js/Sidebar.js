@@ -42,6 +42,7 @@ function Sidebar(loopy){
 		const page = new SidebarPage();
 		backToTopButton(self, page);
 		injectPropsInSideBar(page,objTypeToTypeIndex("edge"));
+		page.onshow = ()=> page.getComponent("customLabel").select(); // Focus on the label field
 		deleteMeButton(self, page, "delete arrow");
 		page.onedit = ()=>injectPropsLabelInSideBar(page,objTypeToTypeIndex("edge"));
 		self.addPage("Edge", page);
@@ -227,6 +228,11 @@ function ComponentInput(config){
 	const label = _createLabel(config.label);
 	const className = config.textarea ? "component_textarea" : "component_input";
 	const input = _createInput(className, config.textarea);
+	input.addEventListener("keydown",(event)=>{
+		if(event.code === "Delete" && !input.value){
+			self.page.target.kill();
+		}
+	});
 	input.oninput = function(){
 		self.setValue(input.value);
 		updateClassActiveDefault(self,config.defaultValue);

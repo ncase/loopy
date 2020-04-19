@@ -10,6 +10,7 @@
 		17: "control",
 		91: "control", // macs
 		13: "enter", // enter
+		46: "delete",
 
 		// TODO: Standardize the NAMING across files?!?!
 		78: "ink", // Pe(n)cil
@@ -26,6 +27,7 @@
 		if(window.loopy && loopy.modal && loopy.modal.isShowing) return;
 		// noinspection JSDeprecatedSymbols
 		const code = KEY_CODES[event.keyCode];
+		//console.log(event.keyCode, event.code, event.key,event.charCode);
 		if(!code) return;
 	    Key[code] = true;
 	    publish("key/"+code);
