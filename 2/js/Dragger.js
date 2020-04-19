@@ -15,7 +15,7 @@ function Dragger(loopy){
 	self.offsetY = 0;
 
 	subscribe("mousedown",function(){
-		if(self.loopy.mode===Loopy.MODE_PLAY) { //FIXME: && free cam
+		if(self.loopy.mode===Loopy.MODE_PLAY && loopy.cameraMode===2) {
 			self.dragging = {_CLASS_:"Scene"};
 			self.offsetX = Mouse.x;
 			self.offsetY = Mouse.y;

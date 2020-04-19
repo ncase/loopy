@@ -24,7 +24,6 @@ injectProperty("loopy", "colorLogic",{
         oninput: factorySwitchMode("colorAestheticMode","colorLogicMode")
     }
 });
-/*
 injectProperty("loopy", "cameraMode",{
     defaultValue:0,
     persist:3,
@@ -39,7 +38,6 @@ injectProperty("loopy", "cameraMode",{
         advanced: true
     }
 });
-*/
 /*injectProperty("loopy", "embed",{
     defaultValue:0, // bool
     persist:3, // reserved

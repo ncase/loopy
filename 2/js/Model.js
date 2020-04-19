@@ -246,6 +246,12 @@ function Model(loopy){
 		if(!_canvasDirty) return;
 		_canvasDirty = false;
 
+		if(self.loopy.mode===Loopy.MODE_PLAY && loopy.cameraMode===0){
+			const bounds = self.getBounds();
+			self.smoothCameraMove(bounds,0.1);
+		}
+
+
 		// Clear!
 		ctx.clearRect(0,0,self.canvas.width,self.canvas.height);
 
@@ -403,22 +409,20 @@ function Model(loopy){
 
 	});
 	subscribe("mousewheel",function(mouse){
-		// ONLY WHEN EDITING (or MODE_PLAY en freeCam)
-		//if(self.loopy.mode!==Loopy.MODE_EDIT) return;
-
-
-		const oldOffsetScale = loopy.offsetScale;
-		if(mouse.wheel<0) loopy.offsetScale*=1.1;
-		if(mouse.wheel>0) loopy.offsetScale*=0.9;
-
-		const old_m2M = mouseToMouse(mouse.x,mouse.y,oldOffsetScale,loopy.offsetX,loopy.offsetY);
-		const new_m2M = mouseToMouse(mouse.x,mouse.y,loopy.offsetScale,loopy.offsetX,loopy.offsetY);
-		loopy.offsetX +=  (new_m2M.x - old_m2M.x);
-		loopy.offsetY +=  (new_m2M.y - old_m2M.y);
+		// ONLY WHEN EDITING (or MODE_PLAY in freeCam)
+		if(self.loopy.mode===Loopy.MODE_EDIT || (self.loopy.mode===Loopy.MODE_PLAY && loopy.cameraMode===2)){
+			const oldOffsetScale = loopy.offsetScale;
+			if(mouse.wheel<0) loopy.offsetScale*=1.1;
+			if(mouse.wheel>0) loopy.offsetScale*=0.9;
+			const old_m2M = mouseToMouse(mouse.x,mouse.y,oldOffsetScale,loopy.offsetX,loopy.offsetY);
+			const new_m2M = mouseToMouse(mouse.x,mouse.y,loopy.offsetScale,loopy.offsetX,loopy.offsetY);
+			loopy.offsetX +=  (new_m2M.x - old_m2M.x);
+			loopy.offsetY +=  (new_m2M.y - old_m2M.y);
+		}
 	});
 
 	// Centering & Scaling
-	self.getBounds = function(){
+	self.getBounds = function(visible=true){
 
 		// If no nodes & no labels, forget it.
 		if(self.nodes.length===0 && self.labels.length===0) return;
@@ -431,6 +435,7 @@ function Model(loopy){
 		const _testObjects = function(objects){
 			for(let i=0; i<objects.length; i++){
 				const obj = objects[i];
+				if(obj.hide===true) continue;
 				const bounds = obj.getBoundingBox();
 				if(left>bounds.left) left=bounds.left;
 				if(top>bounds.top) top=bounds.top;
@@ -469,6 +474,35 @@ function Model(loopy){
 		self.labels.forEach(n=>{n.x = (n.x+addX)*ratio;n.y = (n.y+addY)*ratio});
 		//self.groups.forEach(n=>{n.x = (n.x+addX)*ratio;n.y = (n.y+addY)*ratio});
 	};
+	self.smoothCameraMove = function(targetBounds,speed,mustKeepInRange=[]){
+		const old = {scale:loopy.offsetScale, x:loopy.offsetX,y:loopy.offsetY}
+		const target = {};
+
+
+		const canvasses = document.getElementById("canvasses");
+		const fitWidth = canvasses.clientWidth - _PADDING - _PADDING;
+		const fitHeight = canvasses.clientHeight - _PADDING_BOTTOM - _PADDING;
+		const cx = (targetBounds.left+targetBounds.right)/2;
+		const cy = (targetBounds.top+targetBounds.bottom)/2;
+		target.x = (_PADDING+fitWidth)/2 - cx;
+		target.y = (_PADDING+fitHeight)/2 - cy;
+
+		// Wider or taller than screen?
+		const w = targetBounds.right-targetBounds.left;
+		const h = targetBounds.bottom-targetBounds.top;
+
+		// Wider or taller than screen?
+		const modelRatio = w/h;
+		const screenRatio = fitWidth/fitHeight;
+		let scaleRatio;
+		if(modelRatio > screenRatio) scaleRatio = fitWidth/w; // wider...
+		else scaleRatio = fitHeight/h; // taller...
+
+		target.scale = scaleRatio;
+		loopy.offsetX += (target.x-old.x)*speed;
+		loopy.offsetY += (target.y-old.y)*speed;
+		loopy.offsetScale += (target.scale-old.scale)*speed;
+	}
 	self.center = function(andScale){
 
 		// If no nodes & no labels, forget it.
