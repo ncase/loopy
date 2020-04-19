@@ -8,40 +8,15 @@ Mouse.init = function(target){
 		Mouse.startedOnTarget = true;
 		publish("mousedown");
 	};
+	const _onmousewheel = function(event){
+		publish("mousewheel",[event]);
+	};
 	const _onmousemove = function(event){
 
-		// DO THE INVERSE
-		const canvasses = document.getElementById("canvasses");
-		let tx = 0;
-		let ty = 0;
-		const s = 1/loopy.offsetScale;
-		const CW = canvasses.clientWidth - _PADDING - _PADDING;
-		const CH = canvasses.clientHeight - _PADDING_BOTTOM - _PADDING;
-
-		if(loopy.embedded){
-			tx -= _PADDING/2; // dunno why but this is needed
-			ty -= _PADDING/2; // dunno why but this is needed
-		}
-		
-		tx -= (CW+_PADDING)/2;
-		ty -= (CH+_PADDING)/2;
-		
-		tx = s*tx;
-		ty = s*ty;
-
-		tx += (CW+_PADDING)/2;
-		ty += (CH+_PADDING)/2;
-
-		tx -= loopy.offsetX;
-		ty -= loopy.offsetY;
-
-		// Mutliply by Mouse vector
-		const mx = event.x*s + tx;
-		const my = event.y*s + ty;
-
+		const m = mouseToMouse(event.x,event.y,loopy.offsetScale,loopy.offsetX,loopy.offsetY);
 		// Mouse!
-		Mouse.x = mx;
-		Mouse.y = my;
+		Mouse.x = m.x;
+		Mouse.y = m.y;
 
 		Mouse.moved = true;
 		publish("mousemove");
@@ -58,7 +33,7 @@ Mouse.init = function(target){
 	};
 
 	// Add mouse & touch events!
-	_addMouseEvents(target, _onmousedown, _onmousemove, _onmouseup);
+	_addMouseEvents(target, _onmousedown, _onmousemove, _onmouseup,_onmousewheel);
 
 	// Cursor & Update
 	Mouse.target = target;
@@ -70,3 +45,34 @@ Mouse.init = function(target){
 	};
 
 };
+function mouseToMouse(mx,my,scale,offsetX,offsetY){
+	// DO THE INVERSE
+	const canvasses = document.getElementById("canvasses");
+	let tx = 0;
+	let ty = 0;
+	const s = 1/scale;
+	const CW = canvasses.clientWidth - _PADDING - _PADDING;
+	const CH = canvasses.clientHeight - _PADDING_BOTTOM - _PADDING;
+
+	if(loopy.embedded){
+		tx -= _PADDING/2; // dunno why but this is needed
+		ty -= _PADDING/2; // dunno why but this is needed
+	}
+
+	tx -= (CW+_PADDING)/2;
+	ty -= (CH+_PADDING)/2;
+
+	tx = s*tx;
+	ty = s*ty;
+
+	tx += (CW+_PADDING)/2;
+	ty += (CH+_PADDING)/2;
+
+	tx -= offsetX;
+	ty -= offsetY;
+
+	// Mutliply by Mouse vector
+	const x = mx*s + tx;
+	const y = my*s + ty;
+	return {x,y};
+}

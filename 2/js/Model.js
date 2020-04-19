@@ -252,6 +252,30 @@ function Model(loopy){
 		// Translate
 		ctx.save();
 
+
+		ctx.save()
+		ctx.strokeStyle = "#00F";
+		ctx.lineWidth = 5;
+		ctx.beginPath();
+		ctx.moveTo(-10, 0);
+		ctx.lineTo(10, 0);
+		ctx.moveTo(0, -10);
+		ctx.lineTo(0, 10);
+		ctx.stroke();
+		ctx.restore();
+		applyZoomTransform(ctx);
+		ctx.save()
+		ctx.strokeStyle = "#0F0";
+		ctx.lineWidth = 5;
+		ctx.beginPath();
+		ctx.moveTo(-10, 0);
+		ctx.lineTo(10, 0);
+		ctx.moveTo(0, -10);
+		ctx.lineTo(0, 10);
+		ctx.stroke();
+		ctx.restore();
+
+
 		applyZoomTransform(ctx);
 
 		// Draw labels THEN edges THEN nodes
@@ -378,6 +402,38 @@ function Model(loopy){
 		loopy.sidebar.showPage("Edit");
 
 	});
+	subscribe("mousewheel",function(mouse){
+		//const oldOffsetScale = loopy.offsetScale;
+		if(mouse.wheel<0) loopy.offsetScale*=1.1;
+		if(mouse.wheel>0) loopy.offsetScale*=0.9;
+		//FIXME: zoom on mouse
+		/*
+
+		const canvasses = document.getElementById("canvasses");
+		const fitWidth = canvasses.clientWidth - _PADDING - _PADDING;
+		const fitHeight = canvasses.clientHeight - _PADDING_BOTTOM - _PADDING;
+		const cx = (left+right)/2;
+		const cy = (top+bottom)/2;
+		loopy.offsetX = (_PADDING+fitWidth)/2 - cx;
+		loopy.offsetY = (_PADDING+fitHeight)/2 - cy;
+
+		const oldReal = offsetToRealOffset(oldOffsetScale,loopy.offsetX,loopy.offsetY);
+		const newReal = offsetToRealOffset(loopy.offsetScale,loopy.offsetX,loopy.offsetY);
+		const old_m2M = mouseToMouse(mouse.x,mouse.y,oldOffsetScale,loopy.offsetX,loopy.offsetY);
+		const new_m2M = mouseToMouse(mouse.x,mouse.y,loopy.offsetScale,loopy.offsetX,loopy.offsetY);
+		const transform = (offset,pos,newReal,oldReal)=> offset -(offset/newReal-offset/oldReal) - (pos*offset/newReal-pos*offset/oldReal);
+		loopy.offsetX = transform(loopy.offsetX,Mouse.x,newReal.translateX,oldReal.translateX);
+		loopy.offsetY = transform(loopy.offsetY,Mouse.y,newReal.translateY,oldReal.translateY);
+
+		console.log(`
+		mouse : ${mouse.x.toPrecision(4)} x ${mouse.y.toPrecision(4)}
+		Mouse : ${Mouse.x.toPrecision(4)} x ${Mouse.y.toPrecision(4)}
+		oldReal : ${oldReal.translateX.toPrecision(4)} x ${oldReal.translateY.toPrecision(4)}
+		newReal : ${newReal.translateX.toPrecision(4)} x ${newReal.translateY.toPrecision(4)}
+		Offset: ${loopy.offsetX.toPrecision(4)} x ${loopy.offsetY.toPrecision(4)} scale ${oldOffsetScale.toPrecision(3)} -> ${loopy.offsetScale.toPrecision(3)}
+		`);
+		 */
+	});
 
 	// Centering & Scaling
 	self.getBounds = function(){
@@ -478,24 +534,29 @@ function Model(loopy){
 	};
 
 }
-function applyZoomTransform(ctx){
-	// Translate to center, (translate, scale, translate) to expand to size
+function offsetToRealOffset(scale,offsetX,offsetY) {
 	const canvasses = document.getElementById("canvasses");
 	const CW = canvasses.clientWidth - _PADDING - _PADDING;
 	const CH = canvasses.clientHeight - _PADDING_BOTTOM - _PADDING;
-	let tx = loopy.offsetX*2;
-	let ty = loopy.offsetY*2;
-	tx -= CW+_PADDING;
-	ty -= CH+_PADDING;
-	const s = loopy.offsetScale;
-	tx = s*tx;
-	ty = s*ty;
-	tx += CW+_PADDING;
-	ty += CH+_PADDING;
+	//const tx = offsetX*2*scale + canvasses.clientWidth*(1 - scale) - _PADDING*(2 + scale)
+	let translateX = offsetX*2;
+	let translateY = offsetY*2;
+	translateX -= CW+_PADDING;
+	translateY -= CH+_PADDING;
+	translateX = scale*translateX;
+	translateY = scale*translateY;
+	translateX += CW+_PADDING;
+	translateY += CH+_PADDING;
 	if(loopy.embedded){
-		tx += _PADDING; // dunno why but this is needed
-		ty += _PADDING; // dunno why but this is needed
+		translateX += _PADDING; // dunno why but this is needed
+		translateY += _PADDING; // dunno why but this is needed
 	}
-	ctx.setTransform(s, 0, 0, s, tx, ty);
+	return {scale,translateX,translateY};
+}
+function applyZoomTransform(ctx){
+	// Translate to center, (translate, scale, translate) to expand to size
+	const real = offsetToRealOffset(loopy.offsetScale,loopy.offsetX,loopy.offsetY);
+	//console.log(tx, ty);
+	ctx.setTransform(real.scale, 0, 0, real.scale, real.translateX, real.translateY);
 
 }

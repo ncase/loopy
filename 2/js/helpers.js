@@ -140,12 +140,16 @@ function _getTotalOffset(target){
 	};
 }
 
-function _addMouseEvents(target, onmousedown, onmousemove, onmouseup){
+function _addMouseEvents(target, onmousedown, onmousemove, onmouseup, onmousewheel){
 
 	// WRAP THEM CALLBACKS
 	const _onmousedown = function(event){
 		const _fakeEvent = _onmousemove(event);
 		onmousedown(_fakeEvent);
+	};
+	const _onmousewheel = function(event){
+		const _fakeEvent = _onmousemove(event);
+		onmousewheel(_fakeEvent);
 	};
 	const _onmousemove = function(event){
 		
@@ -161,6 +165,7 @@ function _addMouseEvents(target, onmousedown, onmousemove, onmouseup){
 			// Not Touch
 			_fakeEvent.x = event.offsetX;
 			_fakeEvent.y = event.offsetY;
+			_fakeEvent.wheel = event.deltaY>0?1:event.deltaY<0?-1:0;
 		}
 
 		// Mousemove callback
@@ -177,6 +182,8 @@ function _addMouseEvents(target, onmousedown, onmousemove, onmouseup){
 	target.addEventListener("mousedown", _onmousedown);
 	target.addEventListener("mousemove", _onmousemove);
 	document.body.addEventListener("mouseup", _onmouseup);
+	target.addEventListener("wheel", _onmousewheel);
+
 
 	// TOUCH.
 	target.addEventListener("touchstart",_onmousedown,false);

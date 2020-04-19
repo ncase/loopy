@@ -15,6 +15,11 @@ function Dragger(loopy){
 	self.offsetY = 0;
 
 	subscribe("mousedown",function(){
+		if(self.loopy.mode===Loopy.MODE_PLAY) { //FIXME: && free cam
+			self.dragging = {_CLASS_:"Scene"};
+			self.offsetX = Mouse.x;
+			self.offsetY = Mouse.y;
+		}
 
 		// ONLY WHEN EDITING w DRAG
 		if(self.loopy.mode!==Loopy.MODE_EDIT) return;
@@ -47,16 +52,29 @@ function Dragger(loopy){
 			self.offsetX = Mouse.x - dragEdge.labelX;
 			self.offsetY = Mouse.y - dragEdge.labelY;
 			loopy.sidebar.edit(dragEdge); // and edit!
-			//return; // already final
+			return;
 		}
+
+		self.dragging = {_CLASS_:"Scene"};
+		self.offsetX = Mouse.x;
+		self.offsetY = Mouse.y;
 
 	});
 	subscribe("mousemove",function(){
+		if(self.loopy.mode===Loopy.MODE_PLAY && self.dragging && self.dragging._CLASS_==="Scene") {
+			loopy.offsetX += (Mouse.x - self.offsetX);
+			loopy.offsetY += (Mouse.y - self.offsetY);
+		}
 
 		// ONLY WHEN EDITING w DRAG
 		if(self.loopy.mode!==Loopy.MODE_EDIT) return;
 		if(self.loopy.tool!==Loopy.TOOL_DRAG) return;
 
+		// moving scene/zoom
+		if(self.dragging && self.dragging._CLASS_==="Scene"){
+			loopy.offsetX += (Mouse.x - self.offsetX);
+			loopy.offsetY += (Mouse.y - self.offsetY);
+		}
 		// If you're dragging a NODE, move it around!
 		if(self.dragging && self.dragging._CLASS_==="Node"){
 
@@ -135,19 +153,12 @@ function Dragger(loopy){
 			loopy.model.update();
 			
 		}
-
 	});
 	subscribe("mouseup",function(){
-
-		// ONLY WHEN EDITING w DRAG
-		if(self.loopy.mode!==Loopy.MODE_EDIT) return;
-		if(self.loopy.tool!==Loopy.TOOL_DRAG) return;
-
 		// Let go!
 		self.dragging = null;
 		self.offsetX = 0;
 		self.offsetY = 0;
-
 	});
 
 }

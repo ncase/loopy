@@ -1,3 +1,4 @@
+// noinspection JSUnusedGlobalSymbols
 function log(bitArray) {
     console.log(bitArray.maxOffset,binView(bitArray.rawData.buffer));
 }
@@ -108,6 +109,7 @@ function externalizeStrings(){
         loopy.model[`${typeName}s`].forEach((item)=>strings.push(item[stringField["fieldName"]]));
     }
     const utf8string = strings.join('`');
+    // noinspection UnnecessaryLocalVariableJS
     const stringUint8Array = (new StringView(utf8string)).rawData;
     return stringUint8Array;
 }
@@ -177,7 +179,6 @@ function serializeToBinary(embed, bytesSize=true,bytesEntitiesCount=true,bytesAl
     const stringArea = externalizeStrings();
 
     const realBytesSize = Math.ceil(bitArray.maxOffset/8);
-    console.log(realBytesSize,Math.ceil(size/8), entitiesSizes);
     const bin = new Uint8Array(realBytesSize + stringArea.buffer.byteLength);
     bin.set(new Uint8Array(bitArray.rawData.buffer,0,realBytesSize), 0);
     bin.set(stringArea, realBytesSize);
@@ -219,6 +220,7 @@ function deserializeFromBinary (dataUint8Array){
     restoreStrings(bin, newModel);
     return newModel;
 }
+// noinspection JSUnusedGlobalSymbols
 function serializeToLegacyJson(embed){
     const data = [];
     data.push(loopy.model.nodes.map(n=>legacyJsonPersistProps(n)));  // 0 - nodes
