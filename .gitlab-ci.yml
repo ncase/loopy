@@ -26,7 +26,7 @@ pages:
       - public
 
 OK_publish:
-  when: manual
+  #when: manual
   stage: prod
   image: liaohuqiu/rsync
   before_script:
@@ -41,18 +41,3 @@ OK_publish:
   only:
     - tags
 
-Oups_WiP:
-  when: manual
-  stage: preview
-  image: liaohuqiu/rsync
-  before_script:
-    - eval $(ssh-agent -s)
-    - ssh-add <(echo "$SSH_PRIVATE_KEY")
-    - mkdir -p ~/.ssh
-    - >-
-      [[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" >
-      ~/.ssh/config
-  script:
-    - rsync -az -e ssh ./public/WiP/ gammanu@1000i100.fr:~/lo0p.it
-  only:
-    - tags

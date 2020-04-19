@@ -26,6 +26,7 @@
 		if(window.loopy && loopy.modal && loopy.modal.isShowing) return;
 		// noinspection JSDeprecatedSymbols
 		const code = KEY_CODES[event.keyCode];
+		if(!code) return;
 	    Key[code] = true;
 	    publish("key/"+code);
 	    event.stopPropagation();
@@ -35,6 +36,7 @@
 		if(window.loopy && loopy.modal && loopy.modal.isShowing) return;
 		// noinspection JSDeprecatedSymbols
 		const code = KEY_CODES[event.keyCode];
+		if(!code) return;
 	    Key[code] = false;
 	    event.stopPropagation();
 	    event.preventDefault();
