@@ -271,43 +271,6 @@ function Loopy(config){
 			});
 		}
 
-	}else{
-
-		// Center all the nodes & labels
-
-		// If no nodes & no labels, forget it.
-		if(self.model.nodes.length>0 || self.model.labels.length>0){
-
-			// Get bounds of ALL objects...
-			const bounds = self.model.getBounds();
-			const left = bounds.left;
-			const top = bounds.top;
-			const right = bounds.right;
-			const bottom = bounds.bottom;
-
-			// Re-center!
-			const canvasses = document.getElementById("canvasses");
-			const cx = (left+right)/2;
-			const cy = (top+bottom)/2;
-			const offsetX = (canvasses.clientWidth+50)/2 - cx;
-			const offsetY = (canvasses.clientHeight-80)/2 - cy;
-
-			// MOVE ALL NODES
-			for(let i=0;i<self.model.nodes.length;i++){
-				const node = self.model.nodes[i];
-				node.x += offsetX;
-				node.y += offsetY;
-			}
-
-			// MOVE ALL LABELS
-			for(let i=0;i<self.model.labels.length;i++){
-				const label = self.model.labels[i];
-				label.x += offsetX;
-				label.y += offsetY;
-			}
-
-		}
-
 	}
 
 	// NOT DIRTY, THANKS
