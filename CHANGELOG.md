@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - an **advanced mode** to unleash the power of creativity with V2 features.
 - add a help shortcut `?` for each features linked to a page with some explanations and use-case examples
 - a global switch between **colorAesthetic**  and **colorLogic** mode to allow the use of color to unambiguous different kind of signals and nodes.
+- zoom in and out or (with move tool) drag the scene to explore big system.
 
 ##### Death / Life mechanics
 - nodes can now die and reborn (by receiving vital change propagation signal or by explosion threshold settings).
@@ -33,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ##### Node advanced features
 - empty the name field to resize it to a tiny internal-logic node.
 - name it "autoplay" to auto send a signal on start in play-mode.
+- press del key when name field is empty to remove the node.
 - 4 node **sizes** with 4 different **storage capacities** (none, normal, x5 and x100)
 - **Overflow threshold** : a node can store signals without forwarding them up to a threshold, and down to another threshold (store signals within a threshold window, forward them outside the window).
 - **Aggregation latency** : bypass thresholds to store signals for a duration before releasing them merged into one.

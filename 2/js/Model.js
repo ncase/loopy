@@ -403,36 +403,18 @@ function Model(loopy){
 
 	});
 	subscribe("mousewheel",function(mouse){
-		//const oldOffsetScale = loopy.offsetScale;
+		// ONLY WHEN EDITING (or MODE_PLAY en freeCam)
+		//if(self.loopy.mode!==Loopy.MODE_EDIT) return;
+
+
+		const oldOffsetScale = loopy.offsetScale;
 		if(mouse.wheel<0) loopy.offsetScale*=1.1;
 		if(mouse.wheel>0) loopy.offsetScale*=0.9;
-		//FIXME: zoom on mouse
-		/*
 
-		const canvasses = document.getElementById("canvasses");
-		const fitWidth = canvasses.clientWidth - _PADDING - _PADDING;
-		const fitHeight = canvasses.clientHeight - _PADDING_BOTTOM - _PADDING;
-		const cx = (left+right)/2;
-		const cy = (top+bottom)/2;
-		loopy.offsetX = (_PADDING+fitWidth)/2 - cx;
-		loopy.offsetY = (_PADDING+fitHeight)/2 - cy;
-
-		const oldReal = offsetToRealOffset(oldOffsetScale,loopy.offsetX,loopy.offsetY);
-		const newReal = offsetToRealOffset(loopy.offsetScale,loopy.offsetX,loopy.offsetY);
 		const old_m2M = mouseToMouse(mouse.x,mouse.y,oldOffsetScale,loopy.offsetX,loopy.offsetY);
 		const new_m2M = mouseToMouse(mouse.x,mouse.y,loopy.offsetScale,loopy.offsetX,loopy.offsetY);
-		const transform = (offset,pos,newReal,oldReal)=> offset -(offset/newReal-offset/oldReal) - (pos*offset/newReal-pos*offset/oldReal);
-		loopy.offsetX = transform(loopy.offsetX,Mouse.x,newReal.translateX,oldReal.translateX);
-		loopy.offsetY = transform(loopy.offsetY,Mouse.y,newReal.translateY,oldReal.translateY);
-
-		console.log(`
-		mouse : ${mouse.x.toPrecision(4)} x ${mouse.y.toPrecision(4)}
-		Mouse : ${Mouse.x.toPrecision(4)} x ${Mouse.y.toPrecision(4)}
-		oldReal : ${oldReal.translateX.toPrecision(4)} x ${oldReal.translateY.toPrecision(4)}
-		newReal : ${newReal.translateX.toPrecision(4)} x ${newReal.translateY.toPrecision(4)}
-		Offset: ${loopy.offsetX.toPrecision(4)} x ${loopy.offsetY.toPrecision(4)} scale ${oldOffsetScale.toPrecision(3)} -> ${loopy.offsetScale.toPrecision(3)}
-		`);
-		 */
+		loopy.offsetX +=  (new_m2M.x - old_m2M.x);
+		loopy.offsetY +=  (new_m2M.y - old_m2M.y);
 	});
 
 	// Centering & Scaling
