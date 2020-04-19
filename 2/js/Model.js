@@ -252,24 +252,7 @@ function Model(loopy){
 		// Translate
 		ctx.save();
 
-		// Translate to center, (translate, scale, translate) to expand to size
-		const canvasses = document.getElementById("canvasses");
-		const CW = canvasses.clientWidth - _PADDING - _PADDING;
-		const CH = canvasses.clientHeight - _PADDING_BOTTOM - _PADDING;
-		let tx = loopy.offsetX*2;
-		let ty = loopy.offsetY*2;
-		tx -= CW+_PADDING;
-		ty -= CH+_PADDING;
-		const s = loopy.offsetScale;
-		tx = s*tx;
-		ty = s*ty;
-		tx += CW+_PADDING;
-		ty += CH+_PADDING;
-		if(loopy.embedded){
-			tx += _PADDING; // dunno why but this is needed
-			ty += _PADDING; // dunno why but this is needed
-		}
-		ctx.setTransform(s, 0, 0, s, tx, ty);
+		applyZoomTransform(ctx);
 
 		// Draw labels THEN edges THEN nodes
 		for(let i=0;i<self.labels.length;i++) self.labels[i].draw(ctx);
@@ -280,7 +263,6 @@ function Model(loopy){
 		ctx.restore();
 
 	};
-
 
 
 
@@ -494,5 +476,26 @@ function Model(loopy){
 		}
 
 	};
+
+}
+function applyZoomTransform(ctx){
+	// Translate to center, (translate, scale, translate) to expand to size
+	const canvasses = document.getElementById("canvasses");
+	const CW = canvasses.clientWidth - _PADDING - _PADDING;
+	const CH = canvasses.clientHeight - _PADDING_BOTTOM - _PADDING;
+	let tx = loopy.offsetX*2;
+	let ty = loopy.offsetY*2;
+	tx -= CW+_PADDING;
+	ty -= CH+_PADDING;
+	const s = loopy.offsetScale;
+	tx = s*tx;
+	ty = s*ty;
+	tx += CW+_PADDING;
+	ty += CH+_PADDING;
+	if(loopy.embedded){
+		tx += _PADDING; // dunno why but this is needed
+		ty += _PADDING; // dunno why but this is needed
+	}
+	ctx.setTransform(s, 0, 0, s, tx, ty);
 
 }

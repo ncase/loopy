@@ -34,15 +34,18 @@ function Ink(loopy){
 		const lastPoint = self.strokeData[self.strokeData.length-1];
 
 		// Style
+		ctx.save()
 		ctx.strokeStyle = "#ccc";
 		ctx.lineWidth = 5;
 		ctx.lineCap = "round";
 
 		// Draw line from last to current
+		applyZoomTransform(ctx);
 		ctx.beginPath();
 		ctx.moveTo(lastPoint[0]*2, lastPoint[1]*2);
 		ctx.lineTo(Mouse.x*2, Mouse.y*2);
 		ctx.stroke();
+		ctx.restore();
 
 		// Update last point
 		self.strokeData.push([Mouse.x,Mouse.y]);
