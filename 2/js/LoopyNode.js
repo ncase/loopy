@@ -134,6 +134,13 @@ function LoopyNode(model, config){
 			// Sign constraint filtering
 			if(edge.signBehavior===2 && signal.delta>0) continue;
 			if(edge.signBehavior===3 && signal.delta<0) continue;
+
+			// vital banalized emitting
+			if(edge.filter>=2 && edge.filter<=4) {
+				edge.addSignal(newSignal);
+				continue;
+			}
+
 			// Color constraint filtering
 			if(loopy.colorLogic===1 && edge.edgeFilterColor!== -1 && edge.edgeFilterColor !== signal.color) continue;
 
