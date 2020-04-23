@@ -113,6 +113,11 @@ function Edge(model, config){
 			//var lastPosition = signal.position;
 			signal.position += self.signalSpeed;
 
+			// Signal position (for camera)
+			const signalPosition = self.getPositionAlongArrow(signal.position);
+			signal.x = (fx + Math.cos(a)*signalPosition.x - Math.sin(a)*signalPosition.y)/2; // un-retina
+			signal.y = (fy + Math.sin(a)*signalPosition.x + Math.cos(a)*signalPosition.y)/2; // un-retina
+
 			// If crossed the 0.5 mark...
 			/*
 			if(lastPosition<0.5 && signal.position>=0.5){
@@ -161,6 +166,18 @@ function Edge(model, config){
 		self.signals.splice( self.signals.indexOf(signal), 1 );
 		Edge.allSignals.splice( Edge.allSignals.indexOf(signal), 1 );
 	};
+	self.getSignalBoundingBox = function(signal){
+		const size = 40*Math.max(Math.abs(signal.scaleX),Math.abs(signal.scaleY));
+		return {
+			left:signal.x-size/2,
+			right:signal.x+size/2,
+			top:signal.y-size/2,
+			bottom:signal.y+size/2,
+			cx:signal.x,
+			cy:signal.y,
+			weight:1
+		}
+	}
 	self.drawSignals = function(ctx){
 
 		// Draw each one

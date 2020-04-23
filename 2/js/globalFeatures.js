@@ -29,7 +29,7 @@ injectProperty("loopy", "cameraMode",{
     persist:3,
     sideBar:{
         index: 3,
-        options: [0, 1,2],
+        options: [0,1,2],
         labelFunc: (v)=>`Camera : ${[
             "resize to scene", // scene cam
             "follow signals", // signal cam

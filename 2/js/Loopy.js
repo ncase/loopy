@@ -105,6 +105,7 @@ function Loopy(config){
 
 		// Play mode!
 		if(mode===Loopy.MODE_PLAY){
+			self.model.olderOffset = false; // Camera Reset
 			self.showPlayTutorial = true; // show once!
 			if(!self.embedded) self.wobbleControls=45; // only if NOT embedded
 			self.sidebar.showPage("Edit");

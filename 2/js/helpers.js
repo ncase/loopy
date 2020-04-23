@@ -358,3 +358,52 @@ function MonitoredStruct(inertStruct, eventNameSuffix, topAncestor) {
 	return this.smartObj;
 }
 */
+
+function mergeBounds(...bounds){
+	// Get bounds of ALL objects...
+	return bounds.reduce((acc,cur)=>{
+		//if(isFinite(cur.left)) drawBounds(cur, `#${Math.floor(Math.random()*256).toString(16)}${Math.floor(Math.random()*256).toString(16)}${Math.floor(Math.random()*256).toString(16)}`)
+		if(typeof cur.left === "undefined"){
+			cur.left = Infinity;
+			cur.right = -Infinity;
+			cur.top = Infinity;
+			cur.bottom = -Infinity;
+		}
+		if(typeof cur.weight === "undefined"){
+			cur.cx = (cur.left+cur.right)/2;
+			cur.cy = (cur.top+cur.bottom)/2;
+			cur.weight = 1;
+		}
+		if(isNaN(cur.cx) || isNaN(cur.cy)) cur.cx = cur.cy = cur.weight = 0;
+		if(acc.left>cur.left) acc.left=cur.left;
+		if(acc.top>cur.top) acc.top=cur.top;
+		if(acc.right<cur.right) acc.right=cur.right;
+		if(acc.bottom<cur.bottom) acc.bottom=cur.bottom;
+		acc.cx = (acc.cx*acc.weight + cur.cx*cur.weight)/(acc.weight+cur.weight);
+		acc.cy = (acc.cy*acc.weight + cur.cy*cur.weight)/(acc.weight+cur.weight);
+		acc.weight = acc.weight+cur.weight;
+		if(isNaN(acc.cx) || isNaN(acc.cy)) acc.cx = acc.cy = acc.weight = 0;
+		return acc;
+	},{left:Infinity,right:-Infinity,top:Infinity,bottom:-Infinity,cx:0,cy:0,weight:0});
+}
+function drawBounds(bounds, color){
+	/*
+    const canvasses = document.getElementById("canvasses");
+    console.log(canvasses);
+    const ctx = canvasses.lastChild.getContext("2d");
+     */
+	const ctx = loopy.model.context
+	ctx.restore()
+	ctx.save()
+	applyZoomTransform(ctx);
+
+	ctx.beginPath();
+	ctx.moveTo(bounds.left,bounds.top);
+	ctx.lineTo(bounds.left,bounds.bottom);
+	ctx.lineTo(bounds.right,bounds.bottom);
+	ctx.lineTo(bounds.right,bounds.top);
+	ctx.fillStyle = color;
+	ctx.fill();
+	ctx.restore()
+
+}

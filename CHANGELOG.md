@@ -21,7 +21,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - an **advanced mode** to unleash the power of creativity with V2 features.
 - add a help shortcut `?` for each features linked to a page with some explanations and use-case examples
 - a global switch between **colorAesthetic**  and **colorLogic** mode to allow the use of color to unambiguous different kind of signals and nodes.
-- zoom in and out or (with move tool) drag the scene to explore big system.
+- zoom in and out (or drag with move tool) in the scene to explore big system.
+- select the **camera mode** to use in play mode.
+
+##### Play mode cameras
+- **scene cam.** : (resize to scene) the camera scale to show all visible elements.
+- **signal cam.** : (follow signals) the camera focus and zoom on signals. Switch to scene camera when there is no signal.
+- **free cam.** : (user controllable) user can zoom in/out and drag the scene even in play mode.
 
 ##### Death / Life mechanics
 - nodes can now die and reborn (by receiving vital change propagation signal or by explosion threshold settings).

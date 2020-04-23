@@ -247,41 +247,27 @@ function Model(loopy){
 		_canvasDirty = false;
 
 		if(self.loopy.mode===Loopy.MODE_PLAY && loopy.cameraMode===0){
-			const bounds = self.getBounds();
-			self.smoothCameraMove(bounds,0.1);
+			self.smoothCameraMove(self.getBounds()); // 0.1
 		}
-
+		if(self.loopy.mode===Loopy.MODE_PLAY && loopy.cameraMode===1){
+			const bounds = self.getSignalsBounds();
+			if(bounds.strict.weight>0) {
+				bounds.large.cx = bounds.strict.cx;
+				bounds.large.cy = bounds.strict.cy;
+				bounds.large.weight = bounds.strict.weight;
+				delete bounds.strict.cx;
+				delete bounds.strict.cy;
+				delete bounds.strict.weight;
+				self.smoothCameraMove(bounds.large,bounds.strict); // 0.1
+			}
+			else self.smoothCameraMove(self.getBounds()); //0.02
+		}
 
 		// Clear!
 		ctx.clearRect(0,0,self.canvas.width,self.canvas.height);
 
 		// Translate
 		ctx.save();
-
-
-		ctx.save()
-		ctx.strokeStyle = "#00F";
-		ctx.lineWidth = 5;
-		ctx.beginPath();
-		ctx.moveTo(-10, 0);
-		ctx.lineTo(10, 0);
-		ctx.moveTo(0, -10);
-		ctx.lineTo(0, 10);
-		ctx.stroke();
-		ctx.restore();
-		applyZoomTransform(ctx);
-		ctx.save()
-		ctx.strokeStyle = "#0F0";
-		ctx.lineWidth = 5;
-		ctx.beginPath();
-		ctx.moveTo(-10, 0);
-		ctx.lineTo(10, 0);
-		ctx.moveTo(0, -10);
-		ctx.lineTo(0, 10);
-		ctx.stroke();
-		ctx.restore();
-
-
 		applyZoomTransform(ctx);
 
 		// Draw labels THEN edges THEN nodes
@@ -420,40 +406,44 @@ function Model(loopy){
 			loopy.offsetY +=  (new_m2M.y - old_m2M.y);
 		}
 	});
-
+	// Centering & Scaling
+	self.getSignalsBounds = function(includeInstant=true){
+		let strictBounds = {};
+		let largeBounds = {};
+		for(let i=0; i<self.nodes.length; i++){
+			const node = self.nodes[i];
+			if(node.hidden===true) continue;
+			if(!node.aggregate) continue;
+			largeBounds = mergeBounds(largeBounds,node.getBoundingBox()); // signal in aggregator
+			strictBounds = mergeBounds(strictBounds,node.getBoundingBox()); // signal in aggregator
+		} //TODO: handle instant/lightning edges
+		for(let i=0; i<self.edges.length; i++){
+			const edge = self.edges[i];
+			if(edge.hidden===true) continue;
+			if(edge.signals.length === 0) continue;
+			largeBounds = mergeBounds(largeBounds,edge.getBoundingBox(), edge.from.getBoundingBox(), edge.to.getBoundingBox());
+			edge.signals.forEach((s)=>strictBounds = mergeBounds(strictBounds,edge.getSignalBoundingBox(s)));
+		}
+		return {strict:strictBounds,large:largeBounds};
+	};
 	// Centering & Scaling
 	self.getBounds = function(visible=true){
-
 		// If no nodes & no labels, forget it.
 		if(self.nodes.length===0 && self.labels.length===0) return;
 
+		let bounds = {};
 		// Get bounds of ALL objects...
-		let left = Infinity;
-		let top = Infinity;
-		let right = -Infinity;
-		let bottom = -Infinity;
 		const _testObjects = function(objects){
 			for(let i=0; i<objects.length; i++){
 				const obj = objects[i];
 				if(obj.hide===true) continue;
-				const bounds = obj.getBoundingBox();
-				if(left>bounds.left) left=bounds.left;
-				if(top>bounds.top) top=bounds.top;
-				if(right<bounds.right) right=bounds.right;
-				if(bottom<bounds.bottom) bottom=bounds.bottom;
+				bounds = mergeBounds(bounds,obj.getBoundingBox());
 			}
 		};
 		_testObjects(self.nodes);
 		_testObjects(self.edges);
 		_testObjects(self.labels);
-
-		// Return
-		return {
-			left:left,
-			top:top,
-			right:right,
-			bottom:bottom
-		};
+		return bounds;
 	};
 	self.fitBounds = function(size){
 		const bounds = self.getBounds();
@@ -474,34 +464,85 @@ function Model(loopy){
 		self.labels.forEach(n=>{n.x = (n.x+addX)*ratio;n.y = (n.y+addY)*ratio});
 		//self.groups.forEach(n=>{n.x = (n.x+addX)*ratio;n.y = (n.y+addY)*ratio});
 	};
-	self.smoothCameraMove = function(targetBounds,speed,mustKeepInRange=[]){
-		const old = {scale:loopy.offsetScale, x:loopy.offsetX,y:loopy.offsetY}
-		const target = {};
+	function offsetToBounds(offset,fitBounds){
+		const calc = (side,oppositeSide,offset,scale)=>{
+			const c = (fitBounds[side]+fitBounds[oppositeSide])/2;
+			const sideDelta = fitBounds[side]-c;
+			return sideDelta/scale+c-offset-_PADDING/2;
+		}
+		return {
+			left: calc("left","right",offset.offsetX,offset.offsetScale),
+			right: calc("right","left",offset.offsetX,offset.offsetScale),
+			top: calc("top","bottom",offset.offsetY,offset.offsetScale),
+			bottom: calc("bottom","top",offset.offsetY,offset.offsetScale),
+		}
+	}
 
+	self.smoothCameraMove = function(targetBounds,mustKeepInRangeBounds={},speedSetting = new SpeedSettings(),extraPadding=0){
+		const old = {offsetScale:loopy.offsetScale, offsetX:loopy.offsetX,offsetY:loopy.offsetY};
+		if(!self.olderOffset) self.olderOffset = old;
+		const fitBounds = fitToBounds();
+		/**
+		 * on tente de centrer sur le cx/cy du target
+		 * si le targetbounds n'est pas entièrement inclu dans ce cadrage, on ajoute ce qui manque en maintenant le centre.
+		 * Avec ça, on a notre cadrage idéal au quel on applique le ratio de vitesse.
+		 *
+		 * avec le cadrage pondéré vitesse, on regarde s'il y a un centre strict.
+		 * Si oui, on recentre et on étend au cadrage strict à partir de l'actuel, en maintenant le centre.
+		 * Si non, on étend au cadrage strict si nécessaire
+		 * //NOP enfin, on élargie le cadrage d'extraPadding (en % si entre 0 et 1, en absolu si >1)
+		 *
+		 * C'est bon, adjugé !
+		 */
 
-		const canvasses = document.getElementById("canvasses");
-		const fitWidth = canvasses.clientWidth - _PADDING - _PADDING;
-		const fitHeight = canvasses.clientHeight - _PADDING_BOTTOM - _PADDING;
-		const cx = (targetBounds.left+targetBounds.right)/2;
-		const cy = (targetBounds.top+targetBounds.bottom)/2;
-		target.x = (_PADDING+fitWidth)/2 - cx;
-		target.y = (_PADDING+fitHeight)/2 - cy;
+		let targetOffset;
+		if(targetBounds.weight) targetOffset = scaleTo(targetBounds,fitBounds,true);
+		else targetOffset = scaleTo(targetBounds,fitBounds);
 
-		// Wider or taller than screen?
-		const w = targetBounds.right-targetBounds.left;
-		const h = targetBounds.bottom-targetBounds.top;
+		const calcDelta = (offsetType,speedType)=>{
+			let oldDelta = old[offsetType]-self.olderOffset[offsetType];
+			const fullDelta = targetOffset[offsetType]-old[offsetType];
+			if(offsetType=== "offsetScale" && Math.abs(fullDelta)<0.001) return 0;
+			if(offsetType=== "offsetScale" && Math.abs(oldDelta)<0.001) oldDelta = fullDelta>0?0.001:-0.001;
+			const idealDelta = fullDelta*speedType.speedMaxPercent;
+			let delta = idealDelta;
+			delta = oldDelta*speedType.inertia + delta*(1-speedType.inertia);
+			if(oldDelta>0){
+				if(oldDelta+oldDelta*speedType.accelerationMax<delta) delta = oldDelta+oldDelta*speedType.accelerationMax;
+				if(oldDelta-oldDelta*speedType.accelerationMax>delta) delta = oldDelta-oldDelta*speedType.accelerationMax;
+			} else {
+				if(oldDelta-oldDelta*speedType.accelerationMax<delta) delta = oldDelta-oldDelta*speedType.accelerationMax;
+				if(oldDelta+oldDelta*speedType.accelerationMax>delta) delta = oldDelta+oldDelta*speedType.accelerationMax;
+			}
+			if(offsetType!== "offsetScale" && Math.abs(idealDelta)>1 && Math.abs(delta)<1) delta = idealDelta>0?1:-1;
+			if(offsetType!== "offsetScale" && Math.abs(fullDelta)<_PADDING/4) delta = 0;
+			return delta;
+		}
+		let instantTargetOffset = {
+			offsetX: old.offsetX + calcDelta("offsetX",speedSetting.translate),
+			offsetY: old.offsetY + calcDelta("offsetY",speedSetting.translate),
+			offsetScale: Math.abs(old.offsetScale + calcDelta("offsetScale",targetOffset.offsetScale>old.offsetScale?speedSetting.zoomIn:speedSetting.zoomOut)),
+		}
+		const instantTarget = offsetToBounds(instantTargetOffset, fitBounds);
+		// Does this include strict bounds ?
+		// if not, include them
+		let strictOffset;
+		if(mustKeepInRangeBounds.weight) strictOffset = scaleTo(mustKeepInRangeBounds,fitBounds,true);
+		else strictOffset = scaleTo(mustKeepInRangeBounds,fitBounds);
+		const strictBounds = offsetToBounds(strictOffset,fitBounds);
+		const mergedBounds = mergeBounds(strictBounds,instantTarget);
+		let mergedOffset;
+		if(mustKeepInRangeBounds.weight){
+			mergedBounds.cx = mustKeepInRangeBounds.cx;
+			mergedBounds.cy = mustKeepInRangeBounds.cy;
+			mergedBounds.weight = mustKeepInRangeBounds.weight;
+			mergedOffset = scaleTo(mergedBounds,fitBounds,true);
+		} else mergedOffset = scaleTo(mergedBounds,fitBounds);
 
-		// Wider or taller than screen?
-		const modelRatio = w/h;
-		const screenRatio = fitWidth/fitHeight;
-		let scaleRatio;
-		if(modelRatio > screenRatio) scaleRatio = fitWidth/w; // wider...
-		else scaleRatio = fitHeight/h; // taller...
-
-		target.scale = scaleRatio;
-		loopy.offsetX += (target.x-old.x)*speed;
-		loopy.offsetY += (target.y-old.y)*speed;
-		loopy.offsetScale += (target.scale-old.scale)*speed;
+		loopy.offsetX = mergedOffset.offsetX;
+		loopy.offsetY = mergedOffset.offsetY;
+		loopy.offsetScale = mergedOffset.offsetScale;
+		self.olderOffset = old;
 	}
 	self.center = function(andScale){
 
@@ -575,4 +616,63 @@ function applyZoomTransform(ctx){
 	//console.log(tx, ty);
 	ctx.setTransform(real.scale, 0, 0, real.scale, real.translateX, real.translateY);
 
+}
+// camera misc
+function fitToBounds() {
+	const canvasses = document.getElementById("canvasses");
+	const fitWidth = canvasses.clientWidth - _PADDING - _PADDING;
+	const fitHeight = canvasses.clientHeight - _PADDING_BOTTOM - _PADDING;
+	return {
+		left:  _PADDING,
+		top:   _PADDING,
+		right: fitWidth+_PADDING,
+		bottom:fitHeight+_PADDING,
+		cx:    (_PADDING+fitWidth)/2,
+		cy:    (_PADDING+fitHeight)/2,
+	}
+}
+function calcWidthHeight(bounds) {
+	bounds.width = bounds.right-bounds.left;
+	bounds.height = bounds.bottom-bounds.top;
+}
+function calcCenteredWidthHeight(bounds) {
+	if(typeof bounds.cx === "undefined" || typeof bounds.cy === "undefined"){
+		bounds.cx = (bounds.right+bounds.left)/2;
+		bounds.cy = (bounds.bottom+bounds.top)/2;
+	}
+	bounds.width = 2*Math.max(bounds.right-bounds.cx,bounds.cx-bounds.left);
+	bounds.height = 2*Math.max(bounds.bottom-bounds.cy,bounds.cy-bounds.top);
+}
+function scaleTo(makeTheseBounds,fitInTheseBounds,alignCenter=false){
+	let scaleRatio;
+	calcWidthHeight(fitInTheseBounds);
+	if(alignCenter) calcCenteredWidthHeight(makeTheseBounds);
+	else calcWidthHeight(makeTheseBounds);
+	scaleRatio = Math.min(fitInTheseBounds.width/makeTheseBounds.width,fitInTheseBounds.height/makeTheseBounds.height);
+	const cx = (makeTheseBounds.right+makeTheseBounds.left)/2;
+	const cy = (makeTheseBounds.bottom+makeTheseBounds.top)/2;
+	return {
+		offsetX: fitInTheseBounds.cx - cx,
+		offsetY: fitInTheseBounds.cy - cy,
+		offsetScale: scaleRatio
+	}
+}
+function SpeedSettings(){
+	const self = this;
+	self.translate = {
+		inertia:0.8,
+		speedMaxPercent:0.05,
+		accelerationMax: 2,
+	};
+	self.zoomIn = {
+		inertia:0.8,
+		speedMaxPercent:0.03,
+		accelerationMax: 0.2,
+	};
+	self.zoomOut = {
+		inertia:0.8,
+		speedMaxPercent:0.05,
+		accelerationMax: 2.5,
+	};
+	return self;
 }
