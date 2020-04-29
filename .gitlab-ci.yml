@@ -1,0 +1,43 @@
+stages:
+  - build
+  - preview
+  - prod
+
+build:
+  stage: build
+  image: node:current-alpine
+  script:
+    - mkdir .public
+    - mv * .public/
+    - mv .public public
+    - rm public/LICENSE.txt public/README.md
+  artifacts:
+    paths:
+      - public
+    expire_in: 1 week
+
+pages:
+  stage: preview
+  script:
+    - ls public
+  artifacts:
+    name: loopy
+    paths:
+      - public
+
+OK_publish:
+  #when: manual
+  stage: prod
+  image: liaohuqiu/rsync
+  before_script:
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - mkdir -p ~/.ssh
+    - >-
+      [[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" >
+      ~/.ssh/config
+  script:
+    - rsync -az -e ssh ./public/ gammanu@1000i100.fr:~/lo0p.it
+  only:
+    - tags
+

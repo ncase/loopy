@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Contextual help</title>
+    <meta charset="utf-8">
+    <link rel="icon" type="image/png" href="../css/icons/favicon.png">
+
+    <!-- Schema.org markup for Google+ -->
+    <meta itemprop="name" content="LOOPY!">
+    <meta itemprop="description" content="a tool for thinking in systems">
+    <meta itemprop="image" content="http://ncase.me/loopy/social/thumbnail.png">
+
+    <!-- Twitter Card data: SMALL -->
+    <meta name="twitter:card" content="summary"/>
+    <meta name="twitter:site" content="@ncasenmare"/>
+    <meta name="twitter:title" content="LOOPY!"/>
+    <meta name="twitter:description" content="a tool for thinking in systems"/>
+    <meta name="twitter:creator" content="@ncasenmare">
+    <meta name="twitter:image" content="http://ncase.me/loopy/social/thumbnail_small.png"/>
+
+    <!-- Open Graph data -->
+    <meta property="og:title" content="LOOPY!">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://lo0p.it/">
+    <meta property="og:image" content="http://ncase.me/loopy/social/thumbnail.png">
+    <meta property="og:description" content="a tool for thinking in systems">
+
+    <!-- Styles! -->
+    <link href="doc.css" rel="stylesheet"/>
+    <script src="marked.min.js"></script>
+</head>
+<body>
+<div id="doc"></div>
+<script>
+    async function main() {
+        const rawContext = location.href.split('?')[1];
+        const context = rawContext.split('/');
+        let doc = {status:418};
+        if(doc.status>=400) doc = await fetch(`doc/${context[0].toLowerCase()}_${context[1]}.md`);
+        if(doc.status>=400) doc = await fetch(`doc/${context[0]}_${context[1]}.md`);
+        if(doc.status>=400) doc = await fetch(`doc/${context[0].toLowerCase()}_${context[1].toLowerCase()}.md`);
+        if(doc.status>=400) doc = await fetch(`doc/${context[0]}_${context[1].toLowerCase()}.md`);
+        if(doc.status>=400) doc = await fetch(`doc/${context[1]}.md`);
+        if(doc.status>=400) doc = await fetch(`doc/${context[1].toLowerCase()}.md`);
+        if(doc.status>=400) doc = await fetch(`doc/${context[0].toLowerCase()}.md`);
+        if(doc.status>=400) doc = await fetch(`doc/${context[0]}.md`);
+        if(doc.status>=400) doc = await fetch(`doc/default.md`);
+        const rawMD = await doc.text();
+        document.getElementById('doc').innerHTML = cleaning(marked(rawMD,{}));
+        const targetParts = [
+            [context[0].toLowerCase(),context[0],""],
+            [context[1],context[1].toLowerCase(),""],
+            [`choice_${context[2]}`,""]
+        ];
+        const targets = [];
+        for(let choice of targetParts[2]) for(let feat of targetParts[1]) for(let type of targetParts[0]){
+            const parts = [];
+            if(type) parts.push(type);
+            if(feat) parts.push(feat);
+            if(choice) parts.push(choice);
+            targets.push(parts.join('_'));
+        }
+        targets.pop();
+        for(let target of targets){
+            const found = document.getElementById(target);
+            if(!!found) return location.hash = target;
+        }
+    }
+    function cleaning(strHtml) {
+        strHtml.replace(/<iframe[^>]*(width=[^ ]+)[ >]/g,(full,catched)=>full.replace(catched,''));
+        strHtml.replace(/<iframe[^>]*(height=[^ ]+)[ >]/g,(full,catched)=>full.replace(catched,''));
+        return strHtml;
+    }
+    main();
+</script>
+<noscript>
+    Contextual help need javascript activated.
+</noscript>
+</body>
+</html>

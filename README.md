@@ -1,6 +1,8 @@
 ![](https://i.imgur.com/S8c7E8o.gif)
 
-### [LOOPY - a tool for thinking in systems](http://ncase.me/loopy/)
+### [LOOPY - a tool for thinking in systems](https://lo0p.it/)
+
+Use LOOPY in it last [stable version](https://lo0p.it/2/) or try latest features in the [nightly version](https://1000i100.github.io/loopy/2/).
 
 [Zero Rights Reserved](http://creativecommons.org/publicdomain/zero/1.0/): 
 LOOPY is entirely open source/public domain.
@@ -12,13 +14,13 @@ Other Peeps' Open Source Code I Used:
 - [minpubsub](https://github.com/daniellmb/MinPubSub)
 - [balloon.css](https://kazzkiq.github.io/balloon.css/)
 - [simple sharing buttons](https://simplesharingbuttons.com/)
+- and all libs listed in the folder [vendors](2/js/vendors/)
 
-Check out these [user-made LOOPY's!](http://ncase.me/loopy/v1.1/pages/examples)
+Check out these [user-made LOOPY's!](https://lo0p.it/2/pages/examples)
 
----
+### Features list
 
-Version 1.1:    
-- node amounts are now "uncapped"    
-- better distribution of "signals"
+All features are listed in a human readable [changelog](CHANGELOG.md).
 
-Version 1.0: the whole everything.
+For any feature, you can fine more explanation and specific use-case examples in the [documentation](2/pages/doc/).
+Documentation is also available from contextual help inside LOOPY : Just click on the feature associated `?`.
