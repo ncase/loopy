@@ -89,6 +89,11 @@ function Toolbar(loopy){
 	// Select button
 	buttonsByID.drag.callback();
 
+	// Return to default
+	subscribe("model/changed", function() {
+		buttonsByID.drag.callback();
+	});
+
 	// Hide & Show
 
 }
