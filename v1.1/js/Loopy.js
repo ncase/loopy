@@ -45,7 +45,7 @@ function Loopy(config){
 
 	// Tools
 	self.toolbar = new Toolbar(self);
-	self.tool = Loopy.TOOL_INK;
+	self.tool = Loopy.TOOL_DRAG;
 	self.ink = new Ink(self);
 	self.drag = new Dragger(self);
 	self.erase = new Eraser(self);
