@@ -48,7 +48,7 @@ function Toolbar(loopy){
 	};
 
 	// Set Tool
-	self.currentTool = "ink";
+	self.currentTool = "drag";
 	self.setTool = function(tool){
 		self.currentTool = tool;
 		var name = "TOOL_"+tool.toUpperCase();
@@ -87,7 +87,7 @@ function Toolbar(loopy){
 	});
 
 	// Select button
-	buttonsByID.ink.callback();
+	buttonsByID.drag.callback();
 
 	// Hide & Show
 
