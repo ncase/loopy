@@ -252,7 +252,8 @@ function Node(model, config){
 			width = ctx.measureText(self.label).width;
 		}
 		ctx.fillText(self.label, 0, 0);
-
+		var roundedValue = Math.round(self.value * 100) / 100; // Temp variable solely to cleanly display value
+		ctx.fillText(roundedValue, 0, 40); //Display value slightly below label.
 		// WOBBLE CONTROLS
 		var cl = 40;
 		var cy = 0;
