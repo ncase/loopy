@@ -55,7 +55,7 @@ function Modal(loopy){
 		page.height = 570;
 		var iframe = page.addComponent(new ModalIframe({
 			page: page,
-			src: "pages/examples/",
+			src: "pages/examples/index.html",
 			width: 640,
 			height: 520
 		}));
@@ -93,7 +93,7 @@ function Modal(loopy){
 		page.height = 550;
 		page.addComponent(new ModalIframe({
 			page: page,
-			src: "pages/credits/",
+			src: "pages/credits/index.html",
 			width: 660,
 			height: 500
 		}))
