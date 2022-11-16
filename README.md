@@ -4,7 +4,7 @@
 
 LOOPY was originally created by [Nicky Case](https://github.com/ncase/loopy): (https://github.com/ncase/loopy)
 
-This electron port of LOOPY was made by [JCHU634]((https://github.com/jchu634)
+This electron port of LOOPY was made by [JCHU634](https://github.com/jchu634)
 
 Zero Rights Reserved: LOOPY is entirely open source/public domain.
 ---
