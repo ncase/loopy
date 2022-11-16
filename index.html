@@ -2,8 +2,8 @@
 <html>
 <head>
     
-	<!-- META -->
-	<title>LOOPY: a tool for thinking in systems</title>
+    <!-- META -->
+	<title>LOOPY (v1.1)</title>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
 	<meta content="utf-8" http-equiv="encoding">
 	<meta charset="utf-8">
@@ -14,13 +14,13 @@
 	<meta itemprop="description" content="a tool for thinking in systems">
 	<meta itemprop="image" content="http://ncase.me/loopy/social/thumbnail.png">
 
-	<!-- Twitter Card data: LARGE -->
-	<meta name="twitter:card" content="summary_large_image">
-	<meta name="twitter:site" content="@ncasenmare">
-	<meta name="twitter:title" content="LOOPY!">
-	<meta name="twitter:description" content="a tool for thinking in systems">
+	<!-- Twitter Card data: SMALL -->
+	<meta name="twitter:card" content="summary"/>
+	<meta name="twitter:site" content="@ncasenmare"/>
+	<meta name="twitter:title" content="LOOPY!"/>
+	<meta name="twitter:description" content="a tool for thinking in systems"/>
 	<meta name="twitter:creator" content="@ncasenmare">
-	<meta name="twitter:image" content="http://ncase.me/loopy/social/thumbnail.png">
+	<meta name="twitter:image" content="http://ncase.me/loopy/social/thumbnail_small.png"/>
 
 	<!-- Open Graph data -->
 	<meta property="og:title" content="LOOPY!">
@@ -29,142 +29,62 @@
 	<meta property="og:image" content="http://ncase.me/loopy/social/thumbnail.png">
 	<meta property="og:description" content="a tool for thinking in systems">
 
-	<!-- Styles -->
-	<link href="css/index.css" type="text/css" rel="stylesheet"/>
+    <!-- Styles! -->
+	<link href="css/loopy.css" rel="stylesheet"/>
+	<link href="css/balloon.css" rel="stylesheet"/>
 
 </head>
-<body style="background:#e9e9e9">
+<body style="opacity:0">
 
-	<!-- SPLASH -->
-	<div class="white section" id="splash">
-		<div id="logo_container">
-			<iframe id="logo_interactive" src="splash/" style="border:none" width="300" height="350"></iframe>
-			<div id="logo"></div>
-		</div>
-	</div>
-	<div id="arrow"></div>
+	<!-- Loopy & Ink -->
+	<div id="canvasses"></div>
 
-	<!-- INFO -->
-	<div class="light-gray section" style="padding-top:20px">
-		<div id="why" class="content">
-			In a world filled with ever-more-complex
-			technological, sociological, ecological, 
-			political &amp; economic systems...
-			a tool to make interactive simulations may not be that much help.
-			But it can certainly try.
-		</div>
-		<div id="features" class="content">
+	<!-- The Tools' UI -->
+	<div id="toolbar"></div>
+	<div id="playbar"></div>
+	<div id="sidebar"></div>
 
-			<div class="feature-image">
-				<img src="img/feature_play.gif"/>
-			</div>
-			<div class="feature-text">
-				<div>play with simulations</div>
-				It's the ancient, time-honored way of learning:
-				messing around and seeing what happens.
-				Play with simulations to ask "what if" questions, and get
-				an intuition for how the system works!
-			</div>
-			
-			<div class="feature-text">
-				<div>programming by drawing</div>
-				Raw code is too inaccessible.
-				Also drag-and-drop is too mainstream.
-				But with LOOPY, you can model systems by simply drawing circles &amp; arrows,
-				like a wee baby
-			</div>
-			<div class="feature-image">
-				<img src="img/feature_draw.gif"/>
-			</div>
-
-			<div class="feature-image">
-				<img src="img/feature_remix.gif" width="305"/>
-			</div>
-			<div class="feature-text">
-				<div>remix others' simulations</div>
-				Want to build upon your friends' models?
-				Or challenge your enemies' models?
-				LOOPY lets you have a conversation with simulations!
-				You can go from <i>thinking</i> in systems,
-				to <i>talking</i> in systems.
-			</div>
-
-		</div>
-	</div>
-
-	<!-- EXAMPLES -->
-	<div class="white section">
-		<div id="example_header" class="content">
-			NOW PLAY WITH AN EXAMPLE:
-		</div>
-		<div id="examples" class="content">
-			<iframe src="v1.1/pages/examples/" scrolling="no" style="border:none" width="620" height="220"></iframe>
-		</div>
-		<a href="v1.1" id="start_blank" class="cool_button">
-			<div>OR, MAKE A MODEL FROM SCRATCH &rarr;</div>
-		</a>
-	</div>
-
-	<!-- CONCLUSION -->
-	<div class="light-gray section" style="font-size:24px">
-		<div class="content">
-			Like duct tape, you can use LOOPY for all sorts of things:
-		</div>
-		<div id="uses" class="content" style="margin-top:1.2em">
-			<img src="img/use_1.png"/><img src="img/use_2.png"/><img src="img/use_3.png"/><img src="img/use_4.png"/><img src="img/use_5.png"/>
-		</div>
-		<div class="content" style="margin-top:1.2em">
-			However you choose to use LOOPY, hopefully it can give you not just
-			the software tools, but also the <i>mental</i> tools to understand
-			the complex systems of the world around us.
-			It's a hot mess out there.
-			<br><br>
-			<a href="v1.1" id="final_button" class="cool_button">
-				<div>TRY OUT LOOPY &rarr;</div>
-			</a>
-			<br>
-			Happy simulating! &lt;3
-		</div>
-	</div>
-
-	<!-- CREDITS -->
-	<div class="dark-gray section">
-		<div class="content">
-			<div>LOOPY is a part of</div>
-			<div style="text-align:center; font-size:42px; font-weight:bold; color:#fff; margin:7px 0;">
-			<a style="color:#fff" href="http://explorableexplanations.com/">EXPLORABLE EXPLANATIONS</a>
-			</div>
-			<div style="text-align:right;">a movement to make learning active, not just passive</div>
-		</div>
-		<div class="content">
-			LOOPY is also open source and public domain,
-			meaning it's free for coders, educators, and just about anybody
-			to re-use and re-mix LOOPY as they see fit.
-			<a href="https://github.com/ncase/loopy">(Get the source code on Github!)</a>
-		</div>
-		<div class="content">
-			LOOPY is made by Nicky Case,
-			(<a href="http://ncase.me/">my wobsite</a> | <a href="https://twitter.com/ncasenmare">my tweeter</a>)
-			<br>
-			thanks to my generous supporters on Patreon!
-			<a href="v1.1/pages/credits">(see them all here)</a>
-			<br><br>
-			And if you like what I make, feel free to
-			<a href="https://www.patreon.com/ncase">toss coins at me on Patreon</a>. &lt;3
-		</div>
-	</div>
-
-	<!-- SOCIAL SHARING -->
-	<div class="black section">
-		<div id="sharing" class="content">
-			<span style="position:relative; top:-10px">share:</span>
-			<ul class="share-buttons">
-				<li><a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fncase.me%2Floopy&t=LOOPY%2C%20a%20tool%20for%20thinking%20in%20systems" title="Share on Facebook" target="_blank"><img alt="Share on Facebook" src="css/icons/Facebook.png"></a></li>
-				<li><a href="https://twitter.com/intent/tweet?source=http%3A%2F%2Fncase.me%2Floopy&text=LOOPY%2C%20a%20tool%20for%20thinking%20in%20systems:%20http%3A%2F%2Fncase.me%2Floopy&via=ncasenmare" target="_blank" title="Tweet"><img alt="Tweet" src="css/icons/Twitter.png"></a></li>
-				<li><a href="mailto:?subject=LOOPY%2C%20a%20tool%20for%20thinking%20in%20systems&body=http%3A%2F%2Fncase.me%2Floopy" target="_blank" title="Send email"><img alt="Send email" src="css/icons/Email.png"></a></li>
-			</ul>
+	<!-- MODAL -->
+	<div id="modal_container">
+		<div id="modal_bg"></div>
+		<div id="modal">
+			<div id="modal_close">[×] CLOSE</div>
+			<div id="modal_page"></div>
 		</div>
 	</div>
 
 </body>
 </html>
+
+<!-- Scripts! -->
+
+<!-- Libraries -->
+<script src="js/helpers.js"></script>
+<script src="js/minpubsub.js"></script>
+<script src="js/Mouse.js"></script>
+<script src="js/Key.js"></script>
+
+<!-- Core Simulation Code -->
+<script src="js/Loopy.js?v=5"></script>
+<script src="js/Model.js?v=3"></script>
+<script src="js/Node.js?v=3"></script>
+<script src="js/Edge.js?v=2"></script>
+<script src="js/Label.js"></script>
+
+<!-- Tools -->
+<script src="js/PageUI.js"></script>
+<script src="js/Sidebar.js?v=2"></script>
+<script src="js/Toolbar.js"></script>
+<script src="js/PlayControls.js"></script>
+<script src="js/Modal.js?v=4"></script>
+<script src="js/Ink.js"></script>
+<script src="js/Dragger.js"></script>
+<script src="js/Eraser.js"></script>
+<script src="js/Labeller.js"></script>
+
+<!-- Start it -->
+<script>
+window.onload = function(){
+	window.loopy = new Loopy();
+};
+</script>
