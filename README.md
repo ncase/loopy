@@ -2,19 +2,11 @@
 
 ### [LOOPY - a tool for thinking in systems](http://ncase.me/loopy/)
 
-[Zero Rights Reserved](http://creativecommons.org/publicdomain/zero/1.0/): 
-LOOPY is entirely open source/public domain.
+LOOPY was originally created by [Nicky Case](https://github.com/ncase/loopy): (https://github.com/ncase/loopy)
 
-To mirror LOOPY, just clone this Github Repo with the gh-pages branch.    
-([learn more about these free Github Pages](https://pages.github.com/))
+This electron port of LOOPY was made by [JCHU634]((https://github.com/jchu634)
 
-Other Peeps' Open Source Code I Used:
-- [minpubsub](https://github.com/daniellmb/MinPubSub)
-- [balloon.css](https://kazzkiq.github.io/balloon.css/)
-- [simple sharing buttons](https://simplesharingbuttons.com/)
-
-Check out these [user-made LOOPY's!](http://ncase.me/loopy/v1.1/pages/examples)
-
+Zero Rights Reserved: LOOPY is entirely open source/public domain.
 ---
 
 Version 1.1:    

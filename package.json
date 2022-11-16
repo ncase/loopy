@@ -1,0 +1,20 @@
+{
+    "name": "loopy-electron",
+    "version": "1.1.0",
+    "description": "Loopy made into an Electron app",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron ."
+    },
+    "repository": "https://github.com/jchu634/loopy-electron",
+    "keywords": [
+        "Electron",
+        "loopy"
+    ],
+    "author": "GitHub",
+    "license": "CC0-1.0",
+    "devDependencies": {
+        "electron": "^21.2.3"
+    }
+}
+  
