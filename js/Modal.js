@@ -100,6 +100,7 @@ function Modal(loopy){
 		self.addPage("credits", page);
 	})();
 
+	
 	// Save as link
 	(function(){
 		var page = new Page();

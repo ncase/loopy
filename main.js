@@ -5,8 +5,8 @@ const path = require('path')
 function createWindow () {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1200,
+    height: 800,
     icon:'favicon.png',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js')
@@ -16,8 +16,13 @@ function createWindow () {
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
 
+//   mainWindow.webContents.on('new-window', function(e, url) {
+//     e.preventDefault();
+//     require('electron').shell.openExternal(url);
+//   });
+
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+//   mainWindow.webContents.openDevTools()
 }
 
 // This method will be called when Electron has finished initialization and is ready to create browser windows.
