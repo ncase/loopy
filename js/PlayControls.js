@@ -16,10 +16,13 @@ function PlayControls(loopy){
 	// PAGES & BUTTONS
 
 	// PLAY BUTTON's keyboard shortcut
-	// TODO: Toggle back & forth??????
 	subscribe("key/enter",function(){
 		if(Key.control){ // Ctrl-Enter or ⌘-Enter
-			loopy.setMode(Loopy.MODE_PLAY);
+			if(loopy.getMode() == 1){
+				loopy.setMode(Loopy.MODE_EDIT);
+			}else{
+				loopy.setMode(Loopy.MODE_PLAY);
+			}
 		}
 	});
 
@@ -85,6 +88,7 @@ function PlayControls(loopy){
 			var buttonDOM = page.addComponent(new PlayButton({
 				icon: 1,
 				label: "Stop",
+				tooltip: isMacLike ? "⌘-Enter" : "control-enter",
 				onclick: function(){
 					loopy.setMode(Loopy.MODE_EDIT);
 				}

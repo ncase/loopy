@@ -97,6 +97,9 @@ function Loopy(config){
 
 	self.showPlayTutorial = false;
 	self.wobbleControls = -1;
+	self.getMode = function(){
+		return self.mode;
+	}
 	self.setMode = function(mode){
 
 		self.mode = mode;
