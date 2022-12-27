@@ -26,6 +26,12 @@ function PlayControls(loopy){
 		}
 	});
 
+	// RESET BUttON's keyboard shortcut
+	subscribe("key/reset",function(){ // R
+		if(loopy.getMode() == 1){
+			publish("model/reset");
+		}
+	});
 	// During the Editor
 	(function(){
 		var page = new Page();
@@ -59,6 +65,7 @@ function PlayControls(loopy){
 			var buttonDOM = page.addComponent(new PlayButton({
 				icon: 2,
 				label: "Reset",
+				tooltip:"R",
 				onclick: function(){
 					publish("model/reset");
 				}
@@ -101,6 +108,7 @@ function PlayControls(loopy){
 			var buttonDOM = page.addComponent(new PlayButton({
 				icon: 2,
 				label: "Reset",
+				tooltip:"R",
 				onclick: function(){
 					publish("model/reset");
 				}
