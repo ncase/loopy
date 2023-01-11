@@ -1,5 +1,4 @@
 const {app, Menu} = require('electron');
-const save = require("./save.js");
 const isMac = process.platform === 'darwin';
 
 const template = [
@@ -23,7 +22,10 @@ const template = [
       label: 'File',
       submenu: [
         { role: 'save' ,
-          click: () => { save(); },
+          click: async () => { 
+            const save = require("./save.js");
+            save();
+          } ,
           label: 'Save'
           },
         isMac ? { role: 'close' } : { role: 'quit' }

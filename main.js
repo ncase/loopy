@@ -26,11 +26,6 @@ function createWindow () {
 //     require('electron').shell.openExternal(url);
 //   });
 
-  mainWindow.addEventListener('menu-save-command', (e) =>{
-    e.preventDefault()
-    console.log('this worked?')
-  })
-
   // Open the DevTools.
   mainWindow.webContents.openDevTools()
 }
