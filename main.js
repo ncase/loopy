@@ -5,7 +5,7 @@ const {menu} = require("./electron-js/menu")
 const path = require('path')
 const isMac = process.platform === 'darwin'
 
-Menu.setApplicationMenu(menu)
+Menu.setApplicationMenu(null);
 
 function createWindow () {
   // Create the browser window.
@@ -14,12 +14,19 @@ function createWindow () {
     height: 800,
     icon:'favicon.png',
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration:true
     }
   })
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
+  
+  mainWindow.on('close', function(e){
+    e.preventDefault();
+    mainWindow.destroy();
+  })
+  mainWindow.setMenu(menu);
 
 //   mainWindow.webContents.on('new-window', function(e, url) {
 //     e.preventDefault();
@@ -42,7 +49,6 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
   
-  
 
 })
 
@@ -50,4 +56,5 @@ app.whenReady().then(() => {
 // Quit when all windows are closed, except on macOS. There, it's common for applications and their menu bar to stay active until the user quits explicitly with Cmd + Q.
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit()
+  
 })
