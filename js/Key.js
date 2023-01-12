@@ -16,7 +16,6 @@
 		86: "drag", // Mo(v)e
 		69: "erase", // (E)rase
 		84: "label", // (T)ext
-		83: "save", // (S)ave
 		82: "reset", // (R)eset
 
 	};
@@ -29,14 +28,14 @@
 	    Key[code] = true;
 	    publish("key/"+code);
 	    event.stopPropagation();
-	    event.preventDefault();
+	    // event.preventDefault();
 	}
 	Key.onKeyUp = function(event){
 		if(window.loopy && loopy.modal && loopy.modal.isShowing) return;
 		var code = KEY_CODES[event.keyCode];
 	    Key[code] = false;
 	    event.stopPropagation();
-	    event.preventDefault();
+	    // event.preventDefault();
 	}
 	window.addEventListener("keydown",Key.onKeyDown,false);
 	window.addEventListener("keyup",Key.onKeyUp,false);

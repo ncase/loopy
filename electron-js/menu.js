@@ -26,9 +26,10 @@ const template = [
             const save = require("./save.js");
             save();
           } ,
+          accelerator: "CmdOrCtrl+s",          
           label: 'Save'
           },
-        isMac ? { role: 'close' } : { role: 'quit' }
+        isMac ? { role: 'close' } : { label: 'Quit', accelerator:"Ctrl+q",click: async ()=>{app.quit();}},
       ]
     },
     // { role: 'viewMenu' }
@@ -66,18 +67,6 @@ const template = [
         ])
       ]
     },
-    {
-      role: 'help',
-      submenu: [
-        {
-          label: 'Learn More',
-          click: async () => {
-            const { shell } = require('electron')
-            await shell.openExternal('https://electronjs.org')
-          }
-        }
-      ]
-    }
   ]
   
 module.exports.menu = Menu.buildFromTemplate(template)
