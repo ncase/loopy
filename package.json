@@ -4,17 +4,23 @@
     "description": "Loopy made into an Electron app",
     "main": "main.js",
     "scripts": {
-        "start": "electron ."
+        "start": "electron .",
+        "pack": "electron-builder --dir",
+        "dist": "electron-builder"
     },
     "repository": "https://github.com/jchu634/loopy-electron",
     "keywords": [
         "Electron",
         "loopy"
     ],
-    "author": "GitHub",
-    "license": "CC0-1.0",
     "devDependencies": {
-        "electron": "^21.2.3"
+        "electron": "^21.3.4",
+        "electron-builder": "^23.6.0"
+    },
+    "build": {
+        "appId": "loopy.electron",
+        "mac": {
+            "category": "public.app-category.productivity"
+        }
     }
 }
-  
