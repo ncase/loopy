@@ -1,6 +1,6 @@
 // Modules to control application life and create native browser window
 const {app, BrowserWindow, Menu} = require('electron')
-const {menu} = require("./electron-js/menu")
+const {menu} = require("./js/menu")
 
 const path = require('path')
 const isMac = process.platform === 'darwin'
