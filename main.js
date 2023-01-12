@@ -20,7 +20,7 @@ function createWindow () {
   })
 
   // and load the index.html of the app.
-  mainWindow.loadFile('index.html')
+  mainWindow.loadFile('application/index.html')
   
   mainWindow.on('close', function(e){
     e.preventDefault();
@@ -33,6 +33,8 @@ function createWindow () {
 //     require('electron').shell.openExternal(url);
 //   });
 
+
+  // DEBUG
   // Open the DevTools.
   mainWindow.webContents.openDevTools()
 }

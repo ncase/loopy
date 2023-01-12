@@ -1,5 +1,6 @@
 const {app, Menu} = require('electron');
 const isMac = process.platform === 'darwin';
+const debug = true;
 
 const template = [
     // { role: 'appMenu' }
@@ -36,11 +37,11 @@ const template = [
     {
       label: 'View',
       submenu: [
+        //DEBUG
         { role: 'reload' },
         { role: 'forceReload' },
-        { role: 'toggleDevTools'
-
-    },
+        { role: 'toggleDevTools'},
+        
         
         { type: 'separator' },
         { role: 'resetZoom' },
