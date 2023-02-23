@@ -228,7 +228,9 @@ function Model(loopy){
 			ty += _PADDING; // dunno why but this is needed
 		}
 		ctx.setTransform(s, 0, 0, s, tx, ty);
-
+		
+		ctx.fillStyle = "white";
+		ctx.fillRect(0,0,canvas.width,canvas.height);
 		// Draw labels THEN edges THEN nodes
 		for(var i=0;i<self.labels.length;i++) self.labels[i].draw(ctx);
 		for(var i=0;i<self.edges.length;i++) self.edges[i].draw(ctx);
@@ -326,7 +328,6 @@ function Model(loopy){
 	self.deserialize = function(dataString){
 
 		self.clear();
-
 		var data = JSON.parse(dataString);
 
 		// Get from array!
