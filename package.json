@@ -3,7 +3,7 @@
     "version": "1.1.0",
     "description": "Loopy made into an Electron app",
     "main": "main.js",
-    "author":"Nicky Case, Joshua Chung",
+    "author": "Nicky Case, Joshua Chung",
     "scripts": {
         "start": "electron .",
         "pack": "electron-builder --dir",
@@ -14,7 +14,6 @@
         "Electron",
         "loopy"
     ],
-    
     "devDependencies": {
         "electron": "^21.3.4",
         "electron-builder": "^23.6.0"
@@ -23,9 +22,9 @@
         "appId": "loopy.electron",
         "directories": {
             "buildResources": "resources",
-            "output":"release"
+            "output": "release"
         },
-        "icon":"resources/_icons/icon.png",
+        "icon": "resources/_icons/icon.png",
         "mac": {
             "category": "public.app-category.productivity"
         }
