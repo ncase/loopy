@@ -158,90 +158,66 @@ function getFileAsDataURL(blob){
   });
 }
 
-function encode64(input) {
-	var output = '', i = 0, l = input.length,
-	key = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=', 
-	chr1, chr2, chr3, enc1, enc2, enc3, enc4;
-	while (i < l) {
-		chr1 = input.charCodeAt(i++);
-		chr2 = input.charCodeAt(i++);
-		chr3 = input.charCodeAt(i++);
-		enc1 = chr1 >> 2;
-		enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-		enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-		enc4 = chr3 & 63;
-		if (isNaN(chr2)) enc3 = enc4 = 64;
-		else if (isNaN(chr3)) enc4 = 64;
-		output = output + key.charAt(enc1) + key.charAt(enc2) + key.charAt(enc3) + key.charAt(enc4);
-	}
-	return output;
-}
-
 const displayedSize=500;
 const scale = window.devicePixelRatio;
 
-async function download() {
+async function download(){
   if (!downloadDisabled){
     if (!encodeFinished){
-      let frame;
-      let startTime;
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext("2d", {willReadFrequently:true});
-      
-      document.body.appendChild(canvas);
-      frame = frames[0];
-      var encoder = new GIFEncoder(frame.width, frame.height);
-      encoder.setRepeat(0); // 0 for repeat, -1 for no-repeat
-      encoder.setQuality(16); // [1,30] | Best=1 | >20 not much speed improvement. 10 is default.
-      encoder.setFrameRate(30);
-      encoder.start();
-      for (let i = 0; i<frames.length; i++){
-        startTime=( startTime==0 ? Date.now() : 0);
-        frame = frames[i];
-        
-        console.log(i);
-        // printFromImageBitmap(frame);
-        canvas.width = frame.width;
-        canvas.height = frame.height;
-        ctx.drawImage(frame, 0, 0);
-        
-        encoder.addFrame(ctx);
-      }
-        
-      encoder.finish();
-      document.body.removeChild(canvas); 
-      
-      var readableStream=encoder.stream();
-      var binary_gif =readableStream.getData();
-      var b64Str = 'data:'+fileType+';base64,'+encode64(binary_gif);
-    }
+      document.getElementById('gif_progress').style.display = 'block';
+      let progressBar = document.getElementById('gif_bar');
+      let width = 0;
+      let interval = 100/frames.length;
 
-    var fileType='image/gif';
-    var fileName = `gif-output-${(new Date().toGMTString().replace(/(\s|,|:)/g,''))}.gif`;
-    let dwnlnk = document.createElement('a');
-    dwnlnk.download = fileName;
-    dwnlnk.href = b64Str;
-    document.body.appendChild(dwnlnk);
-    dwnlnk.click();
-    document.body.removeChild(dwnlnk);
-    encodeFinished = true;
-    
-    //DEBUG: Downloads Original WEBM recording
-    // let blob = new Blob(recordedBlobs, {type: 'video/webm'});
-    // const url = window.URL.createObjectURL(blob);
-    // const a = document.createElement('a');
-    // a.style.display = 'none';
-    // a.href = url;
-    // a.download = `gif-output-${(new Date().toGMTString().replace(/(\s|,|:)/g,''))}.webm`;;     
-    // document.body.appendChild(a);
-    // a.click();
-    
-    // document.body.appendChild(a);
-    // a.click();
-    // setTimeout(() => {
-    //   document.body.removeChild(a);
-    //   window.URL.revokeObjectURL(url);
-    // }, 100);
-    
+      const encodeWorker = new Worker('js/GifWorker.js')
+      encodeWorker.postMessage([frames])
+      encodeWorker.onmessage = (e)=>{
+        if (e.data[0] =='fin'){
+          b64Str = e.data[1];
+          var fileName = `gif-output-${(new Date().toGMTString().replace(/(\s|,|:)/g,''))}.gif`;
+          let dwnlnk = document.createElement('a');
+          dwnlnk.download = fileName;
+          dwnlnk.href = b64Str;
+          document.body.appendChild(dwnlnk);
+          dwnlnk.click();
+          document.body.removeChild(dwnlnk);
+          encodeFinished = true;
+          
+          document.getElementById('gif_progress').style.display = 'none';
+
+          //DEBUG: Downloads Original WEBM recording
+          // let blob = new Blob(recordedBlobs, {type: 'video/webm'});
+          // const url = window.URL.createObjectURL(blob);
+          // const a = document.createElement('a');
+          // a.style.display = 'none';
+          // a.href = url;
+          // a.download = `gif-output-${(new Date().toGMTString().replace(/(\s|,|:)/g,''))}.webm`;;     
+          // document.body.appendChild(a);
+          // a.click();
+          
+          // document.body.appendChild(a);
+          // a.click();
+          // setTimeout(() => {
+          //   document.body.removeChild(a);
+          //   window.URL.revokeObjectURL(url);
+          // }, 100);
+        }
+        else{
+          width+=interval;
+          progressBar.style.width = width+"%";
+        }
+      }
+    }
+    else{
+      var fileName = `gif-output-${(new Date().toGMTString().replace(/(\s|,|:)/g,''))}.gif`;
+      let dwnlnk = document.createElement('a');
+      dwnlnk.download = fileName;
+      dwnlnk.href = b64Str;
+      document.body.appendChild(dwnlnk);
+      dwnlnk.click();
+      document.body.removeChild(dwnlnk);
+      encodeFinished = true;
+    }
   }
+  
 }
