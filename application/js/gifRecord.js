@@ -11,12 +11,19 @@ mediaSource.addEventListener('sourceopen', handleSourceOpen, false);
 let mediaRecorder;
 let recordedBlobs;
 let sourceBuffer;
-
+const frames = [];
+let vidUrl;
 
 let canvas;
 let stream;
+let blob;
 let downloadDisabled = true;
-var recordTimeout;
+let recordTimeout;
+let encodeFinished = false;
+let b64Str;
+const recordButton = document.getElementById('record');
+
+
 
 function handleSourceOpen(event) {
   console.log('MediaSource opened');
@@ -41,13 +48,14 @@ function toggleRecording(self) {
   console.log('Started stream capture from canvas element: ', stream);
   if (self.textContent === "Start Recording GIF") {
     startRecording(self);
+    encodeFinished = false;
 
   } else {
     stopRecording();
   }
 }
 
-function startRecording(recordButton) {
+async function startRecording(recordButton) {
   let options = {mimeType: 'video/webm'};
   recordedBlobs = [];
   mediaRecorder = new MediaRecorder(stream, options);
@@ -60,19 +68,85 @@ function startRecording(recordButton) {
   mediaRecorder.start(100); // collect 100ms of data
 
   recordTimeout = setTimeout(stopRecording,30000);
-
+  
   console.log('MediaRecorder started', mediaRecorder);
 
 }
+async function getVideoTrack(src) {
+  const video = document.createElement("video");
 
-function stopRecording() {
+  video.crossOrigin = "anonymous";
+  video.id = 'tempVideo';
+  video.src = src;
+  document.body.append(video);
+  
+  await video.play();
+  const [track] = video.captureStream().getVideoTracks();
+  video.onended = (evt) => track.stop();
+  return track;
+}
+function createCanvas(size){
+  const canvas = document.createElement('canvas');
+  canvas.width = size.w
+  canvas.height = size.h
+
+  canvas.style.position = 'absolute'
+  canvas.style.top = '0'
+  canvas.style.left = '0'
+  canvas.style.width = `${size.w}px`
+  canvas.style.height = `${size.h}px`
+
+  return canvas
+}
+async function printFromImageBitmap(bitmap,scale=1){
+  const canvas = createCanvas({ w: bitmap.width, h: bitmap.height })
+  const ctx = canvas.getContext('bitmaprenderer')
+  const bitmap2 = await createImageBitmap(bitmap)
+  ctx.transferFromImageBitmap(bitmap2)
+  printFromCanvas(ctx.canvas, scale)
+}
+async function stopRecording() {
   clearTimeout(recordTimeout);
   if (mediaRecorder.state != "inactive"){
     document.getElementById("record").textContent = 'Start Recording GIF'; //Hardcoded for condition in toggleRecording()
-    mediaRecorder.stop();
-    // console.log('Recorded Blobs: ', recordedBlobs);
-    downloadDisabled = false;
+    await mediaRecorder.stop();
+    
+    let vidBlob = new Blob(recordedBlobs, {type: 'video/webm'});
+    vidUrl = await getFileAsDataURL(vidBlob);  
+    const track = await getVideoTrack(vidUrl);
+    
+    const processor = new MediaStreamTrackProcessor(track);
+    const reader = processor.readable.getReader();
+    readChunk();
+    
+    
+    function readChunk() {
+      reader.read().then(async({ done, value }) => {
+        if (value) {
+          const bitmap = await createImageBitmap(value);
+          // printFromImageBitmap(bitmap);
+          const index = frames.length;
+          frames.push(bitmap);
+          value.close();
+          // console.log(totalLength);
+        }
+        if (!done) {
+          readChunk();
+        }else{
+          document.body.removeChild(document.getElementById('tempVideo')); 
+          // document.querySelector('span#download').disabled = false;
+          document.querySelector('span#download').removeAttribute('disabled');
+          
+          downloadDisabled = false;
+        }
+      });
+    }
   }
+
+
+
+
+  
 }
 
 function getFileAsDataURL(blob){
@@ -83,37 +157,7 @@ function getFileAsDataURL(blob){
     fileRdr.readAsDataURL(blob);
   });
 }
-function toggleImageSmoothing(_CANVAS, isEnabled) {
-	_CANVAS.getContext('2d').mozImageSmoothingEnabled = isEnabled;
-	_CANVAS.getContext('2d').webkitImageSmoothingEnabled = isEnabled;
-	_CANVAS.getContext('2d').msImageSmoothingEnabled = isEnabled;
-	_CANVAS.getContext('2d').imageSmoothingEnabled = isEnabled;
-}
 
-function scaleCanvas(_CANVAS, videoObj, vidHeight, vidWidth, scale) {
-    _CANVAS['style']['height'] = `${vidHeight}px`;
-    _CANVAS['style']['width'] = `${vidWidth}px`;
-
-    let cWidth=vidWidth*scale;
-    let cHeight=vidHeight*scale;
-
-    console.log('canvasHeight/Width');
-    console.log(cHeight);
-    console.log(cWidth);
-
-    _CANVAS.width=cWidth;
-    _CANVAS.height=cHeight;
-
-    toggleImageSmoothing(_CANVAS, true);
-    _CANVAS.getContext('2d').scale(scale, scale);
-}
-
-const loadVideo = (url) => new Promise((resolve, reject) => {
-  var vid = document.createElement('video');
-  vid.addEventListener('canplay', () => resolve(vid));
-  vid.addEventListener('error', (err) => reject(err));
-  vid.src = url;
-});
 function encode64(input) {
 	var output = '', i = 0, l = input.length,
 	key = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=', 
@@ -132,160 +176,72 @@ function encode64(input) {
 	}
 	return output;
 }
-const byteToKBScale = 0.0009765625;
+
 const displayedSize=500;
 const scale = window.devicePixelRatio;
+
 async function download() {
   if (!downloadDisabled){
-    
-    var FPS=0;
-    const blob = new Blob(recordedBlobs, {type: 'video/webm'});
-    
-    
-    let b64Str = await getFileAsDataURL(blob);  
-    let videoObj = await loadVideo(b64Str);
-    videoObj.autoplay=false;
-    videoObj.muted=true;
-    videoObj.loop=false;
-    
-    let exactVideoDuration=videoObj.duration; //Used Later in Encoding
-
-    let vidHeight=videoObj.videoHeight;
-    let vidWidth=videoObj.videoWidth;
-    console.log('VidHeight/Width');
-    console.log(vidHeight);
-    console.log(vidWidth);
-    
-
-    videoObj.height=vidHeight;
-    videoObj.width=vidWidth;
-    videoObj['style']['height']=`${vidHeight}px`;
-    videoObj['style']['width']=`${vidWidth}px`;
-
-    let _CANVAS = document.createElement('canvas');
-    scaleCanvas(_CANVAS, videoObj, vidHeight, vidWidth, scale);
-    // _CANVAS.getContext('2d').will
-    let hiddencanvas = document.createElement('div');
-    hiddencanvas.id = 'hiddenCanvas';
-    document.body.appendChild(hiddencanvas);
-
-    document.getElementById('hiddenCanvas').appendChild(_CANVAS);
-    
-    // let totalFrames=10;
-
-    let totalFrames=33;
-    if(exactVideoDuration <= 10) {
-        totalFrames=33;
-    } else if(exactVideoDuration <= 12) {
-        totalFrames=25;
-    } else if(exactVideoDuration <= 15) {
-      totalFrames=20;
-    } else if(exactVideoDuration <= 25) {
-      totalFrames=12;
-    } else if(exactVideoDuration <= 30) {
-      totalFrames=10;
-    } else if(exactVideoDuration <= 35) {
-      totalFrames=8;
-    } else if(exactVideoDuration <= 42) {
-      totalFrames=7;
-    } else if(exactVideoDuration <= 60) {
-      totalFrames=5;
-    }
-
-    
-    // let sizeBenchmark=vidHeight;
-    // if(vidWidth>vidHeight) {
-    // 	sizeBenchmark=vidWidth;
-    // }
-    // let scaleRatio=parseFloat(displayedSize/sizeBenchmark);
-    let scaleRatio = 0.5;
-    let displayedHeight=scaleRatio*vidHeight;
-    let displayedWidth=scaleRatio*vidWidth;
-    videoObj['style']['height']=`${displayedHeight}px`;
-    videoObj['style']['width']=`${displayedWidth}px`;
-    scaleCanvas(_CANVAS, videoObj, displayedHeight, displayedWidth, scale);
-
-
-    totalFrames = totalFrames*2;
-    // let displayedHeight=vidHeight;
-    // let displayedWidth=vidWidth;
-        
-    var encoder = new GIFEncoder(vidWidth, vidHeight);
-    encoder.setRepeat(0); // 0 for repeat, -1 for no-repeat
-    encoder.setDelay(0);  // frame delay in ms // 500
-    encoder.setQuality(16); // [1,30] | Best=1 | >20 not much speed improvement. 10 is default.
-    
-    // Sets frame rate in frames per second
-    var startTime=0;
-    var frameIndex=0;
-    var staticFrames='';
-    var continueCallback=true;
-    console.log('running download 1');
-    let ctx = _CANVAS.getContext("2d", { willReadFrequently: true });
-    const step = async() => {
-      // in milliseconds
-      startTime=( startTime==0 ? Date.now() : 0);
-      ctx.drawImage(videoObj, 0, 0, displayedWidth, displayedHeight);
-      encoder.addFrame(ctx);
+    if (!encodeFinished){
+      let frame;
+      let startTime;
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext("2d", {willReadFrequently:true});
       
-      let frameB64Str=_CANVAS.toDataURL();
-      staticFrames+=`<th><small>Frame #${frameIndex++}</small><br><img src=${frameB64Str} width='75' /></th>`;
-      
-      if(FPS==0) {
-        let ms_elapsed = ((Date.now()) - startTime);
-        FPS=(frameIndex / ms_elapsed)*1000.0;
-        console.log('FPS: '+FPS+' | Duration: '+exactVideoDuration);
-        console.log((( (totalFrames*1.0)/exactVideoDuration)-FPS));
-        let encodeDelaySetting=( (FPS*exactVideoDuration) >= totalFrames ) ? 0 : (( (totalFrames*1.0)/exactVideoDuration)-FPS);
-        encodeDelaySetting=Math.floor(encodeDelaySetting*1000);
-        console.log(encodeDelaySetting);
-        encoder.setDelay(encodeDelaySetting);
-      }
-      
-      if(continueCallback) { 
-        videoObj.requestVideoFrameCallback(step);
-      }
-    };
-    
-    console.log('prePlayListener');
-    videoObj.addEventListener('play', (vEvt) => {
-      if(continueCallback) {
-        videoObj.requestVideoFrameCallback(step);
-      }
-      console.log('running encoder');
+      document.body.appendChild(canvas);
+      frame = frames[0];
+      var encoder = new GIFEncoder(frame.width, frame.height);
+      encoder.setRepeat(0); // 0 for repeat, -1 for no-repeat
+      encoder.setQuality(16); // [1,30] | Best=1 | >20 not much speed improvement. 10 is default.
+      encoder.setFrameRate(30);
       encoder.start();
-      
-      
-    }, false);
-    
-    console.log('preEndListener');
-    videoObj.addEventListener('ended', (vEvt) => {
-      console.log('ended');
-      continueCallback=false;
+      for (let i = 0; i<frames.length; i++){
+        startTime=( startTime==0 ? Date.now() : 0);
+        frame = frames[i];
+        
+        console.log(i);
+        // printFromImageBitmap(frame);
+        canvas.width = frame.width;
+        canvas.height = frame.height;
+        ctx.drawImage(frame, 0, 0);
+        
+        encoder.addFrame(ctx);
+      }
+        
       encoder.finish();
-      console.log('encoder Finished');
-      // encoder.download("download.gif");
+      document.body.removeChild(canvas); 
       
-      var fileType='image/gif';
-      var fileName = `gif-output-${(new Date().toGMTString().replace(/(\s|,|:)/g,''))}.gif`;
       var readableStream=encoder.stream();
       var binary_gif =readableStream.getData();
       var b64Str = 'data:'+fileType+';base64,'+encode64(binary_gif);
-      var fileSize = readableStream.bin.length*byteToKBScale;
-      fileSize=fileSize.toFixed(2);
-      
-      let dwnlnk = document.createElement('a');
-      dwnlnk.download = fileName;
-      dwnlnk.href = b64Str;
+    }
 
-      document.body.appendChild(dwnlnk);
-      dwnlnk.click();
-      
-      
-    }, false);
+    var fileType='image/gif';
+    var fileName = `gif-output-${(new Date().toGMTString().replace(/(\s|,|:)/g,''))}.gif`;
+    let dwnlnk = document.createElement('a');
+    dwnlnk.download = fileName;
+    dwnlnk.href = b64Str;
+    document.body.appendChild(dwnlnk);
+    dwnlnk.click();
+    document.body.removeChild(dwnlnk);
+    encodeFinished = true;
     
-    console.log('preplay');
-    videoObj.play();
-    console.log('postplay');
+    //DEBUG: Downloads Original WEBM recording
+    // let blob = new Blob(recordedBlobs, {type: 'video/webm'});
+    // const url = window.URL.createObjectURL(blob);
+    // const a = document.createElement('a');
+    // a.style.display = 'none';
+    // a.href = url;
+    // a.download = `gif-output-${(new Date().toGMTString().replace(/(\s|,|:)/g,''))}.webm`;;     
+    // document.body.appendChild(a);
+    // a.click();
+    
+    // document.body.appendChild(a);
+    // a.click();
+    // setTimeout(() => {
+    //   document.body.removeChild(a);
+    //   window.URL.revokeObjectURL(url);
+    // }, 100);
+    
   }
 }

@@ -178,7 +178,7 @@ function Sidebar(loopy){
 			"<span class='mini_button' onclick='publish(\"modal\",[\"embed\"])'>embed in your website</span> <br><br>"+
 			"<span class='mini_button' onclick='publish(\"modal\",[\"save_gif\"])'>make a GIF using LICEcap</span> <br><br>"+
 			"<span class='mini_button' onclick='toggleRecording(this)' id='record'>Start Recording GIF</span> <br><br>"+
-			"<span class='mini_button' onclick='download()'>Download GIF</span> <br><br>"+
+			"<span class='mini_button'disabled='true' onclick='download()' id='download'>Download GIF</span> <br><br>"+
 			
 			"<hr/><br>"+
 				
