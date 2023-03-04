@@ -162,7 +162,7 @@ div[big=yes] .play_button_label{
 	background: #222;
 	color: #777;
 }
-#sidebar .mini_button{
+#sidebar .mini_button:not(.disabled){
 	background: #999;
 	color: #fff;
 	padding: 3px 5px;
@@ -171,14 +171,27 @@ div[big=yes] .play_button_label{
 
 	cursor: pointer;
 }
-#sidebar .mini_button:hover{
+#sidebar .mini_button[disabled='true']{
+	background: #555;
+	color: #fff;
+	padding: 3px 5px;
+	border-radius: 2px;
+	font-size: 16px;
+
+	cursor: pointer;
+}
+#sidebar .mini_button:not([disabled='true']):hover{
 	background: #aaa;
 }
-#sidebar[mode=play] .mini_button{
+#sidebar[mode=play] .mini_button:not([disabled='true']){
+	background: #999;
+	color: #111;
+}
+#sidebar[mode=play] .mini_button.disabled{
 	background: #555;
 	color: #111;
 }
-#sidebar[mode=play] .mini_button:hover{
+#sidebar[mode=play] .mini_button:not([disabled='true']):hover{
 	background: #666;
 }
 #sidebar a{ color: #777; }
@@ -265,7 +278,21 @@ div[big=yes] .play_button_label{
 	background: #333;
 }
 
+/*********
 
+GifEncode Progress Bar
+
+**********/
+#gif_progress {
+	width: 100%;
+	background-color: grey;
+}
+  
+#gif_bar {
+	width: 1%;
+	height: 30px;
+	background-color: green;
+}
 
 /**********
 

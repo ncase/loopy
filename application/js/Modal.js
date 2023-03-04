@@ -242,20 +242,6 @@ function Modal(loopy){
 
 	})();
 
-	// GIF
-	(function(){
-		var page = new Page();
-		page.width = 530;
-		page.height = 400;
-		page.addComponent(new ModalIframe({
-			page: page,
-			src: "pages/gif.html",
-			width: 500,
-			height: 350
-		}))
-		self.addPage("save_gif", page);
-	})();
-
 }
 
 function ModalIframe(config){
