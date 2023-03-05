@@ -20,7 +20,6 @@ Version 1.0: the whole everything.
 ---
 ## Build Instructions
 Requirements: Yarn (https://yarnpkg.com/getting-started/install)
-Commands to buikd
 ```
 yarn install
 yarn dist
