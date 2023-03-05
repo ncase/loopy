@@ -4,6 +4,7 @@
     "description": "Loopy made into an Electron app",
     "main": "main.js",
     "author": "Nicky Case, Joshua Chung",
+    "license": "MIT",
     "scripts": {
         "start": "electron .",
         "pack": "electron-builder --dir",

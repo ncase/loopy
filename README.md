@@ -6,11 +6,22 @@ LOOPY was originally created by [Nicky Case](https://github.com/ncase/loopy): (h
 
 This electron port of LOOPY was made by [JCHU634](https://github.com/jchu634)
 
-Zero Rights Reserved: LOOPY is entirely open source/public domain.
+LOOPY-Electron is MIT Licensed.
 ---
+Version 1.2:
+- Gif Recording
 
 Version 1.1:    
 - node amounts are now "uncapped"    
 - better distribution of "signals"
 
 Version 1.0: the whole everything.
+
+---
+## Build Instructions
+Requirements: Yarn (https://yarnpkg.com/getting-started/install)
+Commands to buikd
+```
+yarn install
+yarn dist
+````
