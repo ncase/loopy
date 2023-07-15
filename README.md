@@ -12,6 +12,7 @@ Other Peeps' Open Source Code I Used:
 - [minpubsub](https://github.com/daniellmb/MinPubSub)
 - [balloon.css](https://kazzkiq.github.io/balloon.css/)
 - [simple sharing buttons](https://simplesharingbuttons.com/)
+- [icons][https://css.gg/)
 
 Check out these [user-made LOOPY's!](http://ncase.me/loopy/v1.1/pages/examples)
 
