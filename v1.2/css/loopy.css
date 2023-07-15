@@ -1,0 +1,400 @@
+body {
+	margin: 0;
+	background: #eeeeee;
+
+	font-family: Helvetica, Arial, sans-serif;
+	font-weight: normal;
+	font-size: 20px;
+
+	overflow: hidden;
+}
+
+canvas {
+	position: absolute;
+	top: 0;
+	left: 0;
+	background: #eeefff;
+}
+
+#simulator {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: calc(100% - 300px);
+	height: 100%;
+}
+
+#simulator[fullscreen=yes] {
+	width: 100%;
+}
+
+#simulator[cursor=tool-pen] {
+	cursor: crosshair;
+}
+
+#simulator[cursor=tool-move] {
+	cursor: grab;
+}
+
+#simulator[cursor=tool-move-grabbed] {
+	cursor: grabbing;
+}
+
+#simulator[cursor=tool-erase] {
+	cursor: cell;
+}
+
+#simulator[cursor=tool-text] {
+	cursor: text;
+}
+
+/********** sidebar **********/
+#sidebar {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 300px;
+	height: 100%;
+	background: #dddddd;
+	z-index: 5;
+
+	font-weight: 100;
+	font-size: 17px;
+
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+#sidebar>div {
+	margin: 25px;
+}
+
+#sidebar>div>div {
+	margin-bottom: 20px;
+}
+
+#sidebar[mode=play] {
+	background: #222222;
+	color: #777777;
+}
+
+#sidebar .mini_button {
+	background: #999999;
+	color: #ffffff;
+	padding: 3px 5px;
+	border-radius: 2px;
+	font-size: 16px;
+	cursor: pointer;
+}
+
+#sidebar .mini_button:hover {
+	background: #aaaaaa;
+}
+
+#sidebar[mode=play] .mini_button {
+	background: #555555;
+	color: #111111;
+}
+
+#sidebar[mode=play] .mini_button:hover {
+	background: #666666;
+}
+
+#sidebar a {
+	color: #777777;
+}
+
+#sidebar a:hover {
+	color: #999999;
+}
+
+#sidebar hr {
+	border: none;
+	border-bottom: 2px solid rgba(150, 150, 150, 0.5);
+	width: 300px;
+	position: relative;
+	left: -25px;
+	margin: 10px 0;
+}
+
+.component-input {
+	border: none;
+
+	width: calc(100% - 10px);
+	height: 22px;
+	padding: 5px;
+
+	font-size: 20px;
+	font-weight: 100;
+}
+
+.component-textarea {
+	border: none;
+	width: calc(100% - 10px);
+	height: 100px;
+	padding: 5px;
+	font-size: 16px;
+	font-weight: 100;
+	resize: vertical;
+}
+
+.component-output {
+	border: 1px solid #aaaaaa;
+	width: 100%;
+	background: #cccccc;
+	color: #666666;
+	font-size: 15px;
+	font-weight: 100;
+	resize: vertical;
+}
+
+textarea.component-output {
+	height: 250px;
+	resize: vertical;
+}
+
+.component-slider {
+	position: relative;
+	width: 250px;
+	height: 52px;
+}
+
+.component-slider-graphic {
+	position: absolute;
+	width: 250px;
+	height: 40px;
+	cursor: pointer;
+}
+
+.component-slider-pointer {
+	position: absolute;
+	top: 42px;
+	width: 15px;
+	height: 10px;
+}
+
+.component-label {
+	margin-bottom: 5px;
+}
+
+.component-button {
+	width: calc(100% - 20px);
+	background: #888888;
+	color: #ffffff;
+	font-size: 20px;
+	font-weight: 100;
+	text-align: center;
+	padding: 10px;
+	border-radius: 5px;
+
+	cursor: pointer;
+}
+
+.component-button:hover {
+	background: #999999;
+}
+
+.component-button[header=yes] {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 280px;
+	background: #222222;
+	border-radius: 0px;
+	color: #888888;
+}
+
+.component-button[header=yes]:hover {
+	background: #333333;
+}
+
+/********** playbar **********/
+
+#playbar {
+	position: absolute;
+	bottom: 15px;
+	left: calc(50% - 275px);
+	/* 50% - half of (playbar width + sidebar width)*/
+
+	width: 250px;
+	height: 75px;
+
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+#playbar[fullscreen=yes] {
+	left: calc(50% - 125px);
+	/* 50% - half of (playbar width)*/
+}
+
+#playbar .component-button {
+	position: absolute;
+	bottom: 0;
+	width: 230px;
+	height: 25px;
+	background: #444444;
+	border-radius: 40px;
+}
+
+#playbar .component-button:hover {
+	background: #555555;
+}
+
+#playbar .play-slider {
+	width: 190px;
+	position: relative;
+	top: -5px;
+}
+
+#playbar .play-slider-element {
+	--ggs: 0.9;
+	display: inline-block;
+	margin: 2px;
+}
+
+.play-button-icon {
+	display: inline-block;
+}
+
+.play-button-label {
+	display: inline-block;
+	position: relative;
+	padding-left: 3px;
+}
+
+div[big=yes] .play-button-icon {
+	--ggs: 2.3;
+}
+
+div[big=no] .play-button-icon {
+	--ggs: 1.0;
+}
+/********** modal **********/
+#modal-container {
+	display: none;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+#modal-container[show=yes] {
+	display: block;
+}
+
+#modal-background {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.8);
+	z-index: 6;
+}
+
+#modal-body {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	margin: auto;
+
+	width: fit-content;
+	height: fit-content;
+	padding: 10px;
+	background: #ddd;
+	z-index: 7;
+}
+
+#modal-close {
+	width: 120px;
+	font-weight: 100;
+	color: #777;
+	cursor: pointer;
+}
+
+#modal-close:hover {
+	color: #888888;
+}
+
+#modal-content {
+	margin: 15px;
+	font-size: 25px;
+	font-weight: 100;
+	color: #333333;
+}
+
+#modal iframe {
+	border: none;
+}
+
+/********** toolbar  **********/
+#toolbar[mode=play] {
+	display: none;
+}
+
+#toolbar {
+	--ggs: 1.5;
+	position: absolute;
+	top: 100px;
+	left: 8px;
+	/* (scale*buttonsize + 2*(padding+border))*/
+	width: calc(var(--ggs, 1) * 25px + 2 * 5px);
+	/* (scale*buttonsize + 2*(padding+border)) * buttoncount */
+	height: fit-content;
+	background-color: #ffffff;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+#toolbar>hr {
+	border: 1px solid #dddddd;
+}
+
+.toolbar-button {
+	width: calc(var(--ggs, 1) * 25px);
+	height: calc(var(--ggs, 1) * 25px);
+	cursor: pointer;
+
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	background-color: #ffffff;
+
+	padding: 2px;
+	border: 3px solid #ffffff;
+}
+
+.toolbar-button[selected=yes] {
+	background-color: #999999;
+}
+
+.gg-text {
+	content: "T";
+	display: block;
+	transform: scale(var(--ggs, 1));
+	font-size: 20px;
+	font-family: sans-serif;
+	font-style: normal;
+	font-style: normal;
+	text-align: center;
+}
+
+.gg-text::after {
+	content: "T";
+	display: block;
+	width: 20px;
+	height: 20px;
+	border: 2px dotted;
+}
