@@ -17,7 +17,7 @@
     ],
     "devDependencies": {
         "electron": "^21.3.4",
-        "electron-builder": "^23.6.0"
+        "electron-builder": "^24.4.0"
     },
     "build": {
         "appId": "loopy.electron",
