@@ -1685,9 +1685,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"loopy-electron@workspace:.":
+"loopy-desktop@workspace:.":
   version: 0.0.0-use.local
-  resolution: "loopy-electron@workspace:."
+  resolution: "loopy-desktop@workspace:."
   dependencies:
     electron: ^21.3.4
     electron-builder: ^23.6.0

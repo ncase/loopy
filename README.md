@@ -6,7 +6,7 @@ LOOPY was originally created by [Nicky Case](https://github.com/ncase/loopy): (h
 
 This electron port of LOOPY was made by [JCHU634](https://github.com/jchu634)
 
-LOOPY-Electron is MIT Licensed.
+LOOPY-Desktop is MIT Licensed.
 ---
 Version 1.2:
 - Gif Recording

@@ -1,7 +1,7 @@
 {
-    "name": "loopy-electron",
+    "name": "loopy-desktop",
     "version": "1.2.0",
-    "description": "Loopy made into an Electron app",
+    "description": "Loopy made into an desktop Electron app",
     "main": "main.js",
     "author": "Nicky Case, Joshua Chung",
     "license": "MIT",
@@ -10,7 +10,7 @@
         "pack": "electron-builder --dir",
         "dist": "electron-builder"
     },
-    "repository": "https://github.com/jchu634/loopy-electron",
+    "repository": "https://github.com/jchu634/loopy-desktop",
     "keywords": [
         "Electron",
         "loopy"
