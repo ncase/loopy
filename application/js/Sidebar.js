@@ -164,7 +164,7 @@ function Sidebar(loopy){
 		var page = new SidebarPage();
 		page.addComponent(new ComponentHTML({
 			html: ""+
-			"<b style='font-size:1.4em'>LOOPY</b> (v1.1)<br>a tool for thinking in systems<br><br>"+
+			"<b style='font-size:1.4em'>LOOPY</b> (v1.2)<br>a tool for thinking in systems<br><br>"+
 
 			"<span class='mini_button' onclick='publish(\"modal\",[\"examples\"])'>see examples</span> "+
 			"<span class='mini_button' onclick='publish(\"modal\",[\"howto\"])'>how to</span> "+

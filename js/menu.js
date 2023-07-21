@@ -38,9 +38,9 @@ const template = [
       label: 'View',
       submenu: [
         //DEBUG
-        // { role: 'reload' },
-        // { role: 'forceReload' },
-        // { role: 'toggleDevTools'},
+        { role: 'reload' },
+        { role: 'forceReload' },
+        { role: 'toggleDevTools'},
         
         
         { type: 'separator' },
