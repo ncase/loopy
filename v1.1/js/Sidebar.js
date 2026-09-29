@@ -99,8 +99,16 @@ function Sidebar(loopy){
 				Edge.defaultStrength = value;
 			}
 		}));
+		page.addComponent("weight", new ComponentSlider({
+			bgImage: _makeWeightSliderImage(Edge.WEIGHTS),
+			label: "Weight:",
+			options: Edge.WEIGHTS,
+			oninput: function(value){
+				Edge.defaultWeight = value;
+			}
+		}));
 		page.addComponent(new ComponentHTML({
-			html: "(to make a stronger relationship, draw multiple arrows!)<br><br>"+
+			html: "(weight = how much this arrow matters: ×0.5 passes on half the change, ×2 doubles it)<br><br>"+
 			"(to make a delayed relationship, draw longer arrows)"
 		}));
 		page.addComponent(new ComponentButton({
@@ -341,7 +349,7 @@ function ComponentSlider(config){
 	// Slider DOM: graphic + pointer
 	var slider = new Image();
 	slider.draggable = false;
-	slider.src = "css/sliders/"+config.bg+".png";
+	slider.src = config.bgImage || ("css/sliders/"+config.bg+".png");
 	slider.setAttribute("class","component_slider_graphic");
 	var pointer = new Image();
 	pointer.draggable = false;
@@ -450,4 +458,30 @@ function ComponentOutput(config){
 		self.dom.value = string;
 	};
 
+}
+// Draw the weight slider's background: thicker line = heavier arrow
+function _makeWeightSliderImage(weights){
+	var canvas = document.createElement("canvas");
+	canvas.width = 500;
+	canvas.height = 80;
+	var ctx = canvas.getContext("2d");
+	var cellWidth = canvas.width/weights.length;
+	ctx.fillStyle = "#fff";
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+	ctx.strokeStyle = "#666";
+	ctx.fillStyle = "#666";
+	ctx.lineCap = "round";
+	ctx.textAlign = "center";
+	ctx.textBaseline = "middle";
+	ctx.font = "100 26px sans-serif";
+	for(var i=0; i<weights.length; i++){
+		var cx = (i+0.5)*cellWidth;
+		ctx.lineWidth = 2*(0.33 + 1.67*weights[i]); // same as Edge, retina
+		ctx.beginPath();
+		ctx.moveTo(cx-30, 22);
+		ctx.lineTo(cx+30, 22);
+		ctx.stroke();
+		ctx.fillText("×"+weights[i], cx, 58);
+	}
+	return canvas.toDataURL();
 }

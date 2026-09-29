@@ -283,15 +283,17 @@ function Model(loopy){
 			// 1 - to
 			// 2 - arc
 			// 3 - strength
-			// 4 - rotation (optional)
+			// 4 - rotation
+			// 5 - weight (optional)
 			var dataEdge = [
 				edge.from.id,
 				edge.to.id,
 				Math.round(edge.arc),
-				edge.strength
+				edge.strength,
+				Math.round(edge.rotation)
 			];
-			if(dataEdge.f==dataEdge.t){
-				dataEdge.push(Math.round(edge.rotation));
+			if(edge.weight!=1){
+				dataEdge.push(edge.weight);
 			}
 			edges.push(dataEdge);
 		}
@@ -358,6 +360,7 @@ function Model(loopy){
 				strength: edge[3]
 			};
 			if(edge[4]) edgeConfig.rotation=edge[4];
+			if(edge[5]) edgeConfig.weight=edge[5];
 			self.addEdge(edgeConfig);
 		}
 

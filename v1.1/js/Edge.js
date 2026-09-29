@@ -8,6 +8,9 @@ Edge.allSignals = [];
 Edge.MAX_SIGNALS = 100;
 Edge.MAX_SIGNALS_PER_EDGE = 10;
 Edge.defaultStrength = 1;
+Edge.defaultWeight = 1;
+Edge.WEIGHTS = [0.25, 0.5, 1, 2, 3];
+Edge.MIN_SIGNAL_DELTA = 0.005; // weaker signals just fade away
 
 function Edge(model, config){
 
@@ -25,7 +28,8 @@ function Edge(model, config){
 		to: _makeErrorFunc("CAN'T LEAVE 'TO' BLANK"),
 		arc: 100,
 		rotation: 0,
-		strength: Edge.defaultStrength
+		strength: Edge.defaultStrength,
+		weight: Edge.defaultWeight
 	});
 
 	// Get my NODES
@@ -49,6 +53,7 @@ function Edge(model, config){
 
 		// Re-create signal
 		var delta = signal.delta;
+		if(Math.abs(delta)<Edge.MIN_SIGNAL_DELTA) return;
 		var age;
 		if(signal.age===undefined){
 			// age = 13; // cos divisible by 1,2,3,4 + 1
@@ -59,8 +64,8 @@ function Edge(model, config){
 		var newSignal = {
 			delta: delta,
 			position: 0,
-			scaleX: Math.abs(delta),
-			scaleY: delta,
+			scaleX: _signalScale(delta),
+			scaleY: _signalScale(delta)*(delta<0 ? -1 : 1),
 			age: age
 		};
 
@@ -109,7 +114,7 @@ function Edge(model, config){
 		while(lastSignal && lastSignal.position>=1){
 
 			// Actually pass it along
-			lastSignal.delta *= self.strength; // flip at the end only!
+			lastSignal.delta *= self.strength * self.weight; // flip & weigh at the end only!
 			self.to.takeSignal(lastSignal);
 			
 			// Pop it, move on down
@@ -282,6 +287,7 @@ function Edge(model, config){
 		else if(s>=-1) l="–"; // EM dash, not hyphen.
 		else if(s>=-2) l="– –";
 		else l="– – –";
+		if(self.weight!=1) l += " ×"+self.weight;
 		self.label = l;
 
 		// Label position
@@ -365,7 +371,7 @@ function Edge(model, config){
 	self.draw = function(ctx){
 
 		// Width & Color
-		ctx.lineWidth = 4*Math.abs(self.strength)-2;
+		ctx.lineWidth = 0.33 + 1.67*self.weight; // weight 1 -> 2, like before
 		ctx.strokeStyle = "#666";
 
 		// Translate & Rotate!
@@ -444,6 +450,11 @@ function Edge(model, config){
 
 	//////////////////////////////////////
 	// HELPER METHODS ////////////////////
+
+	// Signal size tracks its delta, but keep it visible & not gigantic
+	function _signalScale(delta){
+		return Math.min(Math.max(Math.abs(delta), 0.1), 1);
+	}
 	//////////////////////////////////////
 
 	self.isPointOnLabel = function(x, y){
